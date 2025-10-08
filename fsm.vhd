@@ -8,4 +8,5 @@ BEGIN
             BUSY_OUT      <= '0'; 
 
       ELSIF rising_edge(CLK) THEN
+            
   
