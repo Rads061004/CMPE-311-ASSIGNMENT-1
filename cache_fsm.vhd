@@ -18,7 +18,7 @@ end cache_fsm;
 architecture Behavioral of cache_fsm is
 
     type state_type is (
-        IDLE, READ_HIT, WRITE_HIT, READ_MISS, WRITE_MISS, DONE
+        IDLE, READ_HIT, WRITE_HIT, READ_MISS, WRITE_MISS, S_DONE
     );
     signal state, next_state : state_type := IDLE;
 
@@ -81,7 +81,7 @@ begin
                         end if;
                     end if;
 
-                when DONE =>
+                when S_DONE =>
                     counter <= 0;
                     busy_reg <= '0';
             end case;
@@ -122,32 +122,32 @@ begin
 
             when WRITE_HIT =>
                 if counter = 3 then
-                    next_state <= DONE;
+                    next_state <= S_DONE;
                 else
                     next_state <= WRITE_HIT;
                 end if;
 
             when READ_MISS =>
                 if counter = 19 then
-                    next_state <= DONE;
+                    next_state <= S_DONE;
                 else
                     next_state <= READ_MISS;
                 end if;
 
             when WRITE_MISS =>
-                if counter = 3 then
+                if counter = 3 S_then
                     next_state <= DONE;
                 else
                     next_state <= WRITE_MISS;
                 end if;
 
-            when DONE =>
+            when S_DONE =>
                 next_state <= IDLE;
         end case;
     end process;
 
     busy <= busy_reg;
-    done <= '1' when state = DONE else '0';
+    done <= '1' when state = S_DONE else '0';
 
 end Behavioral;
 
