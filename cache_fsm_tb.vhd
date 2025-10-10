@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
+
 library std;
 use std.textio.all;
 use IEEE.std_logic_textio.all;
@@ -21,14 +22,17 @@ architecture tb of cache_fsm_tb is
   constant TCLK : time := 10 ns;
 
   type txn_t is record
-    start  : std_logic; -- pulse will be generated if '1'
+    start  : std_logic;  -- (kept for readability; we always pulse start)
     tag    : std_logic;
     valid  : std_logic;
-    rw     : std_logic; -- 1=read, 0=write
-    name   : string(1 to 16); -- short label for readability
+    rw     : std_logic;  -- 1=read, 0=write
+    name   : string(1 to 16);
   end record;
 
-  constant TXNS : array (natural range <>) of txn_t := (
+  -- Named, unconstrained array type + constrained constant
+  type txn_vec_t is array (natural range <>) of txn_t;
+
+  constant TXNS : txn_vec_t(0 to 5) := (
     (start=>'1', tag=>'1', valid=>'1', rw=>'1', name=>"READ_HIT       "),
     (start=>'1', tag=>'1', valid=>'1', rw=>'0', name=>"WRITE_HIT      "),
     (start=>'1', tag=>'0', valid=>'1', rw=>'1', name=>"READ_MISS(tag) "),
@@ -36,8 +40,8 @@ architecture tb of cache_fsm_tb is
     (start=>'1', tag=>'1', valid=>'1', rw=>'1', name=>"READ_HIT #2    "),
     (start=>'1', tag=>'0', valid=>'1', rw=>'0', name=>"WRITE_MISS(tag)")
   );
-
 begin
+  -- DUT
   dut: entity work.cache_fsm
     port map (
       clk        => clk,
@@ -49,6 +53,8 @@ begin
       busy       => busy,
       done       => done
     );
+
+  -- Clock & reset
   clk <= not clk after TCLK/2;
 
   process
@@ -59,6 +65,7 @@ begin
     wait;
   end process;
 
+  -- One-transaction runner + stdout print
   procedure run_txn(
     constant label    : in string;
     constant s_tag    : in std_logic;
@@ -68,24 +75,20 @@ begin
   ) is
     variable l : line;
   begin
-    -- apply inputs
     tag        <= s_tag;
     valid      <= s_valid;
     read_write <= s_rw;
 
-    -- one-cycle start pulse
     start <= '1';
     wait until rising_edge(clk);
     start <= '0';
 
-    -- count cycles until done
     cycles := 0;
     while done = '0' loop
       wait until rising_edge(clk);
       cycles := cycles + 1;
     end loop;
 
-    -- print a line to the console
     write(l, string'("txn "));
     write(l, label);
     write(l, string'(" : tag="));   write(l, s_tag);
@@ -94,10 +97,10 @@ begin
     write(l, string'("  -> cycles_to_done=")); write(l, cycles);
     writeline(output, l);
 
-    -- allow FSM to transition DONE->IDLE
-    wait until rising_edge(clk);
+    wait until rising_edge(clk);  -- DONE->IDLE
   end procedure;
 
+  -- Stimulus
   process
     variable l : line;
     variable c : integer;
@@ -107,11 +110,9 @@ begin
     write(l, string'("# Expect: READ_HIT=2, WRITE_HIT=3, READ_MISS=19, WRITE_MISS=3 cycles"));
     writeline(output, l);
 
-    -- wait for reset release
     wait until reset = '0';
     wait until rising_edge(clk);
 
-    -- run each transaction
     for i in TXNS'range loop
       run_txn(TXNS(i).name, TXNS(i).tag, TXNS(i).valid, TXNS(i).rw, c);
     end loop;
@@ -119,8 +120,7 @@ begin
     write(l, string'("# Done. Stopping simulation."));
     writeline(output, l);
     wait for 5*TCLK;
-    std.env.stop;
+    std.env.stop;  -- or: assert false severity failure;
     wait;
   end process;
-
 end architecture tb;
