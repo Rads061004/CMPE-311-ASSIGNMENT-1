@@ -115,7 +115,7 @@ begin
 
             when READ_HIT =>
                 if counter = 2 then
-                    next_state <= DONE;
+                    next_state <= S_DONE;
                 else
                     next_state <= READ_HIT;
                 end if;
