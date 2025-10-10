@@ -23,7 +23,7 @@ architecture Structural of cache_fsm_struct is
     --------------------------------------------------------------------
     -- Component Declarations
     --------------------------------------------------------------------
-    component next_state_logic is
+    component next_state_logic 
         Port (
             start      : in  STD_LOGIC;
             tag        : in  STD_LOGIC;
@@ -35,7 +35,7 @@ architecture Structural of cache_fsm_struct is
         );
     end component;
 
-    component state_register is
+    component state_register 
         Port (
             clk        : in  STD_LOGIC;
             reset      : in  STD_LOGIC;
@@ -44,7 +44,7 @@ architecture Structural of cache_fsm_struct is
         );
     end component;
 
-    component output_logic is
+    component output_logic 
         Port (
             clk        : in  STD_LOGIC;
             state      : in  STD_LOGIC_VECTOR(2 downto 0);
@@ -57,7 +57,7 @@ architecture Structural of cache_fsm_struct is
         );
     end component;
 
-    component counter_logic is
+    component counter_logic 
         Port (
             clk     : in  STD_LOGIC;
             reset   : in  STD_LOGIC;
