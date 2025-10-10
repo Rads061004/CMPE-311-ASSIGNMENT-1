@@ -21,28 +21,39 @@ architecture tb of cache_fsm_tb is
 
   constant TCLK : time := 10 ns;
 
+  component cache_fsm
+    port (
+      clk        : in  std_logic;
+      reset      : in  std_logic;
+      start      : in  std_logic;
+      tag        : in  std_logic;
+      valid      : in  std_logic;
+      read_write : in  std_logic;
+      busy       : out std_logic;
+      done       : out std_logic
+    );
+  end component;
+
+  -- Minimal transaction record (no string field)
   type txn_t is record
-    start  : std_logic;  -- (kept for readability; we always pulse start)
-    tag    : std_logic;
-    valid  : std_logic;
-    rw     : std_logic;  -- 1=read, 0=write
-    name   : string(1 to 16);
+    tag   : std_logic;
+    valid : std_logic;
+    rw    : std_logic;  -- 1=read, 0=write
   end record;
 
-  -- Named, unconstrained array type + constrained constant
   type txn_vec_t is array (natural range <>) of txn_t;
 
   constant TXNS : txn_vec_t(0 to 5) := (
-    (start=>'1', tag=>'1', valid=>'1', rw=>'1', name=>"READ_HIT       "),
-    (start=>'1', tag=>'1', valid=>'1', rw=>'0', name=>"WRITE_HIT      "),
-    (start=>'1', tag=>'0', valid=>'1', rw=>'1', name=>"READ_MISS(tag) "),
-    (start=>'1', tag=>'1', valid=>'0', rw=>'0', name=>"WRITE_MISS(inv)"),
-    (start=>'1', tag=>'1', valid=>'1', rw=>'1', name=>"READ_HIT #2    "),
-    (start=>'1', tag=>'0', valid=>'1', rw=>'0', name=>"WRITE_MISS(tag)")
+    (tag=>'1', valid=>'1', rw=>'1'), -- read hit
+    (tag=>'1', valid=>'1', rw=>'0'), -- write hit
+    (tag=>'0', valid=>'1', rw=>'1'), -- read miss (tag mismatch)
+    (tag=>'1', valid=>'0', rw=>'0'), -- write miss (invalid)
+    (tag=>'1', valid=>'1', rw=>'1'), -- read hit #2
+    (tag=>'0', valid=>'1', rw=>'0')  -- write miss (tag mismatch)
   );
 begin
-  -- DUT
-  dut: entity work.cache_fsm
+  -- UUT
+  UUT : cache_fsm
     port map (
       clk        => clk,
       reset      => reset,
@@ -54,9 +65,10 @@ begin
       done       => done
     );
 
-  -- Clock & reset
+  -- Clock
   clk <= not clk after TCLK/2;
 
+  -- Reset
   process
   begin
     reset <= '1';
@@ -65,47 +77,46 @@ begin
     wait;
   end process;
 
-  -- One-transaction runner + stdout print
-  procedure run_txn(
-    constant label    : in string;
-    constant s_tag    : in std_logic;
-    constant s_valid  : in std_logic;
-    constant s_rw     : in std_logic;
-    variable cycles   : out integer
-  ) is
-    variable l : line;
-  begin
-    tag        <= s_tag;
-    valid      <= s_valid;
-    read_write <= s_rw;
+  -- Stimulus (local procedure with waits)
+  stim : process
+    procedure run_txn(
+      constant s_tag   : in std_logic;
+      constant s_valid : in std_logic;
+      constant s_rw    : in std_logic
+    ) is
+      variable l      : line;
+      variable cycles : integer := 0;
+    begin
+      tag        <= s_tag;
+      valid      <= s_valid;
+      read_write <= s_rw;
 
-    start <= '1';
-    wait until rising_edge(clk);
-    start <= '0';
-
-    cycles := 0;
-    while done = '0' loop
+      -- one-cycle start pulse
+      start <= '1';
       wait until rising_edge(clk);
-      cycles := cycles + 1;
-    end loop;
+      start <= '0';
 
-    write(l, string'("txn "));
-    write(l, label);
-    write(l, string'(" : tag="));   write(l, s_tag);
-    write(l, string'(" valid="));   write(l, s_valid);
-    write(l, string'(" rw="));      write(l, s_rw);
-    write(l, string'("  -> cycles_to_done=")); write(l, cycles);
-    writeline(output, l);
+      -- count cycles until done
+      cycles := 0;
+      while done = '0' loop
+        wait until rising_edge(clk);
+        cycles := cycles + 1;
+      end loop;
 
-    wait until rising_edge(clk);  -- DONE->IDLE
-  end procedure;
+      -- print summary
+      write(l, string'("txn tag="));   write(l, s_tag);
+      write(l, string'(" valid="));    write(l, s_valid);
+      write(l, string'(" rw="));       write(l, s_rw);
+      write(l, string'(" -> cycles_to_done=")); write(l, cycles);
+      writeline(output, l);
 
-  -- Stimulus
-  process
+      -- allow DONE->IDLE
+      wait until rising_edge(clk);
+    end run_txn;
+
     variable l : line;
-    variable c : integer;
   begin
-    write(l, string'("# cache_fsm TB (self-contained stimuli; stdout prints)"));
+    write(l, string'("# cache_fsm TB (stdout prints)"));
     writeline(output, l);
     write(l, string'("# Expect: READ_HIT=2, WRITE_HIT=3, READ_MISS=19, WRITE_MISS=3 cycles"));
     writeline(output, l);
@@ -114,13 +125,14 @@ begin
     wait until rising_edge(clk);
 
     for i in TXNS'range loop
-      run_txn(TXNS(i).name, TXNS(i).tag, TXNS(i).valid, TXNS(i).rw, c);
+      run_txn(TXNS(i).tag, TXNS(i).valid, TXNS(i).rw);
     end loop;
 
     write(l, string'("# Done. Stopping simulation."));
     writeline(output, l);
     wait for 5*TCLK;
-    std.env.stop;  -- or: assert false severity failure;
+
+    std.env.stop;  -- VHDL-2008; replace with "assert false severity failure;" if using -v93
     wait;
-  end process;
-end architecture tb;
+  end process stim;
+end;
