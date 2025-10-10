@@ -135,8 +135,8 @@ begin
                 end if;
 
             when WRITE_MISS =>
-                if counter = 3 S_then
-                    next_state <= DONE;
+                if counter = 3 then
+                    next_state <= S_DONE;
                 else
                     next_state <= WRITE_MISS;
                 end if;
