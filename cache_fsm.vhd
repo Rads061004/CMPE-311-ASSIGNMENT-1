@@ -150,7 +150,7 @@ begin
         if reset = '1' then
             busy_reg <= '0';
         elsif falling_edge(clk) then
-            case next_state is
+            case state is
                 when IDLE =>
                     if start_latched = '1' then
                         busy_reg <= '1';  -- Assert busy on next negedge after start
