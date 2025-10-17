@@ -132,7 +132,7 @@ begin
     writeline(output, l);
     wait for 5*TCLK;
 
-    std.env.stop;  -- VHDL-2008; replace with "assert false severity failure;" if using -v93
+    std.env.stop;
     wait;
   end process stim;
 end;
