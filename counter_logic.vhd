@@ -14,7 +14,7 @@ end counter_logic;
 architecture RTL of counter_logic is
     signal prev_state : STD_LOGIC_VECTOR(2 downto 0) := "000";
     signal cnt        : INTEGER := 0;
-    -- state encodings
+
     constant S_IDLE       : STD_LOGIC_VECTOR(2 downto 0) := "000";
     constant S_READ_HIT   : STD_LOGIC_VECTOR(2 downto 0) := "001";
     constant S_WRITE_HIT  : STD_LOGIC_VECTOR(2 downto 0) := "010";
@@ -26,48 +26,24 @@ begin
     begin
         if reset = '1' then
             prev_state <= S_IDLE;
-            cnt <= 0;
-            counter <= 0;
-        elsif rising_edge(clk) then
-            -- Detect entry to a new state
+            cnt        <= 0;
+            counter    <= 0;
+        elsif falling_edge(clk) then
             if state /= prev_state then
-                -- entering a new state: start counter at 0 (we will increment this cycle if needed)
-                if state = S_READ_HIT then
-                    cnt <= 0;
-                elsif state = S_WRITE_HIT then
-                    cnt <= 0;
-                elsif state = S_READ_MISS then
-                    cnt <= 0;
-                elsif state = S_WRITE_MISS then
-                    cnt <= 0;
-                else
-                    cnt <= 0;
-                end if;
+                cnt <= 0;              -- entering a new state: start at 0
             else
-                -- still in same state: if active counting states, increment up to a safe max
-                if state = S_READ_HIT then
-                    if cnt < 1000000 then -- arbitrary safe limit
-                        cnt <= cnt + 1;
-                    end if;
-                elsif state = S_WRITE_HIT then
-                    if cnt < 1000000 then
-                        cnt <= cnt + 1;
-                    end if;
-                elsif state = S_READ_MISS then
-                    if cnt < 1000000 then
-                        cnt <= cnt + 1;
-                    end if;
-                elsif state = S_WRITE_MISS then
+                if (state = S_READ_HIT) or (state = S_WRITE_HIT) or
+                   (state = S_READ_MISS) or (state = S_WRITE_MISS) then
                     if cnt < 1000000 then
                         cnt <= cnt + 1;
                     end if;
                 else
-                    cnt <= 0;
+                    cnt <= 0;          -- IDLE/DONE
                 end if;
             end if;
 
             prev_state <= state;
-            counter <= cnt;
+            counter    <= cnt;
         end if;
     end process;
 end RTL;

@@ -4,7 +4,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity output_logic is
     Port (
-        clk        : in  STD_LOGIC;
+        clk        : in  STD_LOGIC;  -- unused; kept for interface stability
         state      : in  STD_LOGIC_VECTOR(2 downto 0);
         counter    : in  INTEGER;
         busy       : out STD_LOGIC;
@@ -16,8 +16,6 @@ entity output_logic is
 end output_logic;
 
 architecture RTL of output_logic is
-    signal busy_reg : STD_LOGIC := '0';
-
     constant S_IDLE       : STD_LOGIC_VECTOR(2 downto 0) := "000";
     constant S_READ_HIT   : STD_LOGIC_VECTOR(2 downto 0) := "001";
     constant S_WRITE_HIT  : STD_LOGIC_VECTOR(2 downto 0) := "010";
@@ -25,53 +23,9 @@ architecture RTL of output_logic is
     constant S_WRITE_MISS : STD_LOGIC_VECTOR(2 downto 0) := "100";
     constant S_DONE       : STD_LOGIC_VECTOR(2 downto 0) := "101";
 begin
-
-    -- busy asserted/deasserted on falling edge to meet your timing
-    process(clk)
-    begin
-        if falling_edge(clk) then
-            case state is
-                when S_READ_HIT =>
-                    -- busy should be asserted on the negedge one cycle after start,
-                    -- and go low after 1 cycle (i.e., when counter >= 1)
-                    if counter < 1 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when S_WRITE_HIT =>
-                    -- busy low after 2 cycles => busy asserted while counter < 2
-                    if counter < 2 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when S_READ_MISS =>
-                    -- busy low after 18 cycles (so asserted while counter < 18)
-                    if counter < 18 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when S_WRITE_MISS =>
-                    -- busy low after 2 cycles (so asserted while counter < 2)
-                    if counter < 2 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when others =>
-                    busy_reg <= '0';
-            end case;
-        end if;
-    end process;
-
-    -- combinational outputs (en, OE_CD, OE_MA, done)
+    -- Pure combinational outputs from (state, counter)
     process(state, counter)
+        variable budget : integer;  -- BUSY-high length = D-1
     begin
         -- defaults
         en    <= '0';
@@ -79,51 +33,47 @@ begin
         OE_MA <= '0';
         done  <= '0';
 
+        -- BUSY high while counter < (D-1)
         case state is
-            when S_IDLE =>
-                null;
+            when S_READ_HIT   => budget := 1;   -- D=2  -> BUSY while counter < 1
+            when S_WRITE_HIT  => budget := 2;   -- D=3  -> BUSY while counter < 2
+            when S_READ_MISS  => budget := 18;  -- D=19 -> BUSY while counter < 18
+            when S_WRITE_MISS => budget := 2;   -- D=3  -> BUSY while counter < 2
+            when others       => budget := -1;  -- IDLE/DONE -> BUSY=0
+        end case;
 
+        if (budget >= 0) and (counter < budget) then
+            busy <= '1';
+        else
+            busy <= '0';
+        end if;
+
+        -- DONE is a one-state pulse
+        if state = S_DONE then
+            done <= '1';
+        end if;
+
+        -- Example side-band strobes (adjust later to your datapath)
+        case state is
             when S_READ_HIT =>
-                -- output enable for cache data only when presenting data (you can refine)
                 if counter >= 1 then
-                    OE_CD <= '1';
-                else
-                    OE_CD <= '0';
+                    OE_CD <= '1';       -- present data to CPU
                 end if;
 
-            when S_WRITE_HIT =>
-                -- during write hit, you may want to assert OE_CD as write strobe; leave as 0 by default
-                null;
-
             when S_READ_MISS =>
-                -- for read miss, en (memory enable) is asserted early in the miss cycle,
-                -- here we assert en when counter = 1 to simulate pulse at start of mem access.
-                -- Adjust exact cycle indexes as needed to match the waveform/memory timing.
                 if counter = 1 then
-                    en <= '1';
-                    OE_MA <= '1';  -- present address to memory (OE_MA used as strobe)
-                else
-                    en <= '0';
-                    OE_MA <= '0';
+                    en   <= '1';        -- memory enable pulse
+                    OE_MA<= '1';
                 end if;
 
             when S_WRITE_MISS =>
-                -- write miss: no allocate; write-through to memory might be required
                 if counter = 1 then
-                    en <= '1';
-                    OE_MA <= '1';
-                else
-                    en <= '0';
-                    OE_MA <= '0';
+                    en   <= '1';
+                    OE_MA<= '1';
                 end if;
 
-            when S_DONE =>
-                done <= '1';
             when others =>
                 null;
         end case;
     end process;
-
-    busy <= busy_reg;
-
 end RTL;

@@ -1,6 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
 entity state_register is
     Port (
@@ -18,7 +17,7 @@ begin
     begin
         if reset = '1' then
             state <= S_IDLE;
-        elsif rising_edge(clk) then
+        elsif falling_edge(clk) then
             state <= next_state;
         end if;
     end process;
