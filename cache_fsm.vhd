@@ -1,189 +1,168 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity cache_fsm is
-    Port (
-        clk        : in  STD_LOGIC;
-        reset      : in  STD_LOGIC;
-        start      : in  STD_LOGIC;
-        tag        : in  STD_LOGIC;
-        valid      : in  STD_LOGIC;
-        read_write : in  STD_LOGIC; 
-        busy       : out STD_LOGIC;
-        done       : out STD_LOGIC
+    port (
+        clk        : in  std_logic;
+        reset      : in  std_logic;
+        -- CPU controls (driven on posedge by TB/CPU)
+        start      : in  std_logic;
+        tag        : in  std_logic;
+        valid      : in  std_logic;
+        read_write : in  std_logic;  -- 1 = read, 0 = write
+        -- status
+        busy       : out std_logic;
+        done       : out std_logic
     );
 end cache_fsm;
 
-architecture Behavioral of cache_fsm is
+architecture rtl of cache_fsm is
+    type state_t is (IDLE, READ_HIT, WRITE_HIT, READ_MISS, WRITE_MISS, S_DONE);
+    signal CS, NS : state_t := IDLE;
 
-    type state_type is (
-        IDLE, READ_HIT, WRITE_HIT, READ_MISS, WRITE_MISS, S_DONE
-    );
-    signal state, next_state : state_type := IDLE;
+    -- optional posedge sampling (kept only for debug/visibility, not used in IDLE decision)
+    signal start_q : std_logic := '0';
+    signal rw_q    : std_logic := '0';
+    signal hit_q   : std_logic := '0';  -- tag and valid
 
-    signal counter : integer := 0;
-    signal busy_reg : STD_LOGIC := '0';
-    signal start_edge : STD_LOGIC := '0';
+    -- negedge counter (0 on entry; ++ each negedge in work states)
+    signal counter_en  : std_logic := '0';
+    signal delay_count : unsigned(7 downto 0) := (others => '0');
 
+    -- registered outputs (negedge)
+    signal busy_reg : std_logic := '0';
+    signal done_reg : std_logic := '0';
 begin
+    busy <= busy_reg;
+    done <= done_reg;
 
-    ------------------------------------------------------------------
-    -- Start edge detection (posedge)
-    ------------------------------------------------------------------
-    process(clk, reset)
+    --------------------------------------------------------------------
+    -- Optional: sample for waveform clarity (not used in IDLE decision)
+    --------------------------------------------------------------------
+    process(clk)
     begin
-        if reset = '1' then
-            start_edge <= '0';
-        elsif rising_edge(clk) then
-            start_edge <= start;  -- capture start signal only on posedge
+        if rising_edge(clk) then
+            if reset = '1' then
+                start_q <= '0';
+                rw_q    <= '0';
+                hit_q   <= '0';
+            else
+                start_q <= start;
+                rw_q    <= read_write;
+                hit_q   <= (tag and valid);
+            end if;
         end if;
     end process;
 
-
-    ------------------------------------------------------------------
-    -- State transition and counter update on posedge
-    ------------------------------------------------------------------
-    process(clk, reset)
+    --------------------------------------------------------------------
+    -- Counter (negedge)
+    --------------------------------------------------------------------
+    process(clk)
     begin
-        if reset = '1' then
-            state <= IDLE;
-            counter <= 0;
-        elsif rising_edge(clk) then
-            state <= next_state;
-
-            case state is
-                when IDLE =>
-                    counter <= 0;
-
-                when READ_HIT =>
-                    if counter < 2 then
-                        counter <= counter + 1;
-                    end if;
-
-                when WRITE_HIT =>
-                    if counter < 3 then
-                        counter <= counter + 1;
-                    end if;
-
-                when READ_MISS =>
-                    if counter < 19 then
-                        counter <= counter + 1;
-                    end if;
-
-                when WRITE_MISS =>
-                    if counter < 3 then
-                        counter <= counter + 1;
-                    end if;
-
-                when S_DONE =>
-                    counter <= 0;
-
-            end case;
+        if falling_edge(clk) then
+            if reset = '1' then
+                delay_count <= (others => '0');
+            else
+                if counter_en = '1' then
+                    delay_count <= delay_count + 1;
+                else
+                    delay_count <= (others => '0');
+                end if;
+            end if;
         end if;
     end process;
 
-
-    ------------------------------------------------------------------
-    -- Busy control on negative edge (lags start by half a cycle)
-    ------------------------------------------------------------------
-    process(clk, reset)
+    --------------------------------------------------------------------
+    -- State register (negedge)
+    --------------------------------------------------------------------
+    process(clk)
     begin
-        if reset = '1' then
-            busy_reg <= '0';
-        elsif falling_edge(clk) then
-            case state is
-                when READ_HIT =>
-                    if counter < 1 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when WRITE_HIT =>
-                    if counter < 2 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when READ_MISS =>
-                    if counter < 18 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when WRITE_MISS =>
-                    if counter < 2 then
-                        busy_reg <= '1';
-                    else
-                        busy_reg <= '0';
-                    end if;
-
-                when others =>
-                    busy_reg <= '0';
-            end case;
+        if falling_edge(clk) then
+            if reset = '1' then
+                CS <= IDLE;
+            else
+                CS <= NS;
+            end if;
         end if;
     end process;
 
-
-    ------------------------------------------------------------------
-    -- Next-state logic (combinational)
-    ------------------------------------------------------------------
-    process(state, start_edge, tag, valid, read_write, counter)
+    --------------------------------------------------------------------
+    -- Next-state logic
+    --  • In IDLE: use RAW inputs (start/read_write/tag/valid) to avoid posedge race
+    --  • In work states: use D−1 thresholds on the negedge counter
+    --------------------------------------------------------------------
+    process(CS, start, read_write, tag, valid, delay_count)
     begin
-        next_state <= state;
+        NS <= CS;  -- default
 
-        case state is
+        case CS is
             when IDLE =>
-                if start_edge = '1' then
-                    if (tag and valid) = '1' then
+                if start = '1' then
+                    if (tag = '1' and valid = '1') then
                         if read_write = '1' then
-                            next_state <= READ_HIT;
+                            NS <= READ_HIT;
                         else
-                            next_state <= WRITE_HIT;
+                            NS <= WRITE_HIT;
                         end if;
                     else
                         if read_write = '1' then
-                            next_state <= READ_MISS;
+                            NS <= READ_MISS;
                         else
-                            next_state <= WRITE_MISS;
+                            NS <= WRITE_MISS;
                         end if;
                     end if;
                 else
-                    next_state <= IDLE;
+                    NS <= IDLE;
                 end if;
 
             when READ_HIT =>
-                if counter = 2 then
-                    next_state <= S_DONE;
-                end if;
+                if delay_count = 0 then NS <= S_DONE; else NS <= READ_HIT; end if;   -- 1 negedge
 
             when WRITE_HIT =>
-                if counter = 3 then
-                    next_state <= S_DONE;
-                end if;
+                if delay_count = 1 then NS <= S_DONE; else NS <= WRITE_HIT; end if;  -- 2 negedges
 
             when READ_MISS =>
-                if counter = 19 then
-                    next_state <= S_DONE;
-                end if;
+                if delay_count = 17 then NS <= S_DONE; else NS <= READ_MISS; end if; -- 18 negedges
 
             when WRITE_MISS =>
-                if counter = 3 then
-                    next_state <= S_DONE;
-                end if;
+                if delay_count = 1 then NS <= S_DONE; else NS <= WRITE_MISS; end if; -- 2 negedges
 
             when S_DONE =>
-                next_state <= IDLE;
+                NS <= IDLE;
         end case;
     end process;
 
-    ------------------------------------------------------------------
-    -- Output assignments
-    ------------------------------------------------------------------
-    busy <= busy_reg;
-    done <= '1' when state = S_DONE else '0';
+    --------------------------------------------------------------------
+    -- Outputs / control (negedge) — drive from **NS** (look-ahead)
+    -- This keeps BUSY asserting on the very first falling edge after START.
+    --------------------------------------------------------------------
+    process(clk)
+    begin
+        if falling_edge(clk) then
+            if reset = '1' then
+                busy_reg   <= '0';
+                done_reg   <= '0';
+                counter_en <= '0';
+            else
+                done_reg <= '0';  -- pulse only in S_DONE
 
-end Behavioral;
+                case NS is
+                    when IDLE =>
+                        counter_en <= '0';
+                        busy_reg   <= '0';
+
+                    when READ_HIT | WRITE_HIT | READ_MISS | WRITE_MISS =>
+                        counter_en <= '1';
+                        busy_reg   <= '1';  -- assert on this first negedge
+
+                    when S_DONE =>
+                        counter_en <= '0';
+                        busy_reg   <= '0';
+                        done_reg   <= '1';
+                end case;
+            end if;
+        end if;
+    end process;
+
+end rtl;
