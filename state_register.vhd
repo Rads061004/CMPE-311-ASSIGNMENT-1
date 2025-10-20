@@ -14,12 +14,14 @@ end state_register;
 architecture RTL of state_register is
     constant S_IDLE : STD_LOGIC_VECTOR(2 downto 0) := "000";
 begin
-    process(clk, reset)
+    process(clk)
     begin
-        if reset = '1' then
-            state <= S_IDLE;
-        elsif rising_edge(clk) then
-            state <= next_state;
+        if falling_edge(clk) then
+            if reset = '1' then
+                state <= S_IDLE;
+            else
+                state <= next_state;
+            end if;
         end if;
     end process;
 end RTL;
