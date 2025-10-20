@@ -19,10 +19,6 @@ entity cache_fsm_struct is
 end cache_fsm_struct;
 
 architecture Structural of cache_fsm_struct is
-
-    --------------------------------------------------------------------
-    -- Component Declarations
-    --------------------------------------------------------------------
     component next_state_logic 
         Port (
             start      : in  STD_LOGIC;
@@ -46,14 +42,15 @@ architecture Structural of cache_fsm_struct is
 
     component output_logic 
         Port (
-            clk        : in  STD_LOGIC;
-            state      : in  STD_LOGIC_VECTOR(2 downto 0);
-            counter    : in  INTEGER;
-            busy       : out STD_LOGIC;
-            done       : out STD_LOGIC;
-            en         : out STD_LOGIC;
-            OE_CD      : out STD_LOGIC;
-            OE_MA      : out STD_LOGIC
+            clk         : in  STD_LOGIC;
+            state       : in  STD_LOGIC_VECTOR(2 downto 0);
+            next_state  : in  STD_LOGIC_VECTOR(2 downto 0);
+            counter     : in  INTEGER;
+            busy        : out STD_LOGIC;
+            done        : out STD_LOGIC;
+            en          : out STD_LOGIC;
+            OE_CD       : out STD_LOGIC;
+            OE_MA       : out STD_LOGIC
         );
     end component;
 
@@ -66,18 +63,10 @@ architecture Structural of cache_fsm_struct is
         );
     end component;
 
-    --------------------------------------------------------------------
-    -- Internal Signals
-    --------------------------------------------------------------------
-    signal state_sig, next_state_sig : STD_LOGIC_VECTOR(2 downto 0);
+    signal state_sig, next_state_sig : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
     signal counter_sig : INTEGER := 0;
 
 begin
-
-    --------------------------------------------------------------------
-    -- Component Instantiations
-    --------------------------------------------------------------------
-
     U1_next_state_logic : next_state_logic
         Port map (
             start      => start,
@@ -107,14 +96,14 @@ begin
 
     U4_output_logic : output_logic
         Port map (
-            clk     => clk,
-            state   => state_sig,
-            counter => counter_sig,
-            busy    => busy,
-            done    => done,
-            en      => en,
-            OE_CD   => OE_CD,
-            OE_MA   => OE_MA
+            clk        => clk,
+            state      => state_sig,
+            next_state => next_state_sig, 
+            counter    => counter_sig,
+            busy       => busy,
+            done       => done,
+            en         => en,
+            OE_CD      => OE_CD,
+            OE_MA      => OE_MA
         );
-
 end Structural;
