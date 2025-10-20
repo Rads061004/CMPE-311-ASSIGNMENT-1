@@ -7,59 +7,54 @@ entity cache_block is
         clk   : in  std_logic;
         reset : in  std_logic;
 
-        CA        : in  std_logic_vector(5 downto 0);
+        -- CPU side
+        CA        : in  std_logic_vector(5 downto 0);  -- [5:4]=tag, [3:2]=index, [1:0]=byte
         CD_in     : in  std_logic_vector(7 downto 0);
         CD_out    : out std_logic_vector(7 downto 0);
-        OE_CD     : in  std_logic;                
-        RD_WR     : in  std_logic;                    
-        START     : in  std_logic;                     
+        OE_CD     : in  std_logic;
+        RD_WR     : in  std_logic;                     -- 1=read, 0=write
+        START     : in  std_logic;
 
+        -- Memory side
         MD_in     : in  std_logic_vector(7 downto 0);
         MA_out    : out std_logic_vector(7 downto 0);
 
+        -- Control from FSM (sampled on negedge)
         latch_req       : in  std_logic;
         cache_we        : in  std_logic;
         src_is_mem      : in  std_logic;
         byte_sel        : in  std_logic_vector(1 downto 0);
-        set_tag_valid   : in  std_logic; 
+        set_tag_valid   : in  std_logic;
         invalidate_all  : in  std_logic;
 
-        hit         : out std_logic       -- 1 when tag matches & valid for current index (using latched addr)
+        -- Back to FSM
+        hit             : out std_logic
     );
 end cache_block;
 
 architecture rtl of cache_block is
-
-
+    -- Latched request
     signal tag_q      : std_logic_vector(1 downto 0) := (others => '0');
     signal index_q    : unsigned(1 downto 0)         := (others => '0');
     signal byte_q     : unsigned(1 downto 0)         := (others => '0');
     signal rdwr_q     : std_logic := '0';
     signal cd_in_q    : std_logic_vector(7 downto 0) := (others => '0');
 
-    -- 4 blocks × 4 bytes of 8-bit
-    type block_t is array (0 to 3) of std_logic_vector(7 downto 0);
-    type cache_t is array (0 to 3) of block_t;
+    -- 4 blocks x 4 bytes
+    type block_t  is array (0 to 3) of std_logic_vector(7 downto 0);
+    type cache_t  is array (0 to 3) of block_t;
     signal data_ram : cache_t;
 
-    -- tag/valid arrays per block
     type tag_array_t is array (0 to 3) of std_logic_vector(1 downto 0);
     type val_array_t is array (0 to 3) of std_logic;
     signal tag_ram : tag_array_t := (others => (others => '0'));
     signal valid_b : val_array_t := (others => '0');
 
-    -- Output register to the CPU, latched on negedge when OE_CD=1
     signal cd_out_q : std_logic_vector(7 downto 0) := (others => '0');
-
-    -- Combinational helpers
-    function to_uint(s: std_logic_vector) return integer is
-    begin
-        return to_integer(unsigned(s));
-    end function;
-
 begin
     CD_out <= cd_out_q;
 
+    -- Latch CPU request on first negedge after START (via latch_req)
     process(clk)
     begin
         if falling_edge(clk) then
@@ -81,53 +76,49 @@ begin
         end if;
     end process;
 
+    -- Combinational hit check
     hit <= '1' when (valid_b(to_integer(index_q)) = '1' and
                      tag_ram(to_integer(index_q))  = tag_q) else '0';
 
+    -- Base memory address (last 2 bits forced to "00")
     MA_out <= tag_q & std_logic_vector(index_q) & "00";
 
+    -- Writes / tag+valid / output latch on negedge
     process(clk)
         variable idx  : integer;
-        variable bsel : integer;
+        variable sel  : integer;
         variable din  : std_logic_vector(7 downto 0);
     begin
         if falling_edge(clk) then
             if reset = '1' then
                 valid_b <= (others => '0');
-                -- optional: clear data/tag (not strictly required)
                 tag_ram <= (others => (others => '0'));
             else
-                -- Invalidate all (e.g., at reset entry), optional pulse
                 if invalidate_all = '1' then
                     valid_b <= (others => '0');
                 end if;
 
-                idx  := to_integer(index_q);
-                bsel := to_integer(unsigned(byte_sel));
+                idx := to_integer(index_q);
+                sel := to_integer(unsigned(byte_sel));
 
-                -- Cache write (either write-hit from CPU or read-miss fill from MD)
                 if cache_we = '1' then
                     if src_is_mem = '1' then
-                        din := MD_in;      -- fill from memory
+                        din := MD_in;
                     else
-                        din := cd_in_q;    -- write-hit from CPU
+                        din := cd_in_q;
                     end if;
-
-                    data_ram(idx)(bsel) <= din;
+                    data_ram(idx)(sel) <= din;
                 end if;
 
-                -- Set tag + valid (typically the first fill byte during a read-miss)
                 if set_tag_valid = '1' then
                     tag_ram(idx) <= tag_q;
                     valid_b(idx) <= '1';
                 end if;
 
-                -- Output latch to CPU when OE_CD asserted by FSM
                 if OE_CD = '1' then
                     cd_out_q <= data_ram(idx)(to_integer(unsigned(byte_sel)));
                 end if;
             end if;
         end if;
     end process;
-
 end rtl;
