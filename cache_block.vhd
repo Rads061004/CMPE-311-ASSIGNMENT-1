@@ -43,7 +43,7 @@ architecture rtl of cache_block is
     -- 4 blocks x 4 bytes
     type block_t  is array (0 to 3) of std_logic_vector(7 downto 0);
     type cache_t  is array (0 to 3) of block_t;
-    signal data_ram : cache_t;
+    signal data_ram : cache_t := (others => (others => (others => '0')));  -- init
 
     type tag_array_t is array (0 to 3) of std_logic_vector(1 downto 0);
     type val_array_t is array (0 to 3) of std_logic;
@@ -80,8 +80,8 @@ begin
     hit <= '1' when (valid_b(to_integer(index_q)) = '1' and
                      tag_ram(to_integer(index_q))  = tag_q) else '0';
 
-    -- Base memory address (last 2 bits forced to "00")
-    MA_out <= tag_q & std_logic_vector(index_q) & "00";
+    -- Base memory address (last 2 bits forced to "00") => make it 8 bits total
+    MA_out <= "00" & tag_q & std_logic_vector(index_q) & "00";
 
     -- Writes / tag+valid / output latch on negedge
     process(clk)
@@ -93,6 +93,7 @@ begin
             if reset = '1' then
                 valid_b <= (others => '0');
                 tag_ram <= (others => (others => '0'));
+                cd_out_q <= (others => '0');
             else
                 if invalidate_all = '1' then
                     valid_b <= (others => '0');

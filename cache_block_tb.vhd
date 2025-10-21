@@ -54,6 +54,12 @@ architecture sim of cache_block_tb is
 
   signal hit           : std_logic;
 
+  -- tiny helper for 8-bit bytes (VHDL-93 safe)
+  function U8(hexval : integer) return std_logic_vector is
+  begin
+    return std_logic_vector(to_unsigned(hexval, 8));
+  end;
+
 begin
   -- DUT
   dut: cache_block
@@ -68,7 +74,7 @@ begin
   -- 2 ns clock
   clk <= not clk after 1 ns;
 
-  -- Stimulus (no local functions/procedures, no asserts)
+  -- Stimulus (no local subprograms with bodies, no asserts)
   stim_proc : process
   begin
     -- Reset + invalidate
@@ -91,9 +97,9 @@ begin
     latch_req <= '0';
     START <= '0';
 
-    -- Fill 4 bytes from "memory": 11,22,33,44
+    -- Fill 4 bytes from "memory": 0x11, 0x22, 0x33, 0x44
     src_is_mem    <= '1';
-    MD_in         <= x"11";
+    MD_in         <= U8(16#11#);
     byte_sel      <= "00";
     set_tag_valid <= '1';
     cache_we      <= '1';
@@ -103,7 +109,7 @@ begin
     src_is_mem    <= '0';
 
     src_is_mem    <= '1';
-    MD_in         <= x"22";
+    MD_in         <= U8(16#22#);
     byte_sel      <= "01";
     cache_we      <= '1';
     wait until falling_edge(clk);
@@ -111,7 +117,7 @@ begin
     src_is_mem    <= '0';
 
     src_is_mem    <= '1';
-    MD_in         <= x"33";
+    MD_in         <= U8(16#33#);
     byte_sel      <= "10";
     cache_we      <= '1';
     wait until falling_edge(clk);
@@ -119,14 +125,14 @@ begin
     src_is_mem    <= '0';
 
     src_is_mem    <= '1';
-    MD_in         <= x"44";
+    MD_in         <= U8(16#44#);
     byte_sel      <= "11";
     cache_we      <= '1';
     wait until falling_edge(clk);
     cache_we      <= '0';
     src_is_mem    <= '0';
 
-    -- READ-HIT: read byte_sel=10 (expect to observe 0x33 on CD_out)
+    -- READ-HIT: read byte_sel=10 (observe 0x33 on CD_out)
     byte_sel <= "10";
     OE_CD    <= '1';
     wait until falling_edge(clk);
@@ -136,7 +142,7 @@ begin
     -- ============ WRITE-HIT: overwrite byte 01 with 0xA5 ============
     CA    <= "10" & "01" & "01";  -- same line, byte=01
     RD_WR <= '0';                 -- write
-    CD_in <= x"A5";
+    CD_in <= U8(16#A5#);
     START <= '1';
     latch_req <= '1';
     wait until falling_edge(clk);
@@ -149,7 +155,7 @@ begin
     wait until falling_edge(clk);
     cache_we   <= '0';
 
-    -- Read back byte 01
+    -- Read back byte 01 (should observe 0xA5)
     byte_sel <= "01";
     OE_CD    <= '1';
     wait until falling_edge(clk);
@@ -159,7 +165,7 @@ begin
     -- ============ WRITE-MISS (no-allocate): different tag, same index ============
     CA    <= "01" & "01" & "01";  -- different tag -> miss
     RD_WR <= '0';
-    CD_in <= x"7E";
+    CD_in <= U8(16#7E#);
     START <= '1';
     latch_req <= '1';
     wait until falling_edge(clk);
