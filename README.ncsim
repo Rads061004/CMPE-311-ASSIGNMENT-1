@@ -1,0 +1,20 @@
+-- DON'T CHANGE THE TEST BENCH EXPECT AS NOTED IN PARAGRAPH 1 BELOW
+-- PLOT THE WAVEFORMS FOR THIS TEST BENCH AS SHOWN IN THE EXAMPLE PLOTS ON THE WEB PAGE
+-- INCLUDE THE LOG FILE
+
+The testbench is chip_test.vhd. It reads input from the file called chip_in.txt, it assumes that the chip_test.vhd and chip_in.txt are both in the run directory. Change this if required. Also change the chip component statement to match your chip ports. The test bench reads following from the input file in order:
+
+Rising edge of clock:
+  CPU Address    (6 bits)
+  CPU Data       (8 bits)
+  CPU Read/Write (1 bit)
+  Start          (1 bit)
+  Reset          (1 bit)
+
+Falling edge of clock:
+  Memory Data    (8 bits)
+
+PS: you have to first compile and elaborate your vhdl files before you simulate them. Please refer to lab 1 tutorial for detailed steps.
+
+The log is shown for an older version of the project. It shows 8 bit addresses, but in this project your input addresses would be 6-bit.
+
