@@ -4,16 +4,16 @@ use ieee.numeric_std.all;
 
 entity chip is
   port (
-    cpu_add    : in    std_logic_vector(5 downto 0);  -- [5:4]=tag, [3:2]=index, [1:0]=byte
+    cpu_add    : in    std_logic_vector(5 downto 0);  
     cpu_data   : inout std_logic_vector(7 downto 0);
-    cpu_rd_wrn : in    std_logic;                     -- 1=read, 0=write
+    cpu_rd_wrn : in    std_logic;                     
     start      : in    std_logic;
     clk        : in    std_logic;
     reset      : in    std_logic;
 
     mem_data   : in    std_logic_vector(7 downto 0);
-    Vdd        : in    std_logic;                     -- pads (unused here)
-    Gnd        : in    std_logic;                     -- pads (unused here)
+    Vdd        : in    std_logic;                     
+    Gnd        : in    std_logic;             
 
     busy       : out   std_logic;
     mem_en     : out   std_logic;
@@ -22,12 +22,10 @@ entity chip is
 end chip;
 
 architecture structural of chip is
-  -- Address fields
   signal tag_in    : std_logic_vector(1 downto 0);
   signal idx       : std_logic_vector(1 downto 0);
   signal byte_sel  : std_logic_vector(1 downto 0);
 
-  -- Decoder (index -> one-hot enables)
   component decoder
     port (
       block_addr : in  std_logic_vector(1 downto 0);
@@ -37,7 +35,6 @@ architecture structural of chip is
 
   signal en_1hot : std_logic_vector(3 downto 0);
 
-  -- Cache line
   component cache_block
     port (
       clk, reset   : in  std_logic;
@@ -69,19 +66,18 @@ architecture structural of chip is
   signal valid_sel   : std_logic;
   signal hit_sel     : std_logic;
 
-  -- FSM
   component cache_fsm_struct
     port (
       clk        : in  std_logic;
       reset      : in  std_logic;
       start      : in  std_logic;
-      tag        : in  std_logic;   -- hit=1/miss=0 for selected line
-      valid      : in  std_logic;   -- valid bit of selected line
-      read_write : in  std_logic;   -- CPU rd/wr
+      tag        : in  std_logic;   
+      valid      : in  std_logic;   
+      read_write : in  std_logic;   
       busy       : out std_logic;
       done       : out std_logic;
-      en         : out std_logic;   -- memory enable
-      OE_CD      : out std_logic;   -- drive to CPU data bus
+      en         : out std_logic;   
+      OE_CD      : out std_logic;   
       OE_MA      : out std_logic
     );
   end component;
@@ -91,40 +87,32 @@ architecture structural of chip is
   signal fsm_OEma  : std_logic;
   signal fsm_en    : std_logic;
 
-  -- We / set_tag pulses generated here (not inside FSM)
   signal we_top        : std_logic := '0';
   signal set_tag_top   : std_logic := '0';
 
-  -- Classify initial request at first negedge after START
   signal latch_go    : std_logic := '0';
   signal L_is_write  : std_logic := '0';
   signal L_is_hit    : std_logic := '0';
 
-  -- Refill timing after mem_en goes high
   signal mem_en_q      : std_logic := '0';
   signal refill_cnt    : integer range 0 to 31 := 0;
   signal refill_active : std_logic := '0';
 
-  -- CPU data bus
   signal cpu_do : std_logic_vector(7 downto 0);
 
-  -- clean std_logic version of tag match for FSM (never 'U')
   signal tag_match_sel : std_logic;
 
 begin
-  -- Split incoming address
   tag_in   <= cpu_add(5 downto 4);
   idx      <= cpu_add(3 downto 2);
   byte_sel <= cpu_add(1 downto 0);
 
-  -- Index decoder
   u_dec: decoder
     port map (
       block_addr => idx,
       block_sel  => en_1hot
     );
 
-  -- 4 cache lines
   u_cb0: cache_block
     port map (
       clk => clk, reset => reset, enable => en_1hot(0),
@@ -157,7 +145,6 @@ begin
       valid_out => v3, tag_out => t3, hit_miss => h3
     );
 
-  -- Select metadata/data and produce a CLEAN tag match bit for the FSM
   with idx select data_sel  <= d0 when "00", d1 when "01", d2 when "10", d3 when "11", (others=>'0') when others;
   with idx select valid_sel <= v0 when "00", v1 when "01", v2 when "10", v3 when "11", '0'           when others;
   with idx select hit_sel   <= h0 when "00", h1 when "01", h2 when "10", h3 when "11", '0'           when others;
@@ -169,7 +156,6 @@ begin
                      (idx = "11" and t3 = tag_in)
                    ) else '0';
 
-  -- FSM hookup
   u_fsm: cache_fsm_struct
     port map (
       clk        => clk,
@@ -185,15 +171,12 @@ begin
       OE_MA      => fsm_OEma
     );
 
-  -- External memory handshake
   mem_en  <= fsm_en;
-  mem_add <= cpu_add(5 downto 2) & "00";  -- force byte-offset = "00"
+  mem_add <= cpu_add(5 downto 2) & "00";  
 
-  -- CPU data bus drive (from selected line) gated by FSM
   cpu_do   <= data_sel;
   cpu_data <= cpu_do when fsm_OEcd = '1' else (others => 'Z');
 
-  -- Latch initial request classification at first falling edge after START
   process(clk)
   begin
     if falling_edge(clk) then
@@ -211,7 +194,6 @@ begin
     end if;
   end process;
 
-  -- Refill timing after mem_en goes high (negedge counts 8/10/12/14)
   process(clk)
   begin
     if falling_edge(clk) then
@@ -235,7 +217,6 @@ begin
     end if;
   end process;
 
-  -- Generate WE and SET_TAG pulses at top (not in FSM)
   process(clk)
     variable we_pulse      : std_logic;
     variable set_tag_pulse : std_logic;
@@ -248,12 +229,10 @@ begin
         we_pulse      := '0';
         set_tag_pulse := '0';
 
-        -- write hit: pulse WE right after start
         if (latch_go = '1') and (L_is_write = '1') and (L_is_hit = '1') then
           we_pulse := '1';
         end if;
 
-        -- read miss refill bytes @ 8/10/12/14; set tag on the first byte
         if refill_active = '1' then
           if (refill_cnt = 8) or (refill_cnt = 10) or (refill_cnt = 12) or (refill_cnt = 14) then
             we_pulse := '1';
@@ -270,3 +249,4 @@ begin
   end process;
 
 end structural;
+
