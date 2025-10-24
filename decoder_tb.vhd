@@ -16,17 +16,14 @@ architecture behavior of decoder_tb is
     signal block_sel  : STD_LOGIC_VECTOR(3 downto 0);
 
 begin
-    -- DUT
     uut: decoder
         port map (
             block_addr => block_addr,
             block_sel  => block_sel
         );
 
-    -- Stimulus
     stim_proc: process
     begin
-        -- Test each address
         block_addr <= "00"; wait for 10 ns;
         block_addr <= "01"; wait for 10 ns;
         block_addr <= "10"; wait for 10 ns;
@@ -34,4 +31,5 @@ begin
 
         assert false report "Decoder Test Finished" severity failure;
     end process;
+
 end behavior;
