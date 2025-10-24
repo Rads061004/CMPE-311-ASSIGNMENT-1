@@ -12,29 +12,24 @@ architecture sim of cache_block_tb is
       clk, reset   : in  std_logic;
       enable       : in  std_logic;
 
-      -- CPU side
       data_in      : in  std_logic_vector(7 downto 0);
       data_out     : out std_logic_vector(7 downto 0);
       byte_sel     : in  std_logic_vector(1 downto 0);
-      rd_wr        : in  std_logic;  -- 1 = read, 0 = write
+      rd_wr        : in  std_logic;  
 
-      -- Memory side
       mem_in       : in  std_logic_vector(7 downto 0);
-      src_is_mem   : in  std_logic;  -- 1 = take from memory
-      we           : in  std_logic;  -- write enable
+      src_is_mem   : in  std_logic;  
+      we           : in  std_logic; 
 
-      -- Tag and valid control
       tag_in       : in  std_logic_vector(1 downto 0);
       set_tag      : in  std_logic;
       valid_out    : out std_logic;
       tag_out      : out std_logic_vector(1 downto 0);
 
-      -- Combinational hit/miss
       hit_miss     : out std_logic
     );
   end component;
 
-  -- DUT signals
   signal clk        : std_logic := '0';
   signal reset      : std_logic := '0';
   signal enable     : std_logic := '0';
@@ -55,14 +50,12 @@ architecture sim of cache_block_tb is
 
   signal hit_miss   : std_logic;
 
-  -- helper: 8-bit literal from integer
   function U8(val : integer) return std_logic_vector is
   begin
     return std_logic_vector(to_unsigned(val, 8));
   end;
 
 begin
-  -- DUT instantiation
   dut: cache_block
     port map (
       clk      => clk,
@@ -82,23 +75,16 @@ begin
       hit_miss => hit_miss
     );
 
-  -- 10 ns period clock
   clk <= not clk after 5 ns;
 
-  -- Stimulus
   stim_proc : process
   begin
-    -- Reset
     reset <= '1';
     wait until rising_edge(clk);
     reset <= '0';
 
-    -- Enable this cache line
     enable <= '1';
 
-    ----------------------------------------------------------------
-    -- Refill from "memory": tag=10, bytes = 11,22,33,44
-    ----------------------------------------------------------------
     tag_in   <= "10";
     set_tag  <= '1';
     we       <= '1';
@@ -109,31 +95,20 @@ begin
     mem_in   <= U8(16#33#); byte_sel <= "10"; wait until rising_edge(clk);
     mem_in   <= U8(16#44#); byte_sel <= "11"; wait until rising_edge(clk);
 
-    -- stop writing/tagging
     set_tag    <= '0';
     we         <= '0';
     src_is_mem <= '0';
 
-    ----------------------------------------------------------------
-    -- Show hit_miss behaviour:
-    --   mismatch tag -> hit_miss='0', then match tag -> '1'
-    ----------------------------------------------------------------
-    tag_in <= "01";  -- wrong tag => miss
+    tag_in <= "01";  
     wait for 10 ns;
 
-    tag_in <= "10";  -- matching tag & valid & enable => hit
+    tag_in <= "10";  
     wait for 10 ns;
 
-    ----------------------------------------------------------------
-    -- Read one byte (should be 0x33 at offset "10")
-    ----------------------------------------------------------------
     rd_wr    <= '1';
     byte_sel <= "10";
     wait until rising_edge(clk);
 
-    ----------------------------------------------------------------
-    -- Write hit: overwrite offset "01" with 0xA5 and read back
-    ----------------------------------------------------------------
     rd_wr   <= '0';
     data_in <= U8(16#A5#);
     byte_sel <= "01";
@@ -145,9 +120,9 @@ begin
     byte_sel <= "01";
     wait until rising_edge(clk);
 
-    -- Finish
     wait for 50 ns;
     assert false report "Simulation finished." severity failure;
   end process;
 
 end sim;
+
