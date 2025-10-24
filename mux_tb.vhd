@@ -28,11 +28,12 @@ begin
 
     stim_proc: process
     begin
-        word_addr <= "00"; wait for 10 ns; -- expect 0x11
-        word_addr <= "01"; wait for 10 ns; -- expect 0x22
-        word_addr <= "10"; wait for 10 ns; -- expect 0x33
-        word_addr <= "11"; wait for 10 ns; -- expect 0x44
+        word_addr <= "00"; wait for 10 ns; 
+        word_addr <= "01"; wait for 10 ns; 
+        word_addr <= "10"; wait for 10 ns; 
+        word_addr <= "11"; wait for 10 ns; 
 
         assert false report "Mux Test Finished" severity failure;
     end process;
+
 end behavior;
