@@ -22,14 +22,12 @@ architecture RTL of counter_logic is
     constant S_WRITE_MISS : STD_LOGIC_VECTOR(2 downto 0) := "100";
     constant S_DONE       : STD_LOGIC_VECTOR(2 downto 0) := "101";
 
-    -- Function to check if the state matches
     function is_work(s : STD_LOGIC_VECTOR(2 downto 0)) return boolean is
     begin
         return (s = S_READ_HIT) or (s = S_WRITE_HIT) or
                (s = S_READ_MISS) or (s = S_WRITE_MISS);
     end is_work;
 begin
-    -- Count on the rising edge so value is stable at the falling edge decisions
     process(clk, reset)
         variable next_cnt : integer;
     begin
@@ -38,14 +36,13 @@ begin
             cnt        <= 0;
             counter    <= 0;
         elsif rising_edge(clk) then
-            -- derive next counter value first, then update signals
             if state /= prev_state then
-                next_cnt := 0;                        -- reset on entry to any state
+                next_cnt := 0;                    
             else
                 if is_work(state) then
-                    next_cnt := cnt + 1;             -- increment while in work state
+                    next_cnt := cnt + 1;             
                 else
-                    next_cnt := 0;                   -- hold 0 in IDLE/DONE
+                    next_cnt := 0;                   
                 end if;
             end if;
 
