@@ -1,4 +1,3 @@
--- chip_tb.vhd  (order: read miss, write hit, read hit, write miss)
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -26,11 +25,9 @@ architecture tb of chip_tb is
     );
   end component;
 
-  -- clock/reset
   signal clk   : std_logic := '0';
   signal reset : std_logic := '0';
 
-  -- cpu side
   signal cpu_add    : std_logic_vector(5 downto 0) := (others => '0');
   signal cpu_rd_wrn : std_logic := '1';
   signal start      : std_logic := '0';
@@ -39,7 +36,6 @@ architecture tb of chip_tb is
   signal cpu_d_drv  : std_logic_vector(7 downto 0) := (others => '0');
   signal cpu_d_oe   : std_logic := '0';
 
-  -- memory side
   signal mem_data   : std_logic_vector(7 downto 0) := (others => '0');
   signal mem_en     : std_logic;
   signal mem_add    : std_logic_vector(5 downto 0);
@@ -48,14 +44,12 @@ architecture tb of chip_tb is
   signal Vdd        : std_logic := '1';
   signal Gnd        : std_logic := '0';
 
-  -- memory model internals
   signal mem_en_q      : std_logic := '0';
   signal rd_q          : std_logic := '1';
   signal refill_active : std_logic := '0';
   signal neg_cnt       : integer range 0 to 31 := 0;
-  signal refill_case   : integer := 0;  -- 1=pattern for the first read-miss
+  signal refill_case   : integer := 0;  
 
-  -- helpers
   function U8(i : integer) return std_logic_vector is
   begin
     return std_logic_vector(to_unsigned(i, 8));
@@ -68,7 +62,6 @@ architecture tb of chip_tb is
   end;
 
 begin
-  -- DUT
   dut: chip
     port map (
       cpu_add    => cpu_add,
@@ -85,15 +78,10 @@ begin
       mem_add    => mem_add
     );
 
-  -- 10 ns clock
   clk <= not clk after 5 ns;
 
-  -- tri-state CPU bus
   cpu_data <= cpu_d_drv when cpu_d_oe = '1' else (others => 'Z');
 
-  --------------------------------------------------------------------
-  -- Memory model: burst only for READs; bytes at negedges 8/10/12/14
-  --------------------------------------------------------------------
   mem_model : process(clk)
   begin
     if falling_edge(clk) then
@@ -123,18 +111,12 @@ begin
     end if;
   end process;
 
-  ------------------------------------------
-  -- Watchdog (hard stop if TB ever hangs)
-  ------------------------------------------
   watchdog : process
   begin
     wait for 5 ms;
     assert false report "Watchdog timeout - TB stuck" severity failure;
   end process;
 
-  -----------------------------------------------------
-  -- Stimulus: robust start pulse + timeouts
-  -----------------------------------------------------
   stim : process
     constant TAG_HIT  : std_logic_vector(1 downto 0) := "11";
     constant IDX_HIT  : std_logic_vector(1 downto 0) := "10";
@@ -142,7 +124,6 @@ begin
     constant B01      : std_logic_vector(1 downto 0) := "01";
     constant B10      : std_logic_vector(1 downto 0) := "10";
 
-    -- small utilities
     procedure wait_cycles(n : in integer) is
     begin
       for i in 1 to n loop
@@ -176,7 +157,6 @@ begin
       assert seen report "Timeout waiting for busy=0" severity failure;
     end;
 
-    -- request driver (spans a falling edge with start=1)
     procedure req(
       tag  : in std_logic_vector(1 downto 0);
       idx  : in std_logic_vector(1 downto 0);
@@ -199,51 +179,37 @@ begin
         cpu_d_oe  <= '0';
       end if;
 
-      -- full-cycle start pulse that spans a falling edge
       start <= '1';
       wait until rising_edge(clk);
       wait until falling_edge(clk);
       start <= '0';
 
-      -- handshake with timeouts
       wait_busy_rise(1000);
       wait_busy_fall(50000);
 
       cpu_d_oe <= '0';
     end;
-  begin
-    -- Reset (visible to negedge logic inside DUT)
+                                      
+  begin                               
     reset    <= '1';
     cpu_d_oe <= '0';
     wait until falling_edge(clk);
     wait until falling_edge(clk);
     reset <= '0';
     wait until falling_edge(clk);
-
-    -------------------------------------------------
-    -- (1) READ MISS (warm-up line at TAG_HIT/IDX_HIT)
-    -------------------------------------------------
+                                      
     refill_case <= 1;
     req(TAG_HIT, IDX_HIT, B00, '1', (others => '0'));
 
-    ---------------------------------------------
-    -- (2) WRITE HIT @ same line, byte 01
-    ---------------------------------------------
     req(TAG_HIT, IDX_HIT, B01, '0', U8(16#A5#));
 
-    ---------------------------------------------
-    -- (3) READ HIT @ same line/byte
-    ---------------------------------------------
     req(TAG_HIT, IDX_HIT, B01, '1', (others => '0'));
 
-    ------------------------------------------------
-    -- (4) WRITE MISS (different tag, same index)
-    ------------------------------------------------
     req("01", IDX_HIT, B10, '0', U8(16#7E#));
 
-    -- finish
     wait_cycles(20);
     assert false report "Simulation finished." severity failure;
   end process;
 
 end tb;
+
