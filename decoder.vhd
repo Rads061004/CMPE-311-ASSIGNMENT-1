@@ -4,8 +4,8 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity decoder is
     Port (
-        block_addr : in  STD_LOGIC_VECTOR(1 downto 0);  -- 2 bits to select 1 of 4 blocks
-        block_sel  : out STD_LOGIC_VECTOR(3 downto 0)   -- 4 outputs, one-hot
+        block_addr : in  STD_LOGIC_VECTOR(1 downto 0);  
+        block_sel  : out STD_LOGIC_VECTOR(3 downto 0)   
     );
 end decoder;
 
@@ -21,4 +21,5 @@ begin
             when others => block_sel <= "0000";
         end case;
     end process;
+
 end RTL;
