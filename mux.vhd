@@ -4,9 +4,9 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity mux is
     Port (
-        word_addr : in  STD_LOGIC_VECTOR(1 downto 0);   -- select 1 of 4 words
-        block_data: in  STD_LOGIC_VECTOR(31 downto 0);  -- 4 words * 8 bits = 32 bits
-        word_out  : out STD_LOGIC_VECTOR(7 downto 0)    -- selected word output
+        word_addr : in  STD_LOGIC_VECTOR(1 downto 0);   
+        block_data: in  STD_LOGIC_VECTOR(31 downto 0);  
+        word_out  : out STD_LOGIC_VECTOR(7 downto 0)    
     );
 end mux;
 
@@ -22,4 +22,5 @@ begin
             when others => word_out <= (others => '0');
         end case;
     end process;
+
 end RTL;
