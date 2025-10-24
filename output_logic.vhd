@@ -6,7 +6,7 @@ entity output_logic is
     Port (
         clk         : in  STD_LOGIC;
         state       : in  STD_LOGIC_VECTOR(2 downto 0);
-        next_state  : in  STD_LOGIC_VECTOR(2 downto 0); -- look-ahead
+        next_state  : in  STD_LOGIC_VECTOR(2 downto 0); 
         counter     : in  INTEGER;
         busy        : out STD_LOGIC;
         done        : out STD_LOGIC;
@@ -26,14 +26,12 @@ architecture RTL of output_logic is
     constant S_WRITE_MISS : STD_LOGIC_VECTOR(2 downto 0) := "100";
     constant S_DONE       : STD_LOGIC_VECTOR(2 downto 0) := "101";
 
-    -- Function to check if the state matches
     function is_work(s: STD_LOGIC_VECTOR(2 downto 0)) return boolean is
     begin
         return (s = S_READ_HIT) or (s = S_WRITE_HIT) or
                (s = S_READ_MISS) or (s = S_WRITE_MISS);
     end;
 begin
-    -- Busy timed from next_state
     process(clk)
     begin
         if falling_edge(clk) then
@@ -47,7 +45,6 @@ begin
         end if;
     end process;
 
-    -- Combinational outputs
     process(state, counter)
     begin
         en    <= '0';
