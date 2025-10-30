@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity output_logic is
     Port (
         clk         : in  STD_LOGIC;
-        reset       : in  STD_LOGIC;  -- Added reset input
+        reset       : in  STD_LOGIC;  
         state       : in  STD_LOGIC_VECTOR(2 downto 0);
         next_state  : in  STD_LOGIC_VECTOR(2 downto 0);
         counter     : in  STD_LOGIC_VECTOR(4 downto 0);
@@ -49,7 +49,7 @@ architecture Structural of output_logic is
         port (a, b, c, d : in STD_LOGIC; y : out STD_LOGIC);
     end component;
     
-    -- State constants as signals (VHDL-87 compatibility)
+    -- State constants as signals 
     signal S_IDLE       : STD_LOGIC_VECTOR(2 downto 0);
     signal S_READ_HIT   : STD_LOGIC_VECTOR(2 downto 0);
     signal S_WRITE_HIT  : STD_LOGIC_VECTOR(2 downto 0);
@@ -58,9 +58,6 @@ architecture Structural of output_logic is
     signal S_DONE       : STD_LOGIC_VECTOR(2 downto 0);
     
     signal is_read_hit, is_write_hit, is_read_miss, is_write_miss, is_done, is_idle : STD_LOGIC;
-    signal is_next_read_hit, is_next_write_hit, is_next_read_miss, is_next_write_miss : STD_LOGIC;
-    signal is_next_done, is_next_idle : STD_LOGIC;
-    signal is_work_next : STD_LOGIC;
     signal busy_d, busy_q : STD_LOGIC;
     signal cnt_gte_1 : STD_LOGIC;
     signal read_hit_oe_cd : STD_LOGIC;
@@ -89,30 +86,19 @@ begin
     u_eq_done: eq3 port map (a => state, b => S_DONE, eq => is_done);
     u_eq_idle: eq3 port map (a => state, b => S_IDLE, eq => is_idle);
     
-    -- Decode next state
-    u_eq_next_rh: eq3 port map (a => next_state, b => S_READ_HIT, eq => is_next_read_hit);
-    u_eq_next_wh: eq3 port map (a => next_state, b => S_WRITE_HIT, eq => is_next_write_hit);
-    u_eq_next_rm: eq3 port map (a => next_state, b => S_READ_MISS, eq => is_next_read_miss);
-    u_eq_next_wm: eq3 port map (a => next_state, b => S_WRITE_MISS, eq => is_next_write_miss);
-    u_eq_next_done: eq3 port map (a => next_state, b => S_DONE, eq => is_next_done);
-    u_eq_next_idle: eq3 port map (a => next_state, b => S_IDLE, eq => is_next_idle);
-    
-    -- Busy logic: assert if transitioning to work state, deassert if transitioning to DONE or IDLE
-    u_or_work_next: or4 port map (
-        a => is_next_read_hit,
-        b => is_next_write_hit,
-        c => is_next_read_miss,
-        d => is_next_write_miss,
-        y => is_work_next
+    -- Busy logic: assert while IN a work state (not from next_state)
+    u_or_work_state: or4 port map (
+        a => is_read_hit,
+        b => is_write_hit,
+        c => is_read_miss,
+        d => is_write_miss,
+        y => busy_d
     );
-    
-    -- busy_d = is_work_next (set if going to work state)
-    busy_d <= is_work_next;
     
     -- Busy register (falling edge)
     u_busy_dff: dff_fall port map (
         clk => clk,
-        reset => reset,  -- Connect to actual reset signal!
+        reset => reset,
         d => busy_d,
         q => busy_q
     );
@@ -125,14 +111,13 @@ begin
     -- Counter >= 1 comparison
     u_cnt_gte_1: gte_one port map (a => counter, gte => cnt_gte_1);
     
-    -- Check if counter == 1 (for en and OE_MA timing)
+    -- Check if counter == 1 
     cnt0 <= counter(0);
     cnt1 <= counter(1);
     cnt2 <= counter(2);
     cnt3 <= counter(3);
     cnt4 <= counter(4);
     
-    -- upper_zero = NOT(cnt4 OR cnt3 OR cnt2 OR cnt1)
     u_inv1: inv port map (a => cnt1, y => cnt1_n);
     u_inv2: inv port map (a => cnt2, y => cnt2_n);
     u_inv3: inv port map (a => cnt3, y => cnt3_n);
