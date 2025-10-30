@@ -1,6 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
 entity cache_fsm_struct is
     Port (
@@ -9,12 +8,12 @@ entity cache_fsm_struct is
         start      : in  STD_LOGIC;
         tag        : in  STD_LOGIC;
         valid      : in  STD_LOGIC;
-        read_write : in  STD_LOGIC;  
+        read_write : in  STD_LOGIC;   -- 1=read, 0=write
         busy       : out STD_LOGIC;
         done       : out STD_LOGIC;
         en         : out STD_LOGIC;
-        OE_CD      : out STD_LOGIC;  
-        OE_MA      : out STD_LOGIC   
+        OE_CD      : out STD_LOGIC;
+        OE_MA      : out STD_LOGIC
     );
 end cache_fsm_struct;
 
@@ -26,7 +25,7 @@ architecture Structural of cache_fsm_struct is
             valid      : in  STD_LOGIC;
             read_write : in  STD_LOGIC;
             state      : in  STD_LOGIC_VECTOR(2 downto 0);
-            counter    : in  INTEGER;
+            counter    : in  STD_LOGIC_VECTOR(4 downto 0);
             next_state : out STD_LOGIC_VECTOR(2 downto 0)
         );
     end component;
@@ -43,9 +42,10 @@ architecture Structural of cache_fsm_struct is
     component output_logic 
         Port (
             clk         : in  STD_LOGIC;
+            reset       : in  STD_LOGIC;
             state       : in  STD_LOGIC_VECTOR(2 downto 0);
             next_state  : in  STD_LOGIC_VECTOR(2 downto 0);
-            counter     : in  INTEGER;
+            counter     : in  STD_LOGIC_VECTOR(4 downto 0);
             busy        : out STD_LOGIC;
             done        : out STD_LOGIC;
             en          : out STD_LOGIC;
@@ -59,12 +59,14 @@ architecture Structural of cache_fsm_struct is
             clk     : in  STD_LOGIC;
             reset   : in  STD_LOGIC;
             state   : in  STD_LOGIC_VECTOR(2 downto 0);
-            counter : out INTEGER
+            counter : out STD_LOGIC_VECTOR(4 downto 0)
         );
     end component;
 
-    signal state_sig, next_state_sig : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
-    signal counter_sig : INTEGER := 0;
+    -- NOTE: no initializers here (single drivers from submodules)
+    signal state_sig      : STD_LOGIC_VECTOR(2 downto 0);
+    signal next_state_sig : STD_LOGIC_VECTOR(2 downto 0);
+    signal counter_sig    : STD_LOGIC_VECTOR(4 downto 0);
 
 begin
     U1_next_state_logic : next_state_logic
@@ -97,8 +99,9 @@ begin
     U4_output_logic : output_logic
         Port map (
             clk        => clk,
+            reset      => reset,
             state      => state_sig,
-            next_state => next_state_sig, 
+            next_state => next_state_sig,
             counter    => counter_sig,
             busy       => busy,
             done       => done,

@@ -1,6 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
 entity state_register is
     Port (
@@ -11,17 +10,17 @@ entity state_register is
     );
 end state_register;
 
-architecture RTL of state_register is
-    constant S_IDLE : STD_LOGIC_VECTOR(2 downto 0) := "000";
+architecture behavioral of state_register is
+    signal state_int : STD_LOGIC_VECTOR(2 downto 0) := "000";  -- IDLE from t=0
 begin
-    process(clk)
+    process(clk, reset)
     begin
-        if falling_edge(clk) then
-            if reset = '1' then
-                state <= S_IDLE;
-            else
-                state <= next_state;
-            end if;
+        if reset = '1' then
+            state_int <= "000";  -- IDLE
+        elsif falling_edge(clk) then
+            state_int <= next_state;
         end if;
     end process;
-end RTL;
+
+    state <= state_int;
+end behavioral;

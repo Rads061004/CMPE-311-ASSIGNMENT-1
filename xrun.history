@@ -1,0 +1,199 @@
+s1(09Oct2025:20:09:03):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s2(09Oct2025:20:17:57):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s3(09Oct2025:20:19:28):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s4(09Oct2025:20:21:15):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s5(09Oct2025:20:22:42):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s6(09Oct2025:20:23:00):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s7(09Oct2025:20:24:37):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s8(09Oct2025:20:27:33):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s9(09Oct2025:20:28:59):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s10(09Oct2025:20:30:50):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s11(09Oct2025:20:32:11):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s12(10Oct2025:13:33:00):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s13(10Oct2025:13:38:57):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s14(10Oct2025:13:53:12):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s15(10Oct2025:13:55:53):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s16(10Oct2025:13:59:26):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s17(10Oct2025:14:23:24):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s18(10Oct2025:14:33:04):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s19(10Oct2025:14:34:57):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s20(10Oct2025:14:38:11):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s21(10Oct2025:14:41:11):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s22(10Oct2025:14:43:19):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s23(10Oct2025:14:44:15):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s24(10Oct2025:14:54:45):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s25(10Oct2025:14:59:48):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s26(10Oct2025:15:00:03):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s27(10Oct2025:15:05:15):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s28(10Oct2025:15:11:57):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s29(10Oct2025:15:14:10):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s30(10Oct2025:15:51:57):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s31(10Oct2025:15:53:29):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s32(10Oct2025:15:56:29):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s33(10Oct2025:16:09:31):  xrun -top cache_fsm_tb cmpe413_project_fsm_wr_hit.vhd cache_fsm_tb.vhd -gui -access rwc 
+s34(10Oct2025:16:10:24):  xrun -top fsm_tb cmpe413_project_fsm_wr_hit.vhd -gui -access rwc 
+s35(17Oct2025:13:22:23):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s36(17Oct2025:13:50:04):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s37(17Oct2025:13:51:48):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s38(17Oct2025:13:56:27):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s39(17Oct2025:14:06:49):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s40(17Oct2025:14:11:36):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s41(17Oct2025:14:14:12):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s42(17Oct2025:14:19:07):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s43(17Oct2025:14:21:36):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s44(17Oct2025:14:25:22):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s45(17Oct2025:14:33:44):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s46(17Oct2025:14:33:59):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s47(17Oct2025:14:41:01):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s48(17Oct2025:14:47:39):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s49(17Oct2025:14:52:16):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s50(17Oct2025:14:54:43):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s51(17Oct2025:14:55:16):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s52(17Oct2025:14:57:42):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s53(17Oct2025:15:03:15):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s54(17Oct2025:15:05:39):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s55(17Oct2025:15:33:50):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s56(17Oct2025:15:47:40):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s57(18Oct2025:14:24:13):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s58(18Oct2025:14:25:37):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s59(18Oct2025:14:31:25):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s60(18Oct2025:14:34:42):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s61(18Oct2025:14:39:23):  xrun -top cmpe413_project_fsm_wr_hit cmpe413_project_fsm_wr_hit.vhd -gui -access rwc 
+s62(18Oct2025:14:40:02):  xrun -top fsm_tb cmpe413_project_fsm_wr_hit.vhd -gui -access rwc 
+s63(18Oct2025:14:59:43):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s64(18Oct2025:15:02:28):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s65(18Oct2025:15:07:59):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s66(18Oct2025:15:16:59):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s67(18Oct2025:15:17:17):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s68(18Oct2025:15:20:02):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s69(18Oct2025:15:23:33):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s70(18Oct2025:15:26:07):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s71(18Oct2025:15:31:24):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s72(18Oct2025:15:37:46):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s73(18Oct2025:15:39:50):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s74(18Oct2025:15:42:53):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s75(18Oct2025:15:49:40):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s76(18Oct2025:15:56:35):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s77(18Oct2025:16:02:07):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s78(18Oct2025:16:05:21):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s79(18Oct2025:16:07:52):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s80(18Oct2025:16:23:19):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s81(18Oct2025:16:27:06):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s82(18Oct2025:16:30:02):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s83(18Oct2025:16:41:07):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s84(18Oct2025:16:41:29):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s85(18Oct2025:16:45:12):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s86(18Oct2025:16:47:38):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s87(18Oct2025:16:56:58):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s88(18Oct2025:17:00:23):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s89(18Oct2025:17:06:04):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s90(18Oct2025:17:06:34):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s91(18Oct2025:17:19:16):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s92(18Oct2025:17:29:32):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s93(18Oct2025:17:35:24):  xrun -top cache_fsm_tb cache_fsm.vhd cache_fsm_tb.vhd -gui -access rwc 
+s94(18Oct2025:17:49:31):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s95(18Oct2025:18:03:14):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s96(18Oct2025:18:04:18):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s97(18Oct2025:18:10:11):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s98(20Oct2025:18:25:04):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s99(20Oct2025:18:35:48):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s100(20Oct2025:18:36:51):  xrun -top cache_block_tb cacheBlock.vhd cache_block_tb.vhd -gui -access rwc 
+s101(20Oct2025:18:39:05):  xrun -top cache_block_tb cacheBlock.vhd cache_block_tb.vhd -gui -access rwc 
+s102(20Oct2025:18:39:13):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s103(20Oct2025:18:41:01):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s104(20Oct2025:18:42:00):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s105(20Oct2025:18:43:20):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s106(20Oct2025:18:54:38):  xrun -top decoder_tb decoder.vhd decoder_tb.vhd -gui -access rwc 
+s107(20Oct2025:18:57:56):  xrun -top mux_tb mux.vhd mux_tb.vhd -gui -access rwc 
+s108(20Oct2025:18:59:14):  xrun -top mux_tb mux.vhd mux_tb.vhd -gui -access rwc 
+s109(20Oct2025:18:59:28):  xrun -top mux_tb mux.vhd mux_tb.vhd -gui -access rwc 
+s110(20Oct2025:19:00:42):  xrun -top mux_tb mux.vhd mux_tb.vhd -gui -access rwc 
+s111(21Oct2025:10:14:28):  xrun -top cache_fsm_tb counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s112(21Oct2025:10:14:55):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s113(21Oct2025:10:15:31):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s114(21Oct2025:10:16:36):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s115(21Oct2025:10:23:10):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s116(22Oct2025:15:59:34):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s117(22Oct2025:16:01:00):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s118(22Oct2025:16:01:23):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s119(22Oct2025:16:53:11):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s120(22Oct2025:16:55:39):  xrun -top cache_block_tb cache_block.vhd cache_block_tb.vhd -gui -access rwc 
+s121(22Oct2025:17:14:33):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s122(22Oct2025:17:31:26):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s123(22Oct2025:17:33:54):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s124(22Oct2025:17:35:29):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s125(22Oct2025:17:36:28):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s126(22Oct2025:17:39:04):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s127(22Oct2025:17:58:45):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s128(22Oct2025:18:01:15):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s129(22Oct2025:18:03:58):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s130(22Oct2025:18:05:28):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s131(22Oct2025:18:06:23):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s132(22Oct2025:18:15:56):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s133(22Oct2025:18:20:15):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s134(23Oct2025:14:05:46):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s135(23Oct2025:14:08:29):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s136(23Oct2025:14:23:59):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s137(23Oct2025:14:31:14):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s138(23Oct2025:14:38:18):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s139(23Oct2025:14:48:19):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s140(23Oct2025:15:00:21):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s141(23Oct2025:15:12:11):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s142(23Oct2025:15:24:40):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s143(23Oct2025:15:36:58):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s144(23Oct2025:15:39:21):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip_tb.vhd -gui -access rwc 
+s145(23Oct2025:15:40:06):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s146(23Oct2025:15:47:03):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s147(23Oct2025:15:47:25):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s148(23Oct2025:18:58:34):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s149(23Oct2025:19:06:59):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s150(23Oct2025:19:08:49):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s151(23Oct2025:19:43:44):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s152(23Oct2025:19:46:22):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s153(23Oct2025:19:50:12):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s154(23Oct2025:19:50:55):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s155(23Oct2025:19:53:27):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s156(23Oct2025:19:56:37):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s157(23Oct2025:20:00:45):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s158(23Oct2025:21:10:49):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s159(24Oct2025:12:21:27):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s160(24Oct2025:12:45:40):  xrun -top chip_tb decoder.vhd mux.vhd counter_logic.vhd next_state_logic.vhd state_register.vhd output_logic.vhd cache_fsm_struct.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s161(29Oct2025:08:13:25):  xrun -top decoder_tb decoder.vhd decoder_tb.vhd -gui -access rwc 
+s162(29Oct2025:20:12:48):  xrun -top chip_tb and2.vhd or2.vhd not1.vhd xnor2.vhd dff.vhd decoder.vhd mux_1bit.vhd mux.vhd register_5bit.vhd state_register.vhd prev_state_register.vhd state_change_detector.vhd work_state_detector.vhd full_adder.vhd adder_5bit.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd write_data_mux_1bit.vhd write_data_mux.vhd tag_comparator.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s163(29Oct2025:20:25:06):  xrun -top chip_tb and2.vhd or2.vhd not1.vhd xnor2.vhd dff.vhd decoder.vhd mux_1bit.vhd mux.vhd register_5bit.vhd state_register.vhd prev_state_register.vhd state_change_detector.vhd work_state_detector.vhd full_adder.vhd adder_5bit.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd write_data_mux_1bit.vhd write_data_mux.vhd tag_comparator.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s164(29Oct2025:20:28:44):  xrun -top chip_tb and2.vhd or2.vhd not1.vhd xnor2.vhd dff.vhd decoder.vhd mux_1bit.vhd mux.vhd register_5bit.vhd state_register.vhd prev_state_register.vhd state_change_detector.vhd work_state_detector.vhd full_adder.vhd adder_5bit.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd write_data_mux_1bit.vhd write_data_mux.vhd tag_comparator.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s165(29Oct2025:20:33:59):  xrun -top cache_fsm_tb and2.vhd or2.vhd not1.vhd xnor2.vhd dff.vhd decoder.vhd mux_1bit.vhd mux.vhd register_5bit.vhd state_register.vhd prev_state_register.vhd state_change_detector.vhd work_state_detector.vhd full_adder.vhd adder_5bit.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd -gui -access rwc 
+s166(29Oct2025:20:37:13):  xrun -top chip_tb and2.vhd or2.vhd not1.vhd xnor2.vhd dff.vhd decoder.vhd mux_1bit.vhd mux.vhd register_5bit.vhd state_register.vhd prev_state_register.vhd state_change_detector.vhd work_state_detector.vhd full_adder.vhd adder_5bit.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd write_data_mux_1bit.vhd write_data_mux.vhd tag_comparator.vhd cache_block.vhd chip.vhd chip_tb.vhd -gui -access rwc 
+s167(29Oct2025:22:24:59):  xrun -top cache_fsm_tb not1.vhd and2.vhd and3.vhd and4.vhd or2.vhd or4.vhd or5.vhd nor2.vhd xor2.vhd xnor2.vhd mux2to1.vhd d_latch.vhd dff_ar_posedge.vhd dff_ar_negedge.vhd dff_ce_ar_posedge.vhd register_ar_negedge.vhd register_ce_ar_posedge.vhd full_adder.vhd adder_5bit.vhd comparator_nbit.vhd state_register.vhd next_state_logic.vhd counter_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s168(29Oct2025:22:25:58):  xrun -top cache_fsm_tb not1.vhd and2.vhd and3.vhd and4.vhd or2.vhd or4.vhd or5.vhd nor2.vhd xor2.vhd xnor2.vhd mux2to1.vhd d_latch.vhd dff_ar_posedge.vhd dff_ar_negedge.vhd dff_ce_ar_posedge.vhd register_ar_negedge.vhd register_ce_ar_posedge.vhd full_adder.vhd adder_5bit.vhd comparator_nbit.vhd state_register.vhd next_state_logic.vhd counter_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s169(29Oct2025:22:35:10):  xrun -top cache_fsm_tb not1.vhd and2.vhd and3.vhd and4.vhd or2.vhd or4.vhd or5.vhd nor2.vhd xor2.vhd xnor2.vhd mux2to1.vhd d_latch.vhd dff_ar_posedge.vhd dff_ar_negedge.vhd dff_ce_ar_posedge.vhd register_ar_negedge.vhd register_ce_ar_posedge.vhd full_adder.vhd adder_5bit.vhd comparator_nbit.vhd state_register.vhd next_state_logic.vhd counter_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s170(29Oct2025:22:55:11):  xrun -top cache_fsm_tb not1.vhd and2.vhd and3.vhd and4.vhd or2.vhd or4.vhd or5.vhd nor2.vhd xor2.vhd xnor2.vhd mux2to1.vhd d_latch.vhd dff_ar_posedge.vhd dff_ar_negedge.vhd dff_ce_ar_posedge.vhd register_ar_negedge.vhd register_ce_ar_posedge.vhd full_adder.vhd adder_5bit.vhd comparator_nbit.vhd state_register.vhd next_state_logic.vhd counter_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s171(30Oct2025:00:09:46):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decodr.vhd dlatch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd fsm_state_register.vhd fsm_counter_logic.vhd fsm_next_state_logic.vhd fsm_output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s172(30Oct2025:00:10:38):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decoder.vhd d_latch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s173(30Oct2025:00:15:23):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decoder.vhd d_latch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s174(30Oct2025:00:15:51):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decoder.vhd d_latch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s175(30Oct2025:00:17:15):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decoder.vhd d_latch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s176(30Oct2025:00:17:56):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decoder.vhd d_latch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s177(30Oct2025:00:36:39):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd decoder.vhd d_latch.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s178(30Oct2025:00:44:15):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s179(30Oct2025:00:45:40):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s180(30Oct2025:00:48:38):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s181(30Oct2025:00:49:26):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s182(30Oct2025:00:53:16):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s183(30Oct2025:00:57:12):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s184(30Oct2025:01:02:12):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s185(30Oct2025:01:08:34):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s186(30Oct2025:01:17:06):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s187(30Oct2025:01:18:43):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s188(30Oct2025:01:28:00):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s189(30Oct2025:13:45:08):  xrun -top cache_fsm_tb gates.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s190(30Oct2025:13:45:32):  xrun -top cache_fsm_tb gates.vhd dff_dlatch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s191(30Oct2025:13:46:02):  xrun -top cache_fsm_tb gates.vhd dff_dlatch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s192(30Oct2025:13:55:40):  xrun -top cache_fsm_tb gates.vhd dff_dlatch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s193(30Oct2025:14:21:16):  xrun -top cache_fsm_tb gates.vhd dff_dlatch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s194(30Oct2025:14:21:36):  xrun -top cache_fsm_tb gates.vhd dff_dlatch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s195(30Oct2025:15:22:03):  xrun -top cache_fsm_tb and2.vhd and3.vhd and4.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s196(30Oct2025:15:25:34):  xrun -top cache_fsm_tb and2.vhd and3.vhd and4.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s197(30Oct2025:15:30:28):  xrun -top cache_fsm_tb and2.vhd and3.vhd and4.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s198(30Oct2025:15:44:00):  xrun -top cache_fsm_tb and2.vhd and3.vhd and4.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 
+s199(30Oct2025:15:46:34):  xrun -top cache_fsm_tb and2.vhd and3.vhd and4.vhd dff_fall.vhd dff_rise.vhd d_latch.vhd decoder.vhd mux_comp.vhd counter_adder.vhd comparator.vhd state_register.vhd counter_logic.vhd next_state_logic.vhd output_logic.vhd cache_fsm_struct.vhd cache_fsm_tb.vhd -gui -access rwc 

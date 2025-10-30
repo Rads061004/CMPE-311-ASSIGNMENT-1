@@ -1,0 +1,29 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-XLMODE
+./xcelium.d/run.lnx8664.23.09.d
+-RUNMODE
+and2.vhd
+and3.vhd
+and4.vhd
+dff_fall.vhd
+dff_rise.vhd
+d_latch.vhd
+decoder.vhd
+mux_comp.vhd
+counter_adder.vhd
+comparator.vhd
+state_register.vhd
+counter_logic.vhd
+next_state_logic.vhd
+output_logic.vhd
+cache_fsm_struct.vhd
+cache_fsm_tb.vhd
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-MESSAGES
+-UPDATE

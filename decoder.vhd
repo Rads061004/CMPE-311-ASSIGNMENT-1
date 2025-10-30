@@ -1,25 +1,45 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
+-- 2-to-4 Decoder (converts 2-bit address to 4-bit one-hot output)
 entity decoder is
-    Port (
-        block_addr : in  STD_LOGIC_VECTOR(1 downto 0);  
-        block_sel  : out STD_LOGIC_VECTOR(3 downto 0)   
+    port (
+        block_addr : in  std_logic_vector(1 downto 0);
+        block_sel  : out std_logic_vector(3 downto 0)
     );
 end decoder;
 
-architecture RTL of decoder is
+architecture structural of decoder is
+    component and2
+        port (a, b : in STD_LOGIC; y : out STD_LOGIC);
+    end component;
+    
+    component inv
+        port (a : in STD_LOGIC; y : out STD_LOGIC);
+    end component;
+    
+    signal addr0, addr1 : std_logic;
+    signal addr0_n, addr1_n : std_logic;
+    
 begin
-    process(block_addr)
-    begin
-        case block_addr is
-            when "00" => block_sel <= "0001";
-            when "01" => block_sel <= "0010";
-            when "10" => block_sel <= "0100";
-            when "11" => block_sel <= "1000";
-            when others => block_sel <= "0000";
-        end case;
-    end process;
-
-end RTL;
+    addr0 <= block_addr(0);
+    addr1 <= block_addr(1);
+    
+    -- Generate inverted address bits
+    u_inv0: inv port map (a => addr0, y => addr0_n);
+    u_inv1: inv port map (a => addr1, y => addr1_n);
+    
+    -- Generate one-hot outputs
+    -- block_sel(0) = /addr1 AND /addr0  (00)
+    u_and0: and2 port map (a => addr1_n, b => addr0_n, y => block_sel(0));
+    
+    -- block_sel(1) = /addr1 AND addr0   (01)
+    u_and1: and2 port map (a => addr1_n, b => addr0, y => block_sel(1));
+    
+    -- block_sel(2) = addr1 AND /addr0   (10)
+    u_and2: and2 port map (a => addr1, b => addr0_n, y => block_sel(2));
+    
+    -- block_sel(3) = addr1 AND addr0    (11)
+    u_and3: and2 port map (a => addr1, b => addr0, y => block_sel(3));
+    
+end structural;
