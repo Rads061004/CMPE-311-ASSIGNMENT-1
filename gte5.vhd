@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 5-bit Greater Than or Equal comparator (a >= b)
 entity gte5 is
     port (
         a, b : in  STD_LOGIC_VECTOR(4 downto 0);
@@ -29,21 +28,17 @@ architecture structural of gte5 is
     signal and_temp : STD_LOGIC_VECTOR(3 downto 0);
     signal gte_cascade : STD_LOGIC_VECTOR(4 downto 0);
 begin
-    -- Generate bit-wise equality and inverted b
     gen_eq: for i in 0 to 4 generate
         u_xnor: xnor2 port map (a => a(i), b => b(i), y => eq(i));
         u_inv: inv port map (a => b(i), y => b_n(i));
     end generate;
     
-    -- Generate greater than for each bit position
     gen_gt: for i in 0 to 4 generate
         u_and: and2 port map (a => a(i), b => b_n(i), y => gt(i));
     end generate;
     
-    -- MSB comparison (bit 4)
     gte_cascade(4) <= gt(4);
     
-    -- Cascade down with temporary signals to avoid combinational loops
     u_and3: and2 port map (a => eq(3), b => gte_cascade(4), y => and_temp(3));
     u_or3: or2 port map (a => gt(3), b => and_temp(3), y => gte_cascade(3));
     
@@ -55,4 +50,5 @@ begin
     
     u_and0: and2 port map (a => eq(0), b => gte_cascade(1), y => and_temp(0));
     u_or0: or2 port map (a => gt(0), b => and_temp(0), y => gte);
+
 end structural;

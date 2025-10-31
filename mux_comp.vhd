@@ -1,9 +1,6 @@
--- Multiplexers and Comparators built structurally from gates
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-to-1 Multiplexer
 entity mux2to1 is
     port (
         d0, d1 : in  STD_LOGIC;
@@ -34,8 +31,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-
--- 4-to-1 Multiplexer
 entity mux4to1 is
     port (
         d0, d1, d2, d3 : in  STD_LOGIC;
@@ -58,9 +53,7 @@ end structural;
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
-
--- 8-to-1 Multiplexer  
+ 
 entity mux8to1 is
     port (
         d : in  STD_LOGIC_VECTOR(7 downto 0);
@@ -89,8 +82,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-
--- 3-bit Equality Comparator
 entity eq3 is
     port (
         a, b : in  STD_LOGIC_VECTOR(2 downto 0);
@@ -117,8 +108,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-
--- 2-bit Equality Comparator
 entity eq2 is
     port (
         a, b : in  STD_LOGIC_VECTOR(1 downto 0);
@@ -139,4 +128,5 @@ begin
     u_xnor0: xnor2 port map (a => a(0), b => b(0), y => xnor_out(0));
     u_xnor1: xnor2 port map (a => a(1), b => b(1), y => xnor_out(1));
     u_and: and2 port map (a => xnor_out(0), b => xnor_out(1), y => eq);
+
 end structural;

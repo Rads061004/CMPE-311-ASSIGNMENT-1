@@ -7,9 +7,9 @@ entity fsm_req_capture is
     reset       : in  std_logic;
 
     start_in    : in  std_logic;
-    rdwr_in     : in  std_logic;  -- cpu_rd_wrn (1=read, 0=write)
-    hit_in      : in  std_logic;  -- hit_sel  (1=hit this index)
-    valid_in    : in  std_logic;  -- valid_sel
+    rdwr_in     : in  std_logic;  
+    hit_in      : in  std_logic;  
+    valid_in    : in  std_logic;  
 
     start_q     : out std_logic;
     rdwr_q      : out std_logic;
@@ -20,13 +20,6 @@ end fsm_req_capture;
 
 architecture structural of fsm_req_capture is
 
-  ----------------------------------------------------------------
-  -- We will reuse your falling-edge DFF primitive for each bit.
-  -- dff_fall must already exist in your file list and looks like:
-  --   entity dff_fall is
-  --     port ( clk, reset : in std_logic; d : in std_logic; q : out std_logic );
-  --   end dff_fall;
-  ----------------------------------------------------------------
   component dff_fall
     port (
       clk   : in  std_logic;
@@ -71,3 +64,4 @@ begin
     );
 
 end structural;
+

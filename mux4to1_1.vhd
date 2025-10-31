@@ -24,7 +24,6 @@ architecture structural of mux4to1_1 is
         );
     end component;
 begin
-    -- mux4to1 already does 1-bit, so we just wrap to keep naming parallel
     u_core: mux4to1
         port map (
             d0  => d0,
@@ -35,3 +34,4 @@ begin
             y   => y
         );
 end structural;
+

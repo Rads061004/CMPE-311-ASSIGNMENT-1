@@ -1,9 +1,6 @@
--- Low-level gate components (these can be behavioral)
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-input AND gate
 entity and2 is
     port (
         a, b : in  STD_LOGIC;
@@ -19,7 +16,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 3-input AND gate
 entity and3 is
     port (
         a, b, c : in  STD_LOGIC;
@@ -35,7 +31,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 4-input AND gate
 entity and4 is
     port (
         a, b, c, d : in  STD_LOGIC;
@@ -51,7 +46,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-input OR gate
 entity or2 is
     port (
         a, b : in  STD_LOGIC;
@@ -67,7 +61,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 3-input OR gate
 entity or3 is
     port (
         a, b, c : in  STD_LOGIC;
@@ -83,7 +76,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 4-input OR gate
 entity or4 is
     port (
         a, b, c, d : in  STD_LOGIC;
@@ -99,7 +91,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 8-input OR gate
 entity or8 is
     port (
         a, b, c, d, e, f, g, h : in  STD_LOGIC;
@@ -115,7 +106,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- NOT gate (inverter)
 entity inv is
     port (
         a : in  STD_LOGIC;
@@ -131,7 +121,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-input NAND gate
 entity nand2 is
     port (
         a, b : in  STD_LOGIC;
@@ -147,7 +136,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-input NOR gate
 entity nor2 is
     port (
         a, b : in  STD_LOGIC;
@@ -163,7 +151,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-input XOR gate
 entity xor2 is
     port (
         a, b : in  STD_LOGIC;
@@ -179,7 +166,6 @@ end behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-input XNOR gate
 entity xnor2 is
     port (
         a, b : in  STD_LOGIC;
@@ -190,4 +176,5 @@ end xnor2;
 architecture behavioral of xnor2 is
 begin
     y <= not (a xor b);
+
 end behavioral;

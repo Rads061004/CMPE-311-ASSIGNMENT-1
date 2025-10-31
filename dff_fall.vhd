@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- D Flip-Flop with falling edge trigger and reset
 entity dff_fall is
     port (
         clk   : in  STD_LOGIC;
@@ -21,4 +20,5 @@ begin
             q <= d;
         end if;
     end process;
+
 end behavioral;
