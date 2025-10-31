@@ -23,63 +23,41 @@ architecture tb of chip_tb is
       mem_en     : out   std_logic;
       mem_add    : out   std_logic_vector(5 downto 0);
 
-      -- debug ports exist in chip entity, so we keep them here
       fsm_state_dbg      : out std_logic_vector(3 downto 0);
       fsm_next_state_dbg : out std_logic_vector(3 downto 0);
       fsm_counter_dbg    : out std_logic_vector(7 downto 0)
     );
   end component;
 
-  ----------------------------------------------------------------
-  -- Clock / reset
-  ----------------------------------------------------------------
   signal clk   : std_logic := '0';
   signal reset : std_logic := '1';
 
-  ----------------------------------------------------------------
-  -- CPU <-> DUT interface
-  ----------------------------------------------------------------
   signal cpu_add    : std_logic_vector(5 downto 0) := (others => '0');
-  signal cpu_rd_wrn : std_logic := '1';  -- '1' = read, '0' = write
+  signal cpu_rd_wrn : std_logic := '1';  
   signal start      : std_logic := '0';
 
   signal cpu_data   : std_logic_vector(7 downto 0);
   signal cpu_d_drv  : std_logic_vector(7 downto 0) := (others => '0');
   signal cpu_d_oe   : std_logic := '0';
 
-  ----------------------------------------------------------------
-  -- Memory / observe
-  ----------------------------------------------------------------
   signal mem_data   : std_logic_vector(7 downto 0) := (others => '0');
   signal mem_en     : std_logic;
   signal mem_add    : std_logic_vector(5 downto 0);
   signal busy       : std_logic;
 
-  ----------------------------------------------------------------
-  -- Supplies
-  ----------------------------------------------------------------
   signal Vdd        : std_logic := '1';
   signal Gnd        : std_logic := '0';
 
-  ----------------------------------------------------------------
-  -- Memory model state
-  ----------------------------------------------------------------
   signal mem_en_q      : std_logic := '0';
   signal rd_q          : std_logic := '1';
   signal refill_active : std_logic := '0';
   signal neg_cnt       : integer range 0 to 31 := 0;
   signal refill_case   : integer := 0;
 
-  ----------------------------------------------------------------
-  -- FSM debug signals from DUT (now they'll just be "0000"/"00000000")
-  ----------------------------------------------------------------
   signal fsm_state_dbg_s      : std_logic_vector(3 downto 0);
   signal fsm_next_state_dbg_s : std_logic_vector(3 downto 0);
   signal fsm_counter_dbg_s    : std_logic_vector(7 downto 0);
 
-  ----------------------------------------------------------------
-  -- helpers
-  ----------------------------------------------------------------
   function U8(i : integer) return std_logic_vector is
   begin
     return std_logic_vector(to_unsigned(i, 8));
@@ -92,9 +70,6 @@ architecture tb of chip_tb is
   end;
 
 begin
-  ----------------------------------------------------------------
-  -- DUT instantiation
-  ----------------------------------------------------------------
   dut: chip
     port map (
       cpu_add    => cpu_add,
@@ -117,19 +92,10 @@ begin
       fsm_counter_dbg    => fsm_counter_dbg_s
     );
 
-  ----------------------------------------------------------------
-  -- Clock
-  ----------------------------------------------------------------
   clk <= not clk after 5 ns;
 
-  ----------------------------------------------------------------
-  -- CPU drives bus when writing
-  ----------------------------------------------------------------
   cpu_data <= cpu_d_drv when cpu_d_oe = '1' else (others => 'Z');
 
-  ----------------------------------------------------------------
-  -- Memory model
-  ----------------------------------------------------------------
   mem_model : process(clk)
   begin
     if falling_edge(clk) then
@@ -158,31 +124,21 @@ begin
       end if;
     end if;
   end process;
-
-  ----------------------------------------------------------------
-  -- Reset generator
-  ----------------------------------------------------------------
+                                      
   reset_gen : process
   begin
-    -- hold reset high for two negedges
     wait until falling_edge(clk);
     wait until falling_edge(clk);
     reset <= '0';
     wait;
   end process;
 
-  ----------------------------------------------------------------
-  -- Watchdog
-  ----------------------------------------------------------------
   watchdog : process
   begin
     wait for 5 ms;
     assert false report "Watchdog timeout - TB stuck" severity failure;
   end process;
 
-  ----------------------------------------------------------------
-  -- Stimulus
-  ----------------------------------------------------------------
   stim : process
     constant TAG_HIT  : std_logic_vector(1 downto 0) := "11";
     constant IDX_HIT  : std_logic_vector(1 downto 0) := "10";
@@ -227,7 +183,7 @@ begin
       tag  : in std_logic_vector(1 downto 0);
       idx  : in std_logic_vector(1 downto 0);
       byt  : in std_logic_vector(1 downto 0);
-      rd   : in std_logic;  -- '1'=read, '0'=write
+      rd   : in std_logic;  
       wdat : in std_logic_vector(7 downto 0)) is
     begin
       if busy = '1' then
@@ -261,17 +217,13 @@ begin
     wait until reset = '0';
     wait until falling_edge(clk);
 
-    -- READ MISS to fill line (refill_case=1 drives DE AD BE EF)
     refill_case <= 1;
     req(TAG_HIT, IDX_HIT, B00, '1', (others => '0'));
 
-    -- WRITE HIT into same line
     req(TAG_HIT, IDX_HIT, B01, '0', U8(16#A5#));
 
-    -- READ HIT back
     req(TAG_HIT, IDX_HIT, B01, '1', (others => '0'));
 
-    -- WRITE MISS to different tag (no allocate)
     req("01",   IDX_HIT, B10, '0', U8(16#7E#));
 
     wait_cycles(20);
@@ -279,3 +231,4 @@ begin
   end process;
 
 end tb;
+
