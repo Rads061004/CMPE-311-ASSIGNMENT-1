@@ -31,19 +31,17 @@ architecture structural of reg1_rise_en is
         );
     end component;
 
-    signal q_fb  : STD_LOGIC;  -- internal flop output (fed back)
-    signal d_sel : STD_LOGIC;  -- mux output into flop
+    signal q_fb  : STD_LOGIC;  
+    signal d_sel : STD_LOGIC;  
 begin
-    -- If en='1', load d. If en='0', hold previous q_fb.
     u_mux: mux2to1
         port map (
-            d0  => q_fb,   -- hold path
-            d1  => d,      -- new data
+            d0  => q_fb,   
+            d1  => d,      
             sel => en,
             y   => d_sel
         );
 
-    -- Rising-edge DFF with async reset.
     u_dff: dff_rise
         port map (
             clk   => clk,
@@ -54,3 +52,4 @@ begin
 
     q <= q_fb;
 end structural;
+
