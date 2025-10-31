@@ -17,9 +17,6 @@ entity output_logic is
 end output_logic;
 
 architecture Structural of output_logic is
-    ----------------------------------------------------------------
-    -- component declarations
-    ----------------------------------------------------------------
     component and2
         port (a, b : in STD_LOGIC; y : out STD_LOGIC);
     end component;
@@ -52,11 +49,6 @@ architecture Structural of output_logic is
         port (clk : in STD_LOGIC; reset : in STD_LOGIC; d : in STD_LOGIC; q : out STD_LOGIC);
     end component;
 
-    ----------------------------------------------------------------
-    -- internal signals
-    ----------------------------------------------------------------
-
-    -- Treat state encodings as signals (VHDL-87 style constants)
     signal S_IDLE        : STD_LOGIC_VECTOR(2 downto 0);
     signal S_READ_HIT    : STD_LOGIC_VECTOR(2 downto 0);
     signal S_WRITE_HIT   : STD_LOGIC_VECTOR(2 downto 0);
@@ -64,7 +56,6 @@ architecture Structural of output_logic is
     signal S_WRITE_MISS  : STD_LOGIC_VECTOR(2 downto 0);
     signal S_DONE        : STD_LOGIC_VECTOR(2 downto 0);
 
-    -- decode current state (for output control signals)
     signal is_read_hit    : STD_LOGIC;
     signal is_write_hit   : STD_LOGIC;
     signal is_read_miss   : STD_LOGIC;
@@ -72,19 +63,15 @@ architecture Structural of output_logic is
     signal is_done        : STD_LOGIC;
     signal is_idle        : STD_LOGIC;
 
-    -- decode NEXT state for busy (CRITICAL!)
     signal next_is_read_hit    : STD_LOGIC;
     signal next_is_write_hit   : STD_LOGIC;
     signal next_is_read_miss   : STD_LOGIC;
     signal next_is_write_miss  : STD_LOGIC;
 
-    -- "work" qualifier for next state
     signal next_is_work    : STD_LOGIC;
 
-    -- registered busy signal
     signal busy_int        : STD_LOGIC;
 
-    -- counter-related signals
     signal cnt_gte_1      : STD_LOGIC;
     signal cnt0           : STD_LOGIC;
     signal cnt1           : STD_LOGIC;
@@ -98,7 +85,6 @@ architecture Structural of output_logic is
     signal upper_zero     : STD_LOGIC;
     signal cnt_is_1       : STD_LOGIC;
 
-    -- per-state enables for outputs
     signal read_hit_oe_cd     : STD_LOGIC;
     signal read_miss_en       : STD_LOGIC;
     signal write_miss_en      : STD_LOGIC;
@@ -106,9 +92,6 @@ architecture Structural of output_logic is
     signal write_miss_oe_ma   : STD_LOGIC;
 
 begin
-    ----------------------------------------------------------------
-    -- explicit "constants"
-    ----------------------------------------------------------------
     S_IDLE        <= "000";
     S_READ_HIT    <= "001";
     S_WRITE_HIT   <= "010";
@@ -116,9 +99,6 @@ begin
     S_WRITE_MISS  <= "100";
     S_DONE        <= "101";
 
-    ----------------------------------------------------------------
-    -- decode current state (for output control signals)
-    ----------------------------------------------------------------
     u_eq_read_hit: eq3
         port map (
             a  => state,
@@ -161,10 +141,6 @@ begin
             eq => is_idle
         );
 
-    ----------------------------------------------------------------
-    -- decode NEXT state to determine if we should be busy
-    -- THIS IS THE CRITICAL FIX!
-    ----------------------------------------------------------------
     u_eq_next_read_hit: eq3
         port map (
             a  => next_state,
@@ -193,7 +169,6 @@ begin
             eq => next_is_write_miss
         );
 
-    -- Combine to check if next state is any work state
     u_or_next_work: or4
         port map (
             a => next_is_read_hit,
@@ -203,10 +178,6 @@ begin
             y => next_is_work
         );
 
-    ----------------------------------------------------------------
-    -- Register busy on falling edge based on next_state
-    -- This matches the behavioral implementation exactly!
-    ----------------------------------------------------------------
     u_busy_reg: dff_fall
         port map (
             clk   => clk,
@@ -217,24 +188,14 @@ begin
 
     busy <= busy_int;
 
-    ----------------------------------------------------------------
-    -- done = we're in DONE state (one cycle after work finishes)
-    ----------------------------------------------------------------
     done <= is_done;
 
-    ----------------------------------------------------------------
-    -- counter >= 1 (used for OE_CD timing in READ_HIT)
-    ----------------------------------------------------------------
     u_cnt_gte_1: gte_one
         port map (
             a   => counter,
             gte => cnt_gte_1
         );
 
-    ----------------------------------------------------------------
-    -- Build "counter == 1" (used for EN / OE_MA timing in MISS paths)
-    -- counter == "00001"
-    ----------------------------------------------------------------
     cnt0 <= counter(0);
     cnt1 <= counter(1);
     cnt2 <= counter(2);
@@ -246,7 +207,6 @@ begin
     u_inv3: inv port map (a => cnt3, y => cnt3_n);
     u_inv4: inv port map (a => cnt4, y => cnt4_n);
 
-    -- upper_zero = (~cnt1)&(~cnt2)&(~cnt3)&(~cnt4)
     u_and_upper: and4
         port map (
             a => cnt1_n,
@@ -256,7 +216,6 @@ begin
             y => upper_zero
         );
 
-    -- cnt_is_1 = cnt0 & upper_zero
     u_and_cnt1: and2
         port map (
             a => cnt0,
@@ -264,9 +223,6 @@ begin
             y => cnt_is_1
         );
 
-    ----------------------------------------------------------------
-    -- OE_CD: asserted in READ_HIT when counter >= 1
-    ----------------------------------------------------------------
     u_and_oe_cd: and2
         port map (
             a => is_read_hit,
@@ -276,10 +232,6 @@ begin
 
     OE_CD <= read_hit_oe_cd;
 
-    ----------------------------------------------------------------
-    -- EN and OE_MA:
-    -- In READ_MISS or WRITE_MISS, assert EN and OE_MA when counter == 1
-    ----------------------------------------------------------------
     u_and_rm_en: and2
         port map (
             a => is_read_miss,
