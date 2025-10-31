@@ -8,7 +8,7 @@ entity cache_fsm_struct is
         start      : in  STD_LOGIC;
         tag        : in  STD_LOGIC;
         valid      : in  STD_LOGIC;
-        read_write : in  STD_LOGIC;   -- 1 = read, 0 = write
+        read_write : in  STD_LOGIC;   
 
         busy       : out STD_LOGIC;
         done       : out STD_LOGIC;
