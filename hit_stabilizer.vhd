@@ -7,8 +7,8 @@ entity hit_stabilizer is
     reset      : in  std_logic;
 
     start_in   : in  std_logic;
-    hit_raw    : in  std_logic;   -- raw combinational hit_sel
-    hit_sync   : out std_logic    -- registered, stable version
+    hit_raw    : in  std_logic;   
+    hit_sync   : out std_logic    
   );
 end hit_stabilizer;
 
@@ -20,7 +20,6 @@ begin
     if reset = '1' then
       hit_q <= '0';
     elsif rising_edge(clk) then
-      -- Latch only when a new request is launched by CPU
       if start_in = '1' then
         hit_q <= hit_raw;
       end if;
@@ -29,3 +28,4 @@ begin
 
   hit_sync <= hit_q;
 end behavioral;
+
