@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 2-to-1 Multiplexer
 entity mux2to1 is
     port (
         d0, d1 : in  STD_LOGIC;
@@ -27,4 +26,5 @@ begin
     u_and0: and2 port map (a => d0, b => sel_n, y => and0_out);
     u_and1: and2 port map (a => d1, b => sel, y => and1_out);
     u_or: or2 port map (a => and0_out, b => and1_out, y => y);
+
 end structural;
