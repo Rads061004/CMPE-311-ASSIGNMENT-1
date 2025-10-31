@@ -11,6 +11,6 @@ end tbuf8;
 
 architecture behavioral of tbuf8 is
 begin
-  -- Drive the bus only when en = '1', otherwise release it (Hi-Z).
   b <= d when en = '1' else (others => 'Z');
 end behavioral;
+
