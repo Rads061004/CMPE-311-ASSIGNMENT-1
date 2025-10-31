@@ -84,7 +84,7 @@ begin
     s_write_miss_sig <= S_WRITE_MISS;
     
     -- Store previous state (on falling edge to match original)
-    u_prev_state_reg: reg3_rise port map (
+    u_prev_state_reg: reg3_fall port map (
         clk => clk,
         reset => reset,
         d => state,
