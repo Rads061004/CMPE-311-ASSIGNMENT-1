@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- Full Adder
 entity full_adder is
     port (
         a, b, cin : in  STD_LOGIC;
@@ -28,4 +27,5 @@ begin
     u_and2: and2 port map (a => a, b => cin, y => and2);
     u_and3: and2 port map (a => b, b => cin, y => and3);
     u_or: or3 port map (a => and1, b => and2, c => and3, y => cout);
+
 end structural;
