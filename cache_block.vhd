@@ -1,79 +1,320 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
 
 entity cache_block is
     port (
-        clk   : in  std_logic;
-        reset : in  std_logic;
+        clk        : in  std_logic;
+        reset      : in  std_logic;
 
-        enable      : in  std_logic;
+        enable     : in  std_logic;
 
-        data_in     : in  std_logic_vector(7 downto 0);
-        data_out    : out std_logic_vector(7 downto 0);
-        byte_sel    : in  std_logic_vector(1 downto 0);
-        rd_wr       : in  std_logic;                     
+        data_in    : in  std_logic_vector(7 downto 0);  -- CPU write data
+        data_out   : out std_logic_vector(7 downto 0);  -- latched read data back to CPU
+        byte_sel   : in  std_logic_vector(1 downto 0);  -- which byte in block
+        rd_wr      : in  std_logic;                     -- '1' = READ path active, '0' = WRITE from CPU
 
-        mem_in      : in  std_logic_vector(7 downto 0);
+        mem_in     : in  std_logic_vector(7 downto 0);  -- data from memory on miss refill
 
-        we          : in  std_logic;                 
-        set_tag     : in  std_logic;                  
-        tag_in      : in  std_logic_vector(1 downto 0);  
+        we         : in  std_logic;                     -- write-enable for cache array byte
+        set_tag    : in  std_logic;                     -- load new tag + mark valid
+        tag_in     : in  std_logic_vector(1 downto 0);  -- incoming tag from address
 
-        valid_out   : out std_logic;
-        tag_out     : out std_logic_vector(1 downto 0);
-        hit_miss    : out std_logic                      
+        valid_out  : out std_logic;
+        tag_out    : out std_logic_vector(1 downto 0);
+        hit_miss   : out std_logic                      -- '1' = hit, '0' = miss
     );
 end cache_block;
 
-architecture rtl of cache_block is
-    type block_t is array (0 to 3) of std_logic_vector(7 downto 0);
-    signal data_ram : block_t := (others => (others => '0'));
+architecture structural of cache_block is
 
-    signal tag_reg  : std_logic_vector(1 downto 0) := (others => '0');
-    signal valid    : std_logic := '0';
-    signal dout     : std_logic_vector(7 downto 0) := (others => '0');
+    ----------------------------------------------------------------
+    -- Components we’ll use
+    ----------------------------------------------------------------
+    component decoder
+        port (
+            block_addr : in  std_logic_vector(1 downto 0);
+            block_sel  : out std_logic_vector(3 downto 0)
+        );
+    end component;
 
-    signal is_hit   : std_logic;
+    component mux2to1_8
+        port (
+            d0  : in  STD_LOGIC_VECTOR(7 downto 0);
+            d1  : in  STD_LOGIC_VECTOR(7 downto 0);
+            sel : in  STD_LOGIC;
+            y   : out STD_LOGIC_VECTOR(7 downto 0)
+        );
+    end component;
+
+    component mux4to1_8
+        port (
+            d0  : in  STD_LOGIC_VECTOR(7 downto 0);
+            d1  : in  STD_LOGIC_VECTOR(7 downto 0);
+            d2  : in  STD_LOGIC_VECTOR(7 downto 0);
+            d3  : in  STD_LOGIC_VECTOR(7 downto 0);
+            sel : in  STD_LOGIC_VECTOR(1 downto 0);
+            y   : out STD_LOGIC_VECTOR(7 downto 0)
+        );
+    end component;
+
+    component reg8_rise_en
+        port (
+            clk   : in  STD_LOGIC;
+            reset : in  STD_LOGIC;
+            en    : in  STD_LOGIC;
+            d     : in  STD_LOGIC_VECTOR(7 downto 0);
+            q     : out STD_LOGIC_VECTOR(7 downto 0)
+        );
+    end component;
+
+    component reg2_rise_en
+        port (
+            clk   : in  STD_LOGIC;
+            reset : in  STD_LOGIC;
+            en    : in  STD_LOGIC;
+            d     : in  STD_LOGIC_VECTOR(1 downto 0);
+            q     : out STD_LOGIC_VECTOR(1 downto 0)
+        );
+    end component;
+
+    component reg1_rise_en
+        port (
+            clk   : in  STD_LOGIC;
+            reset : in  STD_LOGIC;
+            en    : in  STD_LOGIC;
+            d     : in  STD_LOGIC;
+            q     : out STD_LOGIC
+        );
+    end component;
+
+    component eq2
+        port (
+            a  : in  STD_LOGIC_VECTOR(1 downto 0);
+            b  : in  STD_LOGIC_VECTOR(1 downto 0);
+            eq : out STD_LOGIC
+        );
+    end component;
+
+    component and2
+        port (
+            a : in STD_LOGIC;
+            b : in STD_LOGIC;
+            y : out STD_LOGIC
+        );
+    end component;
+
+    component and3
+        port (
+            a : in STD_LOGIC;
+            b : in STD_LOGIC;
+            c : in STD_LOGIC;
+            y : out STD_LOGIC
+        );
+    end component;
+
+    ----------------------------------------------------------------
+    -- Internal signals
+    ----------------------------------------------------------------
+    signal byte_dec    : std_logic_vector(3 downto 0);
+    signal write_data  : std_logic_vector(7 downto 0);
+
+    signal byte0_q     : std_logic_vector(7 downto 0);
+    signal byte1_q     : std_logic_vector(7 downto 0);
+    signal byte2_q     : std_logic_vector(7 downto 0);
+    signal byte3_q     : std_logic_vector(7 downto 0);
+
+    signal we_global   : std_logic;
+    signal we_b0       : std_logic;
+    signal we_b1       : std_logic;
+    signal we_b2       : std_logic;
+    signal we_b3       : std_logic;
+
+    signal read_data   : std_logic_vector(7 downto 0);
+    signal dout_q      : std_logic_vector(7 downto 0);
+    signal outreg_en   : std_logic;
+
+    signal tag_q       : std_logic_vector(1 downto 0);
+    signal valid_q     : std_logic;
+    signal tag_en      : std_logic;
+
+    signal tag_match   : std_logic;
+    signal hit_sig     : std_logic;
+    signal valid_and_enable : std_logic;
+
+    -- constant '1' to force valid bit high when loading new tag
+    signal one_sig     : std_logic;
+
 begin
-    data_out  <= dout;
-    valid_out <= valid;
-    tag_out   <= tag_reg;
+    ----------------------------------------------------------------
+    -- constant drive
+    ----------------------------------------------------------------
+    one_sig <= '1';
 
-    is_hit   <= '1' when (enable = '1' and valid = '1' and tag_reg = tag_in) else '0';
-    hit_miss <= is_hit;
+    ----------------------------------------------------------------
+    -- 1) Decode byte_sel
+    ----------------------------------------------------------------
+    u_byte_decoder: decoder
+        port map (
+            block_addr => byte_sel,
+            block_sel  => byte_dec
+        );
 
-    process(clk)
-        variable idx : integer;
-    begin
-        if rising_edge(clk) then
-            if reset = '1' then
-                data_ram <= (others => (others => '0'));
-                tag_reg  <= (others => '0');
-                valid    <= '0';
-                dout     <= (others => '0');
+    ----------------------------------------------------------------
+    -- 2) Select write data: CPU vs mem
+    ----------------------------------------------------------------
+    u_write_src_mux: mux2to1_8
+        port map (
+            d0  => data_in,
+            d1  => mem_in,
+            sel => rd_wr,
+            y   => write_data
+        );
 
-            elsif enable = '1' then
-                idx := to_integer(unsigned(byte_sel));
+    ----------------------------------------------------------------
+    -- 3) we_global = enable AND we
+    ----------------------------------------------------------------
+    u_we_global: and2
+        port map (
+            a => enable,
+            b => we,
+            y => we_global
+        );
 
-                if we = '1' then
-                    if rd_wr = '1' then
-                        data_ram(idx) <= mem_in;
-                    else
-                        data_ram(idx) <= data_in;
-                    end if;
-                end if;
+    -- per-byte enables
+    u_we_b0: and2 port map ( a => we_global, b => byte_dec(0), y => we_b0 );
+    u_we_b1: and2 port map ( a => we_global, b => byte_dec(1), y => we_b1 );
+    u_we_b2: and2 port map ( a => we_global, b => byte_dec(2), y => we_b2 );
+    u_we_b3: and2 port map ( a => we_global, b => byte_dec(3), y => we_b3 );
 
-                if set_tag = '1' then
-                    tag_reg <= tag_in;
-                    valid   <= '1';
-                end if;
+    ----------------------------------------------------------------
+    -- 4) 4 byte registers
+    ----------------------------------------------------------------
+    u_byte0: reg8_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => we_b0,
+            d     => write_data,
+            q     => byte0_q
+        );
 
-                if rd_wr = '1' then
-                    dout <= data_ram(idx);
-                end if;
-            end if;
-        end if;
-    end process;
-end rtl;
+    u_byte1: reg8_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => we_b1,
+            d     => write_data,
+            q     => byte1_q
+        );
 
+    u_byte2: reg8_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => we_b2,
+            d     => write_data,
+            q     => byte2_q
+        );
+
+    u_byte3: reg8_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => we_b3,
+            d     => write_data,
+            q     => byte3_q
+        );
+
+    ----------------------------------------------------------------
+    -- 5) Read mux
+    ----------------------------------------------------------------
+    u_read_mux: mux4to1_8
+        port map (
+            d0  => byte0_q,
+            d1  => byte1_q,
+            d2  => byte2_q,
+            d3  => byte3_q,
+            sel => byte_sel,
+            y   => read_data
+        );
+
+    ----------------------------------------------------------------
+    -- 6) Output register enable = enable AND rd_wr
+    ----------------------------------------------------------------
+    u_outreg_en: and2
+        port map (
+            a => enable,
+            b => rd_wr,
+            y => outreg_en
+        );
+
+    u_dout_reg: reg8_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => outreg_en,
+            d     => read_data,
+            q     => dout_q
+        );
+
+    data_out <= dout_q;
+
+    ----------------------------------------------------------------
+    -- 7) Tag + valid
+    ----------------------------------------------------------------
+    u_tag_en: and2
+        port map (
+            a => enable,
+            b => set_tag,
+            y => tag_en
+        );
+
+    u_tag_reg: reg2_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => tag_en,
+            d     => tag_in,
+            q     => tag_q
+        );
+
+    tag_out <= tag_q;
+
+    u_valid_reg: reg1_rise_en
+        port map (
+            clk   => clk,
+            reset => reset,
+            en    => tag_en,
+            d     => one_sig,   -- <- fixed
+            q     => valid_q
+        );
+
+    valid_out <= valid_q;
+
+    ----------------------------------------------------------------
+    -- 8) Hit = enable AND valid_q AND (tag_q == tag_in)
+    ----------------------------------------------------------------
+    u_tag_cmp: eq2
+        port map (
+            a  => tag_q,
+            b  => tag_in,
+            eq => tag_match
+        );
+
+    u_valid_and_enable: and2
+        port map (
+            a => valid_q,
+            b => enable,
+            y => valid_and_enable
+        );
+
+    u_hit_and: and2
+        port map (
+            a => tag_match,
+            b => valid_and_enable,
+            y => hit_sig
+        );
+
+    hit_miss <= hit_sig;
+
+end structural;

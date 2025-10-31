@@ -3,6 +3,6 @@
 // Do not modify this file
 //
 
-cache_fsm_tb
+chip_tb
 -ACCESS
 rwc
