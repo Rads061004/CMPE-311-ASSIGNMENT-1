@@ -2,14 +2,17 @@
 // File created by:  xrun
 // Do not modify this file
 //
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/and2.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/and3.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/and4.vhd
+/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/gates.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/dff_fall.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/dff_rise.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/d_latch.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/decoder.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux_comp.vhd
+/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg3_rise.vhd
+/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg5_rise.vhd
+/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg3_fall.vhd
+/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg5_fall.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/counter_adder.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/comparator.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/state_register.vhd

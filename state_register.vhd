@@ -10,17 +10,22 @@ entity state_register is
     );
 end state_register;
 
-architecture behavioral of state_register is
-    signal state_int : STD_LOGIC_VECTOR(2 downto 0) := "000";  -- IDLE from t=0
+architecture Structural of state_register is
+    component dff_fall
+        port (clk : in STD_LOGIC; reset : in STD_LOGIC; d : in STD_LOGIC; q : out STD_LOGIC);
+    end component;
+    
+    signal state_int : STD_LOGIC_VECTOR(2 downto 0);
 begin
-    process(clk, reset)
-    begin
-        if reset = '1' then
-            state_int <= "000";  -- IDLE
-        elsif falling_edge(clk) then
-            state_int <= next_state;
-        end if;
-    end process;
-
+    -- Use falling-edge flip-flops to match behavioral implementation
+    gen_dff: for i in 0 to 2 generate
+        u_dff: dff_fall port map (
+            clk   => clk, 
+            reset => reset, 
+            d     => next_state(i), 
+            q     => state_int(i)
+        );
+    end generate;
+    
     state <= state_int;
-end behavioral;
+end Structural;
