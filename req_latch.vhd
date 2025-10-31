@@ -19,17 +19,11 @@ architecture behavioral of req_latch is
   signal L_is_write_q : std_logic := '0';
   signal L_is_hit_q   : std_logic := '0';
   
-  -- Sample hit_sel on RISING edge (half cycle after address change)
-  -- This gives the combinational hit detection path time to settle
   signal hit_sampled  : std_logic := '0';
   signal start_sampled : std_logic := '0';
   signal rd_wrn_sampled : std_logic := '1';
 begin
-  --------------------------------------------------------------------
-  -- Stage 1: Sample inputs on RISING edge
-  -- This occurs half a cycle AFTER the falling edge where address
-  -- and start change, giving combinational paths time to settle.
-  --------------------------------------------------------------------
+
   process(clk, reset)
   begin
     if reset = '1' then
@@ -39,13 +33,10 @@ begin
     elsif rising_edge(clk) then
       start_sampled  <= start_in;
       rd_wrn_sampled <= cpu_rd_wrn;
-      hit_sampled    <= hit_sel_in;  -- NOW stable!
+      hit_sampled    <= hit_sel_in;  
     end if;
   end process;
   
-  --------------------------------------------------------------------
-  -- Stage 2: Use the stable sampled values on FALLING edge
-  --------------------------------------------------------------------
   process(clk, reset)
   begin
     if reset = '1' then
@@ -56,7 +47,7 @@ begin
       latch_go_q <= start_sampled;
       if start_sampled = '1' then
         L_is_write_q <= not rd_wrn_sampled;
-        L_is_hit_q   <= hit_sampled;  -- Use stable sampled value
+        L_is_hit_q   <= hit_sampled;  
       end if;
     end if;
   end process;
@@ -64,4 +55,5 @@ begin
   latch_go   <= latch_go_q;
   L_is_write <= L_is_write_q;
   L_is_hit   <= L_is_hit_q;
+
 end behavioral;
