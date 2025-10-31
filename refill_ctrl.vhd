@@ -10,7 +10,7 @@ entity refill_ctrl is
 
     mem_en_q       : out std_logic;
     refill_active  : out std_logic;
-    refill_cnt     : out std_logic_vector(4 downto 0)  -- 0..31
+    refill_cnt     : out std_logic_vector(4 downto 0)  
   );
 end refill_ctrl;
 
@@ -26,10 +26,8 @@ begin
       refill_active_q <= '0';
       refill_cnt_q    <= (others => '0');
     elsif falling_edge(clk) then
-      -- track previous mem_en
       mem_en_q_q <= fsm_en;
 
-      -- start refill on rising edge of fsm_en
       if (mem_en_q_q = '0' and fsm_en = '1') then
         refill_active_q <= '1';
         refill_cnt_q    <= (others => '0');
@@ -46,3 +44,4 @@ begin
   refill_active <= refill_active_q;
   refill_cnt    <= std_logic_vector(refill_cnt_q);
 end behavioral;
+
