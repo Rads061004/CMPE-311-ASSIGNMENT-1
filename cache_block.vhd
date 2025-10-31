@@ -8,28 +8,25 @@ entity cache_block is
 
         enable     : in  std_logic;
 
-        data_in    : in  std_logic_vector(7 downto 0);  -- CPU write data
-        data_out   : out std_logic_vector(7 downto 0);  -- latched read data back to CPU
-        byte_sel   : in  std_logic_vector(1 downto 0);  -- which byte in block
-        rd_wr      : in  std_logic;                     -- '1' = READ path active, '0' = WRITE from CPU
+        data_in    : in  std_logic_vector(7 downto 0);  
+        data_out   : out std_logic_vector(7 downto 0);  
+        byte_sel   : in  std_logic_vector(1 downto 0);  
+        rd_wr      : in  std_logic;                     
 
-        mem_in     : in  std_logic_vector(7 downto 0);  -- data from memory on miss refill
-
-        we         : in  std_logic;                     -- write-enable for cache array byte
-        set_tag    : in  std_logic;                     -- load new tag + mark valid
-        tag_in     : in  std_logic_vector(1 downto 0);  -- incoming tag from address
+        mem_in     : in  std_logic_vector(7 downto 0);  
+        
+        we         : in  std_logic;                     
+        set_tag    : in  std_logic;                     
+        tag_in     : in  std_logic_vector(1 downto 0);  
 
         valid_out  : out std_logic;
         tag_out    : out std_logic_vector(1 downto 0);
-        hit_miss   : out std_logic                      -- '1' = hit, '0' = miss
+        hit_miss   : out std_logic                     
     );
 end cache_block;
 
 architecture structural of cache_block is
 
-    ----------------------------------------------------------------
-    -- Components we’ll use
-    ----------------------------------------------------------------
     component decoder
         port (
             block_addr : in  std_logic_vector(1 downto 0);
@@ -112,9 +109,6 @@ architecture structural of cache_block is
         );
     end component;
 
-    ----------------------------------------------------------------
-    -- Internal signals
-    ----------------------------------------------------------------
     signal byte_dec    : std_logic_vector(3 downto 0);
     signal write_data  : std_logic_vector(7 downto 0);
 
@@ -141,27 +135,17 @@ architecture structural of cache_block is
     signal hit_sig     : std_logic;
     signal valid_and_enable : std_logic;
 
-    -- constant '1' to force valid bit high when loading new tag
     signal one_sig     : std_logic;
 
 begin
-    ----------------------------------------------------------------
-    -- constant drive
-    ----------------------------------------------------------------
     one_sig <= '1';
 
-    ----------------------------------------------------------------
-    -- 1) Decode byte_sel
-    ----------------------------------------------------------------
     u_byte_decoder: decoder
         port map (
             block_addr => byte_sel,
             block_sel  => byte_dec
         );
 
-    ----------------------------------------------------------------
-    -- 2) Select write data: CPU vs mem
-    ----------------------------------------------------------------
     u_write_src_mux: mux2to1_8
         port map (
             d0  => data_in,
@@ -170,9 +154,6 @@ begin
             y   => write_data
         );
 
-    ----------------------------------------------------------------
-    -- 3) we_global = enable AND we
-    ----------------------------------------------------------------
     u_we_global: and2
         port map (
             a => enable,
@@ -180,15 +161,11 @@ begin
             y => we_global
         );
 
-    -- per-byte enables
     u_we_b0: and2 port map ( a => we_global, b => byte_dec(0), y => we_b0 );
     u_we_b1: and2 port map ( a => we_global, b => byte_dec(1), y => we_b1 );
     u_we_b2: and2 port map ( a => we_global, b => byte_dec(2), y => we_b2 );
     u_we_b3: and2 port map ( a => we_global, b => byte_dec(3), y => we_b3 );
 
-    ----------------------------------------------------------------
-    -- 4) 4 byte registers
-    ----------------------------------------------------------------
     u_byte0: reg8_rise_en
         port map (
             clk   => clk,
@@ -225,9 +202,6 @@ begin
             q     => byte3_q
         );
 
-    ----------------------------------------------------------------
-    -- 5) Read mux
-    ----------------------------------------------------------------
     u_read_mux: mux4to1_8
         port map (
             d0  => byte0_q,
@@ -238,9 +212,6 @@ begin
             y   => read_data
         );
 
-    ----------------------------------------------------------------
-    -- 6) Output register enable = enable AND rd_wr
-    ----------------------------------------------------------------
     u_outreg_en: and2
         port map (
             a => enable,
@@ -259,9 +230,6 @@ begin
 
     data_out <= dout_q;
 
-    ----------------------------------------------------------------
-    -- 7) Tag + valid
-    ----------------------------------------------------------------
     u_tag_en: and2
         port map (
             a => enable,
@@ -285,15 +253,12 @@ begin
             clk   => clk,
             reset => reset,
             en    => tag_en,
-            d     => one_sig,   -- <- fixed
+            d     => one_sig,   
             q     => valid_q
         );
 
     valid_out <= valid_q;
 
-    ----------------------------------------------------------------
-    -- 8) Hit = enable AND valid_q AND (tag_q == tag_in)
-    ----------------------------------------------------------------
     u_tag_cmp: eq2
         port map (
             a  => tag_q,
