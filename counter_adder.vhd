@@ -1,9 +1,6 @@
--- Counter and Adder components built structurally
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- Full Adder
 entity full_adder is
     port (
         a, b, cin : in  STD_LOGIC;
@@ -35,7 +32,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 5-bit Ripple Carry Adder
 entity adder5 is
     port (
         a, b : in  STD_LOGIC_VECTOR(4 downto 0);
@@ -62,7 +58,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 5-bit Incrementer (adds 1)
 entity inc5 is
     port (
         a   : in  STD_LOGIC_VECTOR(4 downto 0);
@@ -88,7 +83,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 5-bit register with rising edge, reset, and enable
 entity reg5_rise is
     port (
         clk   : in  STD_LOGIC;
@@ -121,7 +115,6 @@ end structural;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- 3-bit register with falling edge and reset
 entity reg3_fall is
     port (
         clk   : in  STD_LOGIC;
@@ -139,4 +132,5 @@ begin
     gen_dff: for i in 0 to 2 generate
         u_dff: dff_fall port map (clk => clk, reset => reset, d => d(i), q => q(i));
     end generate;
+
 end structural;
