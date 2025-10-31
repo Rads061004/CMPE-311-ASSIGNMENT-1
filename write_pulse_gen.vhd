@@ -23,7 +23,6 @@ architecture behavioral of write_pulse_gen is
   signal we_q      : std_logic := '0';
   signal settag_q  : std_logic := '0';
 
-  -- convenience casts
   function u5(s : std_logic_vector(4 downto 0)) return unsigned is
   begin
     return unsigned(s);
@@ -40,12 +39,10 @@ begin
       we_pulse      := '0';
       set_tag_pulse := '0';
 
-      -- CPU write hit pulse
       if (latch_go = '1') and (L_is_write = '1') and (L_is_hit = '1') then
         we_pulse := '1';
       end if;
 
-      -- Refill write pulses from memory at counts 8,10,12,14
       if refill_active = '1' then
         if    u5(refill_cnt) = to_unsigned(8,5)
            or u5(refill_cnt) = to_unsigned(10,5)
@@ -53,7 +50,6 @@ begin
            or u5(refill_cnt) = to_unsigned(14,5) then
           we_pulse := '1';
 
-          -- first refill beat also sets tag/valid
           if u5(refill_cnt) = to_unsigned(8,5) then
             set_tag_pulse := '1';
           end if;
@@ -68,3 +64,4 @@ begin
   we_top      <= we_q;
   set_tag_top <= settag_q;
 end behavioral;
+
