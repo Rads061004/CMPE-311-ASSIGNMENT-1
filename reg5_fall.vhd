@@ -1,4 +1,3 @@
--- 5-bit register with falling-edge clock, async reset, and enable
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -35,7 +34,6 @@ architecture structural of reg5_fall is
     signal d_sel : STD_LOGIC_VECTOR(4 downto 0);
 begin
     gen_regbits: for i in 0 to 4 generate
-        -- if en=0, hold old value; if en=1, take new d(i)
         u_mux_en: mux2to1
             port map (
                 d0  => q_int(i),
@@ -44,7 +42,6 @@ begin
                 y   => d_sel(i)
             );
 
-        -- latch on FALLING edge
         u_ff: dff_fall
             port map (
                 clk   => clk,
@@ -56,3 +53,4 @@ begin
 
     q <= q_int;
 end structural;
+
