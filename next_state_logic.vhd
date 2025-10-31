@@ -14,9 +14,6 @@ entity next_state_logic is
 end next_state_logic;
 
 architecture Structural of next_state_logic is
-    --------------------------------------------------------------------------
-    -- Component declarations
-    --------------------------------------------------------------------------
     component and2
         port (a, b : in STD_LOGIC; y : out STD_LOGIC);
     end component;
@@ -69,9 +66,6 @@ architecture Structural of next_state_logic is
         );
     end component;
 
-    --------------------------------------------------------------------------
-    -- State encodings as signals
-    --------------------------------------------------------------------------
     signal S_IDLE        : STD_LOGIC_VECTOR(2 downto 0);
     signal S_READ_HIT    : STD_LOGIC_VECTOR(2 downto 0);
     signal S_WRITE_HIT   : STD_LOGIC_VECTOR(2 downto 0);
@@ -79,9 +73,6 @@ architecture Structural of next_state_logic is
     signal S_WRITE_MISS  : STD_LOGIC_VECTOR(2 downto 0);
     signal S_DONE        : STD_LOGIC_VECTOR(2 downto 0);
 
-    --------------------------------------------------------------------------
-    -- State decode
-    --------------------------------------------------------------------------
     signal is_idle        : STD_LOGIC;
     signal is_read_hit    : STD_LOGIC;
     signal is_write_hit   : STD_LOGIC;
@@ -89,9 +80,6 @@ architecture Structural of next_state_logic is
     signal is_write_miss  : STD_LOGIC;
     signal is_done        : STD_LOGIC;
 
-    --------------------------------------------------------------------------
-    -- Classification when leaving IDLE
-    --------------------------------------------------------------------------
     signal hit            : STD_LOGIC;
     signal hit_n          : STD_LOGIC;
     signal rw_n           : STD_LOGIC;
@@ -104,9 +92,6 @@ architecture Structural of next_state_logic is
     signal start_read_miss_pulse   : STD_LOGIC;
     signal start_write_miss_pulse  : STD_LOGIC;
 
-    --------------------------------------------------------------------------
-    -- Next-state bits when currently in IDLE
-    --------------------------------------------------------------------------
     signal idle_next_b0   : STD_LOGIC;
     signal idle_next_b1   : STD_LOGIC;
     signal idle_next_b2   : STD_LOGIC;
@@ -115,14 +100,10 @@ architecture Structural of next_state_logic is
     signal next_from_idle_b1 : STD_LOGIC;
     signal next_from_idle_b2 : STD_LOGIC;
 
-    --------------------------------------------------------------------------
-    -- Counter compare / done detection
-    --------------------------------------------------------------------------
     signal cnt_gte_0      : STD_LOGIC;
     signal cnt_gte_1      : STD_LOGIC;
     signal cnt_gte_17     : STD_LOGIC;
 
-    -- We'll also build counter == 1 ("00001")
     signal c0, c1, c2, c3, c4        : STD_LOGIC;
     signal c1_n, c2_n, c3_n, c4_n    : STD_LOGIC;
     signal upper_zero                : STD_LOGIC;
@@ -138,9 +119,6 @@ architecture Structural of next_state_logic is
     signal read_miss_done_n   : STD_LOGIC;
     signal write_miss_done_n  : STD_LOGIC;
 
-    --------------------------------------------------------------------------
-    -- Per-state next bits
-    --------------------------------------------------------------------------
     signal rh_next_b0     : STD_LOGIC;
     signal rh_next_b1     : STD_LOGIC;
     signal rh_next_b2     : STD_LOGIC;
@@ -161,9 +139,6 @@ architecture Structural of next_state_logic is
     signal dn_next_b1     : STD_LOGIC;
     signal dn_next_b2     : STD_LOGIC;
 
-    --------------------------------------------------------------------------
-    -- Mux inputs for final next_state
-    --------------------------------------------------------------------------
     signal mux_inputs_b0  : STD_LOGIC_VECTOR(7 downto 0);
     signal mux_inputs_b1  : STD_LOGIC_VECTOR(7 downto 0);
     signal mux_inputs_b2  : STD_LOGIC_VECTOR(7 downto 0);
@@ -172,9 +147,6 @@ architecture Structural of next_state_logic is
     signal vdd            : STD_LOGIC;
 
 begin
-    --------------------------------------------------------------------------
-    -- Constants / encodings
-    --------------------------------------------------------------------------
     gnd <= '0';
     vdd <= '1';
 
@@ -185,9 +157,6 @@ begin
     S_WRITE_MISS  <= "100";
     S_DONE        <= "101";
 
-    --------------------------------------------------------------------------
-    -- Decode current state
-    --------------------------------------------------------------------------
     u_eq_idle       : eq3 port map (a => state, b => S_IDLE,        eq => is_idle);
     u_eq_read_hit   : eq3 port map (a => state, b => S_READ_HIT,    eq => is_read_hit);
     u_eq_write_hit  : eq3 port map (a => state, b => S_WRITE_HIT,   eq => is_write_hit);
@@ -195,73 +164,44 @@ begin
     u_eq_write_miss : eq3 port map (a => state, b => S_WRITE_MISS,  eq => is_write_miss);
     u_eq_done       : eq3 port map (a => state, b => S_DONE,        eq => is_done);
 
-    --------------------------------------------------------------------------
-    -- Classify the request when we leave IDLE
-    -- hit = tag AND valid
-    --------------------------------------------------------------------------
     u_hit_and : and2 port map (a => tag,  b => valid, y => hit);
     u_hit_inv : inv  port map (a => hit,  y => hit_n);
 
     u_rw_inv  : inv  port map (a => read_write, y => rw_n);
 
-    -- start_and_hit  = start AND hit
     u_sah : and2 port map (a => start, b => hit,    y => start_and_hit);
-    -- start_and_miss = start AND (NOT hit)
     u_sam : and2 port map (a => start, b => hit_n,  y => start_and_miss);
 
-    -- start_read_hit_pulse    = start & hit  & read
     u_srh_and3 : and3 port map (a => start_and_hit,    b => read_write, c => vdd, y => start_read_hit_pulse);
 
-    -- start_write_hit_pulse   = start & hit  & write
     u_swh_and3 : and3 port map (a => start_and_hit,    b => rw_n,       c => vdd, y => start_write_hit_pulse);
 
-    -- start_read_miss_pulse   = start & miss & read
     u_srm_and3 : and3 port map (a => start_and_miss,   b => read_write, c => vdd, y => start_read_miss_pulse);
 
-    -- start_write_miss_pulse  = start & miss & write
     u_swm_and3 : and3 port map (a => start_and_miss,   b => rw_n,       c => vdd, y => start_write_miss_pulse);
 
-    --------------------------------------------------------------------------
-    -- IDLE -> next state encoding
-    --
-    -- READ_HIT    "001"
-    -- WRITE_HIT   "010"
-    -- READ_MISS   "011"
-    -- WRITE_MISS  "100"
-    --
-    -- Bit0 (LSB): 1 for READ_HIT, READ_MISS
-    -- Bit1:       1 for WRITE_HIT, READ_MISS
-    -- Bit2:       1 for WRITE_MISS
-    --------------------------------------------------------------------------
-    -- bit0 = start_read_hit_pulse OR start_read_miss_pulse
     u_idle_b0_or : or2 port map (
         a => start_read_hit_pulse,
         b => start_read_miss_pulse,
         y => idle_next_b0
     );
 
-    -- bit1 = start_write_hit_pulse OR start_read_miss_pulse
     u_idle_b1_or : or2 port map (
         a => start_write_hit_pulse,
         b => start_read_miss_pulse,
         y => idle_next_b1
     );
 
-    -- bit2 = start_write_miss_pulse
     idle_next_b2 <= start_write_miss_pulse;
 
     next_from_idle_b0 <= idle_next_b0;
     next_from_idle_b1 <= idle_next_b1;
     next_from_idle_b2 <= idle_next_b2;
 
-    --------------------------------------------------------------------------
-    -- Counter threshold comparators
-    --------------------------------------------------------------------------
     u_cnt_ge0  : gte_zero      port map (a => counter, gte => cnt_gte_0);
     u_cnt_ge1  : gte_one       port map (a => counter, gte => cnt_gte_1);
     u_cnt_ge17 : gte_seventeen port map (a => counter, gte => cnt_gte_17);
 
-    -- Build counter == 1 ("00001")
     c0 <= counter(0);
     c1 <= counter(1);
     c2 <= counter(2);
@@ -273,7 +213,6 @@ begin
     u_inv3: inv port map (a => c3, y => c3_n);
     u_inv4: inv port map (a => c4, y => c4_n);
 
-    -- upper_zero = (~c1)&(~c2)&(~c3)&(~c4)
     u_and_upper: and4 port map (
         a => c1_n,
         b => c2_n,
@@ -282,42 +221,33 @@ begin
         y => upper_zero
     );
 
-    -- cnt_eq_1 = c0 & upper_zero
     u_and_cnt1: and2 port map (
         a => c0,
         b => upper_zero,
         y => cnt_eq_1
     );
 
-    --------------------------------------------------------------------------
-    -- Done conditions per active state
-    --
-    -- READ_HIT      : finishes immediately (1-cycle busy). Use cnt_gte_0.
-    -- WRITE_HIT     : needs 2 busy cycles -> trigger done when counter == 1.
-    -- WRITE_MISS    : same 2-busy-cycle behavior.
-    -- READ_MISS     : long latency -> requires counter >= 17.
-    --------------------------------------------------------------------------
     u_rh_done_and : and2 port map (
         a => is_read_hit,
-        b => cnt_gte_0,      -- immediate
+        b => cnt_gte_0,      
         y => read_hit_done
     );
 
     u_wh_done_and : and2 port map (
         a => is_write_hit,
-        b => cnt_eq_1,       -- assert when counter == 1
+        b => cnt_eq_1,      
         y => write_hit_done
     );
 
     u_rm_done_and : and2 port map (
         a => is_read_miss,
-        b => cnt_gte_17,     -- long memory wait
+        b => cnt_gte_17,     
         y => read_miss_done
     );
 
     u_wm_done_and : and2 port map (
         a => is_write_miss,
-        b => cnt_eq_1,       -- assert when counter == 1
+        b => cnt_eq_1,      
         y => write_miss_done
     );
 
@@ -326,77 +256,26 @@ begin
     u_rm_done_inv : inv port map (a => read_miss_done,   y => read_miss_done_n);
     u_wm_done_inv : inv port map (a => write_miss_done,  y => write_miss_done_n);
 
-    --------------------------------------------------------------------------
-    -- Next state when current state = READ_HIT ("001")
-    -- READ_HIT -> "001"
-    -- DONE     -> "101"
-    --
-    -- b0 = 1 in BOTH => '1'
-    -- b1 = 0 in BOTH => '0'
-    -- b2 = 0 in RH, 1 in DONE => read_hit_done
-    --------------------------------------------------------------------------
     rh_next_b0 <= vdd;
     rh_next_b1 <= gnd;
     rh_next_b2 <= read_hit_done;
 
-    --------------------------------------------------------------------------
-    -- Next state when current state = WRITE_HIT ("010")
-    -- WRITE_HIT -> "010" (b2=0 b1=1 b0=0)
-    -- DONE      -> "101" (b2=1 b1=0 b0=1)
-    --
-    -- b0 = write_hit_done
-    -- b1 = NOT write_hit_done
-    -- b2 = write_hit_done
-    --------------------------------------------------------------------------
     wh_next_b0 <= write_hit_done;
     wh_next_b1 <= write_hit_done_n;
     wh_next_b2 <= write_hit_done;
 
-    --------------------------------------------------------------------------
-    -- Next state when current state = READ_MISS ("011")
-    -- READ_MISS -> "011"
-    -- DONE      -> "101"
-    --
-    -- b0 = 1 in BOTH => '1'
-    -- b1 = NOT read_miss_done
-    -- b2 = read_miss_done
-    --------------------------------------------------------------------------
     rm_next_b0 <= vdd;
     rm_next_b1 <= read_miss_done_n;
     rm_next_b2 <= read_miss_done;
 
-    --------------------------------------------------------------------------
-    -- Next state when current state = WRITE_MISS ("100")
-    -- WRITE_MISS -> "100" (b2=1 b1=0 b0=0)
-    -- DONE       -> "101" (b2=1 b1=0 b0=1)
-    --
-    -- b0 = write_miss_done
-    -- b1 = 0 always
-    -- b2 = 1 always
-    --------------------------------------------------------------------------
     wm_next_b0 <= write_miss_done;
     wm_next_b1 <= gnd;
     wm_next_b2 <= vdd;
 
-    --------------------------------------------------------------------------
-    -- DONE ("101") -> IDLE ("000")
-    --------------------------------------------------------------------------
     dn_next_b0 <= gnd;
     dn_next_b1 <= gnd;
     dn_next_b2 <= gnd;
 
-    --------------------------------------------------------------------------
-    -- Mux inputs by current state code:
-    --   0 -> IDLE
-    --   1 -> READ_HIT
-    --   2 -> WRITE_HIT
-    --   3 -> READ_MISS
-    --   4 -> WRITE_MISS
-    --   5 -> DONE
-    --   6 -> unused ("000")
-    --   7 -> unused ("000")
-    --------------------------------------------------------------------------
-    -- bit0
     mux_inputs_b0(0) <= next_from_idle_b0;
     mux_inputs_b0(1) <= rh_next_b0;
     mux_inputs_b0(2) <= wh_next_b0;
@@ -416,7 +295,6 @@ begin
     mux_inputs_b1(6) <= gnd;
     mux_inputs_b1(7) <= gnd;
 
-    -- bit2
     mux_inputs_b2(0) <= next_from_idle_b2;
     mux_inputs_b2(1) <= rh_next_b2;
     mux_inputs_b2(2) <= wh_next_b2;
@@ -426,9 +304,6 @@ begin
     mux_inputs_b2(6) <= gnd;
     mux_inputs_b2(7) <= gnd;
 
-    --------------------------------------------------------------------------
-    -- Final muxes that drive next_state
-    --------------------------------------------------------------------------
     u_mux_b0 : mux8to1
         port map (
             d   => mux_inputs_b0,
