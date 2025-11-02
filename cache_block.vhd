@@ -21,7 +21,11 @@ entity cache_block is
 
         valid_out  : out std_logic;
         tag_out    : out std_logic_vector(1 downto 0);
-        hit_miss   : out std_logic                     
+        hit_miss   : out std_logic;
+
+        -- NEW: peek interface for reading any byte combinationally
+        peek_sel   : in  std_logic_vector(1 downto 0);
+        peek_data  : out std_logic_vector(7 downto 0)
     );
 end cache_block;
 
@@ -281,5 +285,16 @@ begin
         );
 
     hit_miss <= hit_sig;
+
+    -- NEW: Peek mux - structural mux to read any byte based on peek_sel
+    u_peek_mux: mux4to1_8
+        port map (
+            d0  => byte0_q,
+            d1  => byte1_q,
+            d2  => byte2_q,
+            d3  => byte3_q,
+            sel => peek_sel,
+            y   => peek_data
+        );
 
 end structural;

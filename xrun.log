@@ -1,5 +1,5 @@
 xrun(64): 23.09-s013: (c) Copyright 1995-2024 Cadence Design Systems, Inc.
-TOOL:	xrun(64)	23.09-s013: Started on Oct 31, 2025 at 13:42:17 EDT
+TOOL:	xrun(64)	23.09-s013: Started on Nov 02, 2025 at 17:54:17 EST
 xrun
 	-top chip_tb
 	gates.vhd
@@ -9,19 +9,23 @@ xrun
 	decoder.vhd
 	mux_comp.vhd
 	mux2to1_8.vhd
+	mux2to1_2.vhd
 	mux4to1_8.vhd
 	mux4to1_1.vhd
 	mux4to1_2.vhd
+	req_latch.vhd
 	reg8_rise_en.vhd
+	reg8_fall_en.vhd
 	reg2_rise_en.vhd
+	reg2_fall_en.vhd
 	reg1_rise_en.vhd
 	reg3_rise.vhd
 	reg5_rise.vhd
 	reg3_fall.vhd
 	reg5_fall.vhd
 	counter_adder.vhd
+	inc_mod4.vhd
 	comparator.vhd
-	req_qualifier.vhd
 	state_register.vhd
 	counter_logic.vhd
 	next_state_logic.vhd
@@ -34,13 +38,16 @@ xrun
 	chip_tb.vhd
 	-gui
 	-access rwc
+Recompiling... reason: file './chip.vhd' is newer than expected.
+	expected: Sun Nov  2 17:37:35 2025
+	actual:   Sun Nov  2 17:53:53 2025
 reg5_rise.vhd:
 	errors: 0, warnings: 0
 reg3_fall.vhd:
 	errors: 0, warnings: 0
 counter_adder.vhd:
 	errors: 0, warnings: 0
-tbuf.vhd:
+chip.vhd:
 	errors: 0, warnings: 0
 WORKLIB.REG5_RISE (entity):
 	streams: 8, words: 645
@@ -50,14 +57,8 @@ WORKLIB.REG3_FALL (entity):
 	streams: 7, words: 621
 WORKLIB.REG3_FALL:STRUCTURAL (architecture):
 	streams: 2, words: 2097
-WORKLIB.TBUF1 (entity):
-	streams: 4, words: 87
-WORKLIB.TBUF1:STRUCTURAL (architecture):
-	streams: 1, words: 195
-WORKLIB.TBUF8 (entity):
-	streams: 6, words: 613
-WORKLIB.TBUF8:STRUCTURAL (architecture):
-	streams: 2, words: 2097
+WORKLIB.CHIP:STRUCTURAL (architecture):
+	streams: 1, words: 11614
 xmelab: *W,ARCMRA: Elaborating the WORKLIB.CHIP_TB:TB, MRA (most recently analyzed) architecture.
 	Elaborating the design hierarchy:
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut) with design unit (WORKLIB.CHIP:STRUCTURAL).
@@ -524,6 +525,135 @@ xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb)
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_tag_cmp@eq2(structural):u_and) with design unit (WORKLIB.AND2:BEHAVIORAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_valid_and_enable) with design unit (WORKLIB.AND2:BEHAVIORAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_hit_and) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux) with design unit (WORKLIB.MUX4TO1_8:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(0):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(1):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(2):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(3):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(4):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(5):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(6):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit) with design unit (WORKLIB.MUX4TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_low) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_low@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_high) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_high@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_final) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
+xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb0@cache_block(structural):u_peek_mux@mux4to1_8(structural):gen_bits(7):u_muxbit@mux4to1(structural):u_mux_final@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1) with design unit (WORKLIB.CACHE_BLOCK:STRUCTURAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_byte_decoder) with design unit (WORKLIB.DECODER:STRUCTURAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_byte_decoder@decoder(structural):u_inv0) with design unit (WORKLIB.INV:BEHAVIORAL).
@@ -931,148 +1061,16 @@ xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb)
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(3):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(4):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(4):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(4):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(4):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(4):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(4):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(5):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(5):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(5):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(5):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(5):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(5):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(6):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(6):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(6):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(6):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(6):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(6):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(7):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(7):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(7):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(7):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(7):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_dout_reg@reg8_rise_en(structural):gen_bit(7):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_en) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg) with design unit (WORKLIB.REG2_RISE_EN:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(0):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(0):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(1):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_reg@reg2_rise_en(structural):gen_bit(1):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg) with design unit (WORKLIB.REG1_RISE_EN:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg@reg1_rise_en(structural):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg@reg1_rise_en(structural):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg@reg1_rise_en(structural):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg@reg1_rise_en(structural):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg@reg1_rise_en(structural):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_reg@reg1_rise_en(structural):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_cmp) with design unit (WORKLIB.EQ2:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_cmp@eq2(structural):u_xnor0) with design unit (WORKLIB.XNOR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_cmp@eq2(structural):u_xnor1) with design unit (WORKLIB.XNOR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_tag_cmp@eq2(structural):u_and) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_valid_and_enable) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb1@cache_block(structural):u_hit_and) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2) with design unit (WORKLIB.CACHE_BLOCK:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder) with design unit (WORKLIB.DECODER:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder@decoder(structural):u_inv0) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder@decoder(structural):u_inv1) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder@decoder(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder@decoder(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder@decoder(structural):u_and2) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte_decoder@decoder(structural):u_and3) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux) with design unit (WORKLIB.MUX2TO1_8:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(0):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(0):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(0):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(0):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(0):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(1):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(1):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(1):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(1):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(1):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(2):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(2):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(2):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(2):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(2):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(3):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(3):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(3):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(3):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(3):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(4):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(4):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(4):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(4):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(4):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(5):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(5):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(5):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(5):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(5):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(6):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(6):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(6):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(6):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(6):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(7):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(7):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(7):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(7):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_write_src_mux@mux2to1_8(structural):gen_bits(7):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_we_global) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_we_b0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_we_b1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_we_b2) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_we_b3) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0) with design unit (WORKLIB.REG8_RISE_EN:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(0):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(0):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(0):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(1):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(1):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(1):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(2):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(2):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(2):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(2):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(2):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(2):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(3):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(3):u_mux@mux2to1(structural):u_inv) with design unit (WORKLIB.INV:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(3):u_mux@mux2to1(structural):u_and0) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(3):u_mux@mux2to1(structural):u_and1) with design unit (WORKLIB.AND2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(3):u_mux@mux2to1(structural):u_or) with design unit (WORKLIB.OR2:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(3):u_dff) with design unit (WORKLIB.DFF_RISE:BEHAVIORAL).
-xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut@chip(structural):u_cb2@cache_block(structural):u_byte0@reg8_rise_en(structural):gen_bit(4):u_mux) with design unit (WORKLIB.MUX2TO1:STRUCTURAL).
 xmelab: *W,MXWARN: Reached maximum warning limit for 'CUDEFB'(1000).
-xmelab: *W,CUFEPC: output port STATE_DBG is not connected in instance U_FSM [File:chip.vhd, Line:261].
-xmelab: *W,CUFEPC: output port NEXT_STATE_DBG is not connected in instance U_FSM [File:chip.vhd, Line:261].
-xmelab: *W,CUFEPC: output port COUNTER_DBG is not connected in instance U_FSM [File:chip.vhd, Line:261].
 	Top level design units:
 		:chip_tb(tb):
 	Building instance specific data structures.
 	Design hierarchy summary:
 		              Instances  Unique
-		Components:        2454      40
-		Default bindings:  2452    2373
-		Processes:         2119     130
-		Signals:           1636     253
+		Components:        2736      39
+		Default bindings:  2734    2662
+		Processes:         2324     134
+		Signals:           1862     266
 	Writing initial simulation snapshot: WORKLIB.CHIP_TB:TB
 xmsim: *W,NOMTDGUI: Multi-Threaded Dumping is disabled for interactive debug mode.
 
@@ -1081,12 +1079,12 @@ Relinquished control to SimVision...
 xcelium> 
 xcelium> database -open waves -into waves.shm -default
 Created default SHM database waves
-xcelium> probe -create -shm :busy :clk :cpu_add :cpu_d_drv :cpu_d_oe :cpu_data :cpu_rd_wrn :fsm_counter_dbg_s :fsm_next_state_dbg_s :fsm_state_dbg_s :Gnd :mem_add :mem_data :mem_en :mem_en_q :neg_cnt :rd_q :refill_active :refill_case :reset :start :Vdd
+xcelium> probe -create -shm :busy :clk :cpu_add :cpu_d_drv :cpu_d_oe :cpu_data :cpu_rd_wrn :fsm_counter_dbg_s_tb :fsm_next_state_dbg_s_tb :fsm_state_dbg_s_tb :Gnd :mem_add :mem_data :mem_en :mem_en_q :neg_cnt :rd_q :refill_active :refill_case :reset :start :Vdd
 Created probe 1
 xcelium> run
-ASSERT/FAILURE (time 545 NS) from process :stim (architecture worklib.chip_tb:tb)
+ASSERT/FAILURE (time 535 NS) from process :stim (architecture worklib.chip_tb:tb)
 Simulation finished.
-Assertion at 545 NS + 0
+Assertion at 535 NS + 0
 xcelium> ^C
 xcelium> exit
-TOOL:	xrun(64)	23.09-s013: Exiting on Oct 31, 2025 at 13:53:55 EDT  (total: 00:11:38)
+TOOL:	xrun(64)	23.09-s013: Exiting on Nov 02, 2025 at 17:59:44 EST  (total: 00:05:27)

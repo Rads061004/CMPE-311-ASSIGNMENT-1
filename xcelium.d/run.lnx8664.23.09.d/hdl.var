@@ -3,7 +3,3 @@ DEFINE RUNMODEDEFAULT 1
 DEFINE LIB_MAP ( + => worklib )
 define ELAB_SNAPSHOT
 define SNAPSHOT worklib.chip_tb:tb
-define ELAB_SNAPSHOT
-define SNAPSHOT worklib.chip_tb:tb
-define ELAB_SNAPSHOT
-define SNAPSHOT worklib.chip_tb:tb

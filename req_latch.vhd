@@ -1,59 +1,58 @@
-library ieee;
-use ieee.std_logic_1164.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
 
 entity req_latch is
-  port (
-    clk         : in  std_logic;
-    reset       : in  std_logic;
-    start_in    : in  std_logic;
-    cpu_rd_wrn  : in  std_logic;
-    hit_sel_in  : in  std_logic;
-    latch_go    : out std_logic;
-    L_is_write  : out std_logic;
-    L_is_hit    : out std_logic
-  );
+    Port (
+        clk          : in  STD_LOGIC;
+        reset        : in  STD_LOGIC;
+        start        : in  STD_LOGIC;
+        read_write   : in  STD_LOGIC;   -- '1' = READ , '0' = WRITE
+        req_is_read  : out STD_LOGIC
+    );
 end req_latch;
 
-architecture behavioral of req_latch is
-  signal latch_go_q   : std_logic := '0';
-  signal L_is_write_q : std_logic := '0';
-  signal L_is_hit_q   : std_logic := '0';
-  
-  signal hit_sampled  : std_logic := '0';
-  signal start_sampled : std_logic := '0';
-  signal rd_wrn_sampled : std_logic := '1';
+architecture Structural of req_latch is
+
+    component dff_fall
+        port (
+            clk   : in STD_LOGIC;
+            reset : in STD_LOGIC;
+            d     : in STD_LOGIC;
+            q     : out STD_LOGIC
+        );
+    end component;
+
+    component mux2to1
+        port (
+            d0  : in STD_LOGIC;
+            d1  : in STD_LOGIC;
+            sel : in STD_LOGIC;
+            y   : out STD_LOGIC
+        );
+    end component;
+
+    signal q_cur   : STD_LOGIC;
+    signal d_next  : STD_LOGIC;
+
 begin
+    -- d_next = (start ? read_write : q_cur)
+    U_MUX_HOLD_LOAD : mux2to1
+        port map (
+            d0  => q_cur,
+            d1  => read_write,
+            sel => start,
+            y   => d_next
+        );
 
-  process(clk, reset)
-  begin
-    if reset = '1' then
-      start_sampled  <= '0';
-      rd_wrn_sampled <= '1';
-      hit_sampled    <= '0';
-    elsif rising_edge(clk) then
-      start_sampled  <= start_in;
-      rd_wrn_sampled <= cpu_rd_wrn;
-      hit_sampled    <= hit_sel_in;  
-    end if;
-  end process;
-  
-  process(clk, reset)
-  begin
-    if reset = '1' then
-      latch_go_q   <= '0';
-      L_is_write_q <= '0';
-      L_is_hit_q   <= '0';
-    elsif falling_edge(clk) then
-      latch_go_q <= start_sampled;
-      if start_sampled = '1' then
-        L_is_write_q <= not rd_wrn_sampled;
-        L_is_hit_q   <= hit_sampled;  
-      end if;
-    end if;
-  end process;
-  
-  latch_go   <= latch_go_q;
-  L_is_write <= L_is_write_q;
-  L_is_hit   <= L_is_hit_q;
+    -- latch on falling edge, async reset clears it
+    U_REQ_FF : dff_fall
+        port map (
+            clk   => clk,
+            reset => reset,
+            d     => d_next,
+            q     => q_cur
+        );
 
-end behavioral;
+    req_is_read <= q_cur;
+
+end Structural;
