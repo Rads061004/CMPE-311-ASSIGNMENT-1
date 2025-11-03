@@ -7,7 +7,7 @@ entity cache_fsm_struct is
         reset          : in  STD_LOGIC;
 
         start          : in  STD_LOGIC;    -- CPU request strobe
-        tag            : in  STD_LOGIC;    -- tag match for indexed line
+        tag            : in  STD_LOGIC;    -- tag match boolean for indexed line
         valid          : in  STD_LOGIC;    -- valid bit for indexed line
         read_write     : in  STD_LOGIC;    -- '1' = read, '0' = write
 
