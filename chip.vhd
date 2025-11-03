@@ -13,7 +13,7 @@ entity chip is
 
     mem_data   : in    std_logic_vector(7 downto 0);   
     Vdd        : in    std_logic;                      
-    Gnd        : in    std_logic;                 
+    Gnd        : in    std_logic;                
 
     busy       : out   std_logic;                  
     mem_en     : out   std_logic;                     
@@ -268,7 +268,7 @@ architecture structural of chip is
   signal refill_active         : std_logic;
   signal refill_active_d       : std_logic;
 
-  signal refill_cnt            : std_logic_vector(4 downto 0);  -- 0..31
+  signal refill_cnt            : std_logic_vector(4 downto 0);
   signal refill_cnt_d          : std_logic_vector(4 downto 0);
 
   signal refill_offset_reg     : std_logic_vector(1 downto 0);
@@ -276,34 +276,30 @@ architecture structural of chip is
 
   signal start_refill          : std_logic;
 
-  -- incrementer signals
   signal c1, c2, c3, c4, c5    : std_logic;
   signal cnt_inc               : std_logic_vector(4 downto 0);
   signal cnt_after_inc         : std_logic_vector(4 downto 0);
   signal cnt_after_zero        : std_logic_vector(4 downto 0);
 
-  -- equality comparators for 8,10,12,14
   signal eq8, eq10, eq12, eq14 : std_logic;
   signal x8, x10, x12, x14     : std_logic_vector(4 downto 0);
   signal eq8_low3,  eq10_low3,  eq12_low3,  eq14_low3  : std_logic;
   signal eq8_high2, eq10_high2, eq12_high2, eq14_high2 : std_logic;
 
-  -- refill_cnt >= 16
   signal ge16                    : std_logic;
   signal refill_active_and_ge16  : std_logic;
   signal clr_active_pulse        : std_logic;
   signal active_after_clr        : std_logic;
 
-  -- pulses for offset updates
   signal refill_active_and_eq8   : std_logic;
   signal refill_active_and_eq10  : std_logic;
   signal refill_active_and_eq12  : std_logic;
   signal refill_active_and_eq14  : std_logic;
 
-  signal load00_pulse            : std_logic; -- "00"
-  signal load01_pulse            : std_logic; -- "01"
-  signal load10_pulse            : std_logic; -- "10"
-  signal load11_pulse            : std_logic; -- "11"
+  signal load00_pulse            : std_logic;
+  signal load01_pulse            : std_logic;
+  signal load10_pulse            : std_logic;
+  signal load11_pulse            : std_logic;
 
   signal load_en01_11            : std_logic;
   signal load_en10_00            : std_logic;
@@ -330,7 +326,7 @@ architecture structural of chip is
   signal any_eq8_14          : std_logic;
 
   ------------------------------------------------------------------------
-  -- Misc / constants / tie-offs for VHDL-87 tool compliance
+  -- Misc / constants / tie-offs
   ------------------------------------------------------------------------
   signal cpu_rd_wrn_n        : std_logic;
   signal gnd_sig             : std_logic;
@@ -365,170 +361,105 @@ begin
   ------------------------------------------------------------------------
   -- Decoder (index -> one-hot)
   ------------------------------------------------------------------------
-  u_dec: decoder
-    port map (
-      block_addr => idx,
-      block_sel  => en_1hot
-    );
+  u_dec: decoder port map (block_addr => idx, block_sel => en_1hot);
 
   ------------------------------------------------------------------------
   -- Cache block instances
   ------------------------------------------------------------------------
-  u_cb0: cache_block
+  u_cb0: cache_block 
     port map (
-      clk        => clk,
-      reset      => reset,
-      enable     => en_1hot(0),
-
-      data_in    => cpu_data,
-      data_out   => d0,
-      byte_sel   => curr_byte_sel,
-      rd_wr      => cpu_rd_wrn,
-
-      mem_in     => mem_data,
-
-      we         => we_top,
-      set_tag    => set_tag_top,
-      tag_in     => tag_in,
-
-      valid_out  => v0,
-      tag_out    => t0,
-      hit_miss   => h0,
-      
-      peek_sel   => byte_sel,
-      peek_data  => pk0
+      clk => clk, 
+      reset => reset, 
+      enable => en_1hot(0), 
+      data_in => cpu_data, 
+      data_out => d0, 
+      byte_sel => curr_byte_sel, 
+      rd_wr => cpu_rd_wrn, 
+      mem_in => mem_data, 
+      we => we_top, 
+      set_tag => set_tag_top, 
+      tag_in => tag_in, 
+      valid_out => v0, 
+      tag_out => t0, 
+      hit_miss => h0, 
+      peek_sel => byte_sel, 
+      peek_data => pk0
     );
 
-  u_cb1: cache_block
+  u_cb1: cache_block 
     port map (
-      clk        => clk,
-      reset      => reset,
-      enable     => en_1hot(1),
-
-      data_in    => cpu_data,
-      data_out   => d1,
-      byte_sel   => curr_byte_sel,
-      rd_wr      => cpu_rd_wrn,
-
-      mem_in     => mem_data,
-
-      we         => we_top,
-      set_tag    => set_tag_top,
-      tag_in     => tag_in,
-
-      valid_out  => v1,
-      tag_out    => t1,
-      hit_miss   => h1,
-      
-      peek_sel   => byte_sel,
-      peek_data  => pk1
+      clk => clk, 
+      reset => reset, 
+      enable => en_1hot(1), 
+      data_in => cpu_data, 
+      data_out => d1, 
+      byte_sel => curr_byte_sel, 
+      rd_wr => cpu_rd_wrn, 
+      mem_in => mem_data, 
+      we => we_top, 
+      set_tag => set_tag_top, 
+      tag_in => tag_in, 
+      valid_out => v1, 
+      tag_out => t1, 
+      hit_miss => h1, 
+      peek_sel => byte_sel, 
+      peek_data => pk1
     );
 
-  u_cb2: cache_block
+  u_cb2: cache_block 
     port map (
-      clk        => clk,
-      reset      => reset,
-      enable     => en_1hot(2),
-
-      data_in    => cpu_data,
-      data_out   => d2,
-      byte_sel   => curr_byte_sel,
-      rd_wr      => cpu_rd_wrn,
-
-      mem_in     => mem_data,
-
-      we         => we_top,
-      set_tag    => set_tag_top,
-      tag_in     => tag_in,
-
-      valid_out  => v2,
-      tag_out    => t2,
-      hit_miss   => h2,
-      
-      peek_sel   => byte_sel,
-      peek_data  => pk2
+      clk => clk, 
+      reset => reset, 
+      enable => en_1hot(2), 
+      data_in => cpu_data, 
+      data_out => d2, 
+      byte_sel => curr_byte_sel, 
+      rd_wr => cpu_rd_wrn, 
+      mem_in => mem_data, 
+      we => we_top, 
+      set_tag => set_tag_top, 
+      tag_in => tag_in, 
+      valid_out => v2, 
+      tag_out => t2, 
+      hit_miss => h2, 
+      peek_sel => byte_sel, 
+      peek_data => pk2
     );
 
-  u_cb3: cache_block
+  u_cb3: cache_block 
     port map (
-      clk        => clk,
-      reset      => reset,
-      enable     => en_1hot(3),
-
-      data_in    => cpu_data,
-      data_out   => d3,
-      byte_sel   => curr_byte_sel,
-      rd_wr      => cpu_rd_wrn,
-
-      mem_in     => mem_data,
-
-      we         => we_top,
-      set_tag    => set_tag_top,
-      tag_in     => tag_in,
-
-      valid_out  => v3,
-      tag_out    => t3,
-      hit_miss   => h3,
-      
-      peek_sel   => byte_sel,
-      peek_data  => pk3
+      clk => clk, 
+      reset => reset, 
+      enable => en_1hot(3), 
+      data_in => cpu_data, 
+      data_out => d3, 
+      byte_sel => curr_byte_sel, 
+      rd_wr => cpu_rd_wrn, 
+      mem_in => mem_data, 
+      we => we_top, 
+      set_tag => set_tag_top, 
+      tag_in => tag_in, 
+      valid_out => v3, 
+      tag_out => t3, 
+      hit_miss => h3, 
+      peek_sel => byte_sel, 
+      peek_data => pk3
     );
 
   ------------------------------------------------------------------------
   -- curr_byte_sel = byte_sel normally, or refill_offset_reg during refill
   ------------------------------------------------------------------------
   gen_curr_byte_sel: for i in 0 to 1 generate
-    u_mux_curr_byte: mux2to1
-      port map (
-        d0  => byte_sel(i),
-        d1  => refill_offset_reg(i),
-        sel => refill_active,
-        y   => curr_byte_sel(i)
-      );
+    u_mux_curr_byte: mux2to1 port map (d0 => byte_sel(i), d1 => refill_offset_reg(i), sel => refill_active, y => curr_byte_sel(i));
   end generate;
 
   ------------------------------------------------------------------------
   -- Muxes for data, valid, hit, and peek data
   ------------------------------------------------------------------------
-  u_mux_data : mux4to1_8
-    port map (
-      d0  => d0,
-      d1  => d1,
-      d2  => d2,
-      d3  => d3,
-      sel => idx,
-      y   => data_sel
-    );
-
-  u_mux_valid : mux4to1_1
-    port map (
-      d0  => v0,
-      d1  => v1,
-      d2  => v2,
-      d3  => v3,
-      sel => idx,
-      y   => valid_sel
-    );
-
-  u_mux_hit : mux4to1_1
-    port map (
-      d0  => h0,
-      d1  => h1,
-      d2  => h2,
-      d3  => h3,
-      sel => idx,
-      y   => hit_sel      
-    );
-
-  u_mux_peek : mux4to1_8
-    port map (
-      d0  => pk0,
-      d1  => pk1,
-      d2  => pk2,
-      d3  => pk3,
-      sel => idx,
-      y   => peek_sel_data
-    );
+  u_mux_data : mux4to1_8 port map (d0 => d0, d1 => d1, d2 => d2, d3 => d3, sel => idx, y => data_sel);
+  u_mux_valid : mux4to1_1 port map (d0 => v0, d1 => v1, d2 => v2, d3 => v3, sel => idx, y => valid_sel);
+  u_mux_hit : mux4to1_1 port map (d0 => h0, d1 => h1, d2 => h2, d3 => h3, sel => idx, y => hit_sel);
+  u_mux_peek : mux4to1_8 port map (d0 => pk0, d1 => pk1, d2 => pk2, d3 => pk3, sel => idx, y => peek_sel_data);
 
   ------------------------------------------------------------------------
   -- tag_match_sel logic
@@ -548,14 +479,7 @@ begin
   u_match_2: and2 port map (a => idx_eq_10, b => tag_eq_2, y => match_2);
   u_match_3: and2 port map (a => idx_eq_11, b => tag_eq_3, y => match_3);
 
-  u_tag_match_or: or4
-    port map (
-      a => match_0,
-      b => match_1,
-      c => match_2,
-      d => match_3,
-      y => tag_match_sel
-    );
+  u_tag_match_or: or4 port map (a => match_0, b => match_1, c => match_2, d => match_3, y => tag_match_sel);
 
   ------------------------------------------------------------------------
   -- FSM
@@ -597,225 +521,72 @@ begin
   ------------------------------------------------------------------------
   cpu_do <= peek_sel_data;
 
-  u_cpu_data_tbuf: tbuf8
-    port map (
-      d  => cpu_do,
-      en => cpu_data_oe,
-      b  => cpu_data
-    );
+  u_cpu_data_tbuf: tbuf8 port map (d => cpu_do, en => cpu_data_oe, b => cpu_data);
 
   ------------------------------------------------------------------------
   -- Latch_go register (captures start)
   ------------------------------------------------------------------------
-  u_latch_go_dff: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => start,
-      q     => latch_go
-    );
+  u_latch_go_dff: dff_fall port map (clk => clk, reset => reset, d => start, q => latch_go);
 
   ------------------------------------------------------------------------
   -- L_is_write, L_is_read, L_is_hit registers
   ------------------------------------------------------------------------
-  u_inv_rd_wrn: inv
-    port map (
-      a => cpu_rd_wrn,
-      y => cpu_rd_wrn_n
-    );
+  u_inv_rd_wrn: inv port map (a => cpu_rd_wrn, y => cpu_rd_wrn_n);
 
-  -- L_is_write latch
-  u_mux_L_is_write: mux2to1
-    port map (
-      d0  => L_is_write,
-      d1  => cpu_rd_wrn_n,
-      sel => start,
-      y   => L_is_write_mux_out
-    );
+  u_mux_L_is_write: mux2to1 port map (d0 => L_is_write, d1 => cpu_rd_wrn_n, sel => start, y => L_is_write_mux_out);
+  u_dff_L_is_write: dff_fall port map (clk => clk, reset => reset, d => L_is_write_mux_out, q => L_is_write);
 
-  u_dff_L_is_write: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => L_is_write_mux_out,
-      q     => L_is_write
-    );
+  u_mux_L_is_read: mux2to1 port map (d0 => L_is_read, d1 => cpu_rd_wrn, sel => start, y => L_is_read_mux_out);
+  u_dff_L_is_read: dff_fall port map (clk => clk, reset => reset, d => L_is_read_mux_out, q => L_is_read);
 
-  -- L_is_read latch
-  u_mux_L_is_read: mux2to1
-    port map (
-      d0  => L_is_read,
-      d1  => cpu_rd_wrn,
-      sel => start,
-      y   => L_is_read_mux_out
-    );
-
-  u_dff_L_is_read: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => L_is_read_mux_out,
-      q     => L_is_read
-    );
-
-  -- L_is_hit latch
-  u_mux_L_is_hit: mux2to1
-    port map (
-      d0  => L_is_hit,
-      d1  => hit_sel,
-      sel => start,
-      y   => L_is_hit_mux_out
-    );
-
-  u_dff_L_is_hit: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => L_is_hit_mux_out,
-      q     => L_is_hit
-    );
+  u_mux_L_is_hit: mux2to1 port map (d0 => L_is_hit, d1 => hit_sel, sel => start, y => L_is_hit_mux_out);
+  u_dff_L_is_hit: dff_fall port map (clk => clk, reset => reset, d => L_is_hit_mux_out, q => L_is_hit);
 
   ------------------------------------------------------------------------
   -- cpu_data_oe register
-  -- cpu_data_oe_d = fsm_resp_pulse AND L_is_read
   ------------------------------------------------------------------------
-  u_and_cpu_data_oe: and2
-    port map (
-      a => fsm_resp_pulse,
-      b => L_is_read,
-      y => cpu_data_oe_d
-    );
-
-  u_dff_cpu_data_oe: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => cpu_data_oe_d,
-      q     => cpu_data_oe
-    );
+  u_and_cpu_data_oe: and2 port map (a => fsm_resp_pulse, b => L_is_read, y => cpu_data_oe_d);
+  u_dff_cpu_data_oe: dff_fall port map (clk => clk, reset => reset, d => cpu_data_oe_d, q => cpu_data_oe);
 
   ------------------------------------------------------------------------
   -- STRUCTURAL REFILL CONTROL LOGIC (first process replacement)
   ------------------------------------------------------------------------
-
-  -- mem_en_q <= fsm_en each falling edge
   mem_en_q_d <= fsm_en;
 
-  -- start_refill = (~mem_en_q) AND (fsm_en)
-  u_inv_mem_en_q: inv
-    port map (
-      a => mem_en_q,
-      y => mem_en_q_n
-    );
-
-  u_start_refill_and: and2
-    port map (
-      a => mem_en_q_n,
-      b => fsm_en,
-      y => start_refill
-    );
+  u_inv_mem_en_q: inv port map (a => mem_en_q, y => mem_en_q_n);
+  u_start_refill_and: and2 port map (a => mem_en_q_n, b => fsm_en, y => start_refill);
 
   ------------------------------------------------------------------------
   -- refill_cnt + 1 ripple incrementer
   ------------------------------------------------------------------------
-  -- bit0: next0 = NOT(cnt0); carry = cnt0
-  u_inv_cnt0: inv  
-    port map (
-      a => refill_cnt(0),
-      y => cnt_inc(0)
-    );
+  u_inv_cnt0: inv port map (a => refill_cnt(0), y => cnt_inc(0));
   c1 <= refill_cnt(0);
 
-  -- bit1
-  u_xor_cnt1: xor2 
-    port map (
-      a => refill_cnt(1),
-      b => c1,
-      y => cnt_inc(1)
-    );
-  u_and_cnt1: and2 
-    port map (
-      a => refill_cnt(1),
-      b => c1,
-      y => c2
-    );
+  u_xor_cnt1: xor2 port map (a => refill_cnt(1), b => c1, y => cnt_inc(1));
+  u_and_cnt1: and2 port map (a => refill_cnt(1), b => c1, y => c2);
 
-  -- bit2
-  u_xor_cnt2: xor2 
-    port map (
-      a => refill_cnt(2),
-      b => c2,
-      y => cnt_inc(2)
-    );
-  u_and_cnt2: and2 
-    port map (
-      a => refill_cnt(2),
-      b => c2,
-      y => c3
-    );
+  u_xor_cnt2: xor2 port map (a => refill_cnt(2), b => c2, y => cnt_inc(2));
+  u_and_cnt2: and2 port map (a => refill_cnt(2), b => c2, y => c3);
 
-  -- bit3
-  u_xor_cnt3: xor2 
-    port map (
-      a => refill_cnt(3),
-      b => c3,
-      y => cnt_inc(3)
-    );
-  u_and_cnt3: and2 
-    port map (
-      a => refill_cnt(3),
-      b => c3,
-      y => c4
-    );
+  u_xor_cnt3: xor2 port map (a => refill_cnt(3), b => c3, y => cnt_inc(3));
+  u_and_cnt3: and2 port map (a => refill_cnt(3), b => c3, y => c4);
 
-  -- bit4
-  u_xor_cnt4: xor2 
-    port map (
-      a => refill_cnt(4),
-      b => c4,
-      y => cnt_inc(4)
-    );
-  u_and_cnt4: and2 
-    port map (
-      a => refill_cnt(4),
-      b => c4,
-      y => c5
-    );
-  -- c5 unused
+  u_xor_cnt4: xor2 port map (a => refill_cnt(4), b => c4, y => cnt_inc(4));
+  u_and_cnt4: and2 port map (a => refill_cnt(4), b => c4, y => c5);
 
   ------------------------------------------------------------------------
-  -- refill_cnt_d priority:
-  --   if start_refill=1      -> 0
-  --   elsif refill_active=1  -> increment
-  --   else                   -> hold
+  -- refill_cnt_d priority
   ------------------------------------------------------------------------
   gen_cnt_next: for i in 0 to 4 generate
-    -- choose hold vs increment
-    u_cnt_inc_mux: mux2to1
-      port map (
-        d0  => refill_cnt(i),
-        d1  => cnt_inc(i),
-        sel => refill_active,
-        y   => cnt_after_inc(i)
-      );
-
-    -- override with zero if start_refill
-    u_cnt_zero_mux: mux2to1
-      port map (
-        d0  => cnt_after_inc(i),
-        d1  => sig_zero,       -- was '0'
-        sel => start_refill,
-        y   => cnt_after_zero(i)
-      );
+    u_cnt_inc_mux: mux2to1 port map (d0 => refill_cnt(i), d1 => cnt_inc(i), sel => refill_active, y => cnt_after_inc(i));
+    u_cnt_zero_mux: mux2to1 port map (d0 => cnt_after_inc(i), d1 => sig_zero, sel => start_refill, y => cnt_after_zero(i));
   end generate;
 
   refill_cnt_d <= cnt_after_zero;
 
   ------------------------------------------------------------------------
   -- Equality checks for refill_cnt = 8,10,12,14
-  -- We use xnor2 against constant bits, but constants are signals now.
   ------------------------------------------------------------------------
-  -- refill_cnt = 8  (01000)
   u_xnor8_b0:  xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x8(0));
   u_xnor8_b1:  xnor2 port map (a => refill_cnt(1), b => sig_zero, y => x8(1));
   u_xnor8_b2:  xnor2 port map (a => refill_cnt(2), b => sig_zero, y => x8(2));
@@ -825,7 +596,6 @@ begin
   u_eq8_high2: and2  port map (a => x8(3), b => x8(4), y => eq8_high2);
   u_eq8_and:   and2  port map (a => eq8_low3, b => eq8_high2, y => eq8);
 
-  -- refill_cnt = 10 (01010)
   u_xnor10_b0: xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x10(0));
   u_xnor10_b1: xnor2 port map (a => refill_cnt(1), b => sig_one,  y => x10(1));
   u_xnor10_b2: xnor2 port map (a => refill_cnt(2), b => sig_zero, y => x10(2));
@@ -835,7 +605,6 @@ begin
   u_eq10_high2:and2  port map (a => x10(3), b => x10(4), y => eq10_high2);
   u_eq10_and:  and2  port map (a => eq10_low3, b => eq10_high2, y => eq10);
 
-  -- refill_cnt = 12 (01100)
   u_xnor12_b0: xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x12(0));
   u_xnor12_b1: xnor2 port map (a => refill_cnt(1), b => sig_zero, y => x12(1));
   u_xnor12_b2: xnor2 port map (a => refill_cnt(2), b => sig_one,  y => x12(2));
@@ -845,7 +614,6 @@ begin
   u_eq12_high2:and2  port map (a => x12(3), b => x12(4), y => eq12_high2);
   u_eq12_and:  and2  port map (a => eq12_low3, b => eq12_high2, y => eq12);
 
-  -- refill_cnt = 14 (01110)
   u_xnor14_b0: xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x14(0));
   u_xnor14_b1: xnor2 port map (a => refill_cnt(1), b => sig_one,  y => x14(1));
   u_xnor14_b2: xnor2 port map (a => refill_cnt(2), b => sig_one,  y => x14(2));
@@ -858,42 +626,15 @@ begin
   ------------------------------------------------------------------------
   -- refill_active clear condition: refill_cnt >= 16
   ------------------------------------------------------------------------
-  u_ge16: gte5
-    port map (
-      a   => refill_cnt,
-      b   => vec_sixteen,  -- instead of "10000"
-      gte => ge16
-    );
-
-  u_and_active_ge16: and2
-    port map (
-      a => refill_active,
-      b => ge16,
-      y => refill_active_and_ge16
-    );
-
+  u_ge16: gte5 port map (a => refill_cnt, b => vec_sixteen, gte => ge16);
+  u_and_active_ge16: and2 port map (a => refill_active, b => ge16, y => refill_active_and_ge16);
   clr_active_pulse <= refill_active_and_ge16;
 
   ------------------------------------------------------------------------
-  -- refill_active_d:
-  --   clear if clr_active_pulse
-  --   set   if start_refill
+  -- refill_active_d
   ------------------------------------------------------------------------
-  u_active_clr_mux: mux2to1
-    port map (
-      d0  => refill_active,   -- hold
-      d1  => sig_zero,        -- clear ('0')
-      sel => clr_active_pulse,
-      y   => active_after_clr
-    );
-
-  u_active_set_mux: mux2to1
-    port map (
-      d0  => active_after_clr,
-      d1  => sig_one,         -- set ('1')
-      sel => start_refill,
-      y   => refill_active_d
-    );
+  u_active_clr_mux: mux2to1 port map (d0 => refill_active, d1 => sig_zero, sel => clr_active_pulse, y => active_after_clr);
+  u_active_set_mux: mux2to1 port map (d0 => active_after_clr, d1 => sig_one, sel => start_refill, y => refill_active_d);
 
   ------------------------------------------------------------------------
   -- refill_offset_reg next-state
@@ -903,192 +644,55 @@ begin
   u_and_eq12: and2 port map (a => refill_active, b => eq12, y => refill_active_and_eq12);
   u_and_eq14: and2 port map (a => refill_active, b => eq14, y => refill_active_and_eq14);
 
-  u_or_load00: or2
-    port map (
-      a => start_refill,
-      b => refill_active_and_eq8,
-      y => load00_pulse
-    );
+  u_or_load00: or2 port map (a => start_refill, b => refill_active_and_eq8, y => load00_pulse);
 
   load01_pulse <= refill_active_and_eq10;
   load10_pulse <= refill_active_and_eq12;
   load11_pulse <= refill_active_and_eq14;
 
-  u_or01_11: or2
-    port map (
-      a => load01_pulse,
-      b => load11_pulse,
-      y => load_en01_11
-    );
+  u_or01_11: or2 port map (a => load01_pulse, b => load11_pulse, y => load_en01_11);
+  u_or10_00: or2 port map (a => load10_pulse, b => load00_pulse, y => load_en10_00);
+  u_or_all_en: or2 port map (a => load_en01_11, b => load_en10_00, y => load_en);
 
-  u_or10_00: or2
-    port map (
-      a => load10_pulse,
-      b => load00_pulse,
-      y => load_en10_00
-    );
+  u_or_bit0: or2 port map (a => load01_pulse, b => load11_pulse, y => offset_bit0_load);
+  u_or_bit1: or2 port map (a => load10_pulse, b => load11_pulse, y => offset_bit1_load);
 
-  u_or_all_en: or2
-    port map (
-      a => load_en01_11,
-      b => load_en10_00,
-      y => load_en
-    );
-
-  -- bit0 is 1 for "01" and "11"
-  u_or_bit0: or2
-    port map (
-      a => load01_pulse,
-      b => load11_pulse,
-      y => offset_bit0_load
-    );
-
-  -- bit1 is 1 for "10" and "11"
-  u_or_bit1: or2
-    port map (
-      a => load10_pulse,
-      b => load11_pulse,
-      y => offset_bit1_load
-    );
-
-  -- refill_offset_d(0)
-  u_offset_bit0_mux: mux2to1
-    port map (
-      d0  => refill_offset_reg(0),
-      d1  => offset_bit0_load,
-      sel => load_en,
-      y   => refill_offset_d(0)
-    );
-
-  -- refill_offset_d(1)
-  u_offset_bit1_mux: mux2to1
-    port map (
-      d0  => refill_offset_reg(1),
-      d1  => offset_bit1_load,
-      sel => load_en,
-      y   => refill_offset_d(1)
-    );
+  u_offset_bit0_mux: mux2to1 port map (d0 => refill_offset_reg(0), d1 => offset_bit0_load, sel => load_en, y => refill_offset_d(0));
+  u_offset_bit1_mux: mux2to1 port map (d0 => refill_offset_reg(1), d1 => offset_bit1_load, sel => load_en, y => refill_offset_d(1));
 
   ------------------------------------------------------------------------
   -- DFFs for refill state
   ------------------------------------------------------------------------
-  u_dff_mem_en_q: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => mem_en_q_d,
-      q     => mem_en_q
-    );
-
-  u_dff_refill_active: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => refill_active_d,
-      q     => refill_active
-    );
+  u_dff_mem_en_q: dff_fall port map (clk => clk, reset => reset, d => mem_en_q_d, q => mem_en_q);
+  u_dff_refill_active: dff_fall port map (clk => clk, reset => reset, d => refill_active_d, q => refill_active);
 
   gen_refill_cnt_reg: for i in 0 to 4 generate
-    u_dff_refill_cnt: dff_fall
-      port map (
-        clk   => clk,
-        reset => reset,
-        d     => refill_cnt_d(i),
-        q     => refill_cnt(i)
-      );
+    u_dff_refill_cnt: dff_fall port map (clk => clk, reset => reset, d => refill_cnt_d(i), q => refill_cnt(i));
   end generate;
 
   gen_refill_offset_reg: for i in 0 to 1 generate
-    u_dff_refill_offset: dff_fall
-      port map (
-        clk   => clk,
-        reset => reset,
-        d     => refill_offset_d(i),
-        q     => refill_offset_reg(i)
-      );
+    u_dff_refill_offset: dff_fall port map (clk => clk, reset => reset, d => refill_offset_d(i), q => refill_offset_reg(i));
   end generate;
 
   ------------------------------------------------------------------------
   -- STRUCTURAL WRITE / TAG PULSE LOGIC (second process replacement)
   ------------------------------------------------------------------------
-  -- write_hit_pulse_full = latch_go AND L_is_write AND L_is_hit
-  u_write_hit_and0: and2
-    port map (
-      a => latch_go,
-      b => L_is_write,
-      y => write_hit_pulse
-    );
+  u_write_hit_and0: and2 port map (a => latch_go, b => L_is_write, y => write_hit_pulse);
+  u_write_hit_and1: and2 port map (a => write_hit_pulse, b => L_is_hit, y => write_hit_pulse_full);
 
-  u_write_hit_and1: and2
-    port map (
-      a => write_hit_pulse,
-      b => L_is_hit,
-      y => write_hit_pulse_full
-    );
+  u_or_8_10: or2 port map (a => eq8, b => eq10, y => eq8_or_eq10);
+  u_or_12_14: or2 port map (a => eq12, b => eq14, y => eq12_or_eq14);
+  u_or_8to14: or2 port map (a => eq8_or_eq10, b => eq12_or_eq14, y => any_eq8_14);
 
-  -- any_eq8_14 = eq8 or eq10 or eq12 or eq14
-  u_or_8_10: or2
-    port map (
-      a => eq8,
-      b => eq10,
-      y => eq8_or_eq10
-    );
+  u_and_refill_write: and2 port map (a => refill_active, b => any_eq8_14, y => refill_write_pulse);
 
-  u_or_12_14: or2
-    port map (
-      a => eq12,
-      b => eq14,
-      y => eq12_or_eq14
-    );
+  u_or_we_top: or2 port map (a => write_hit_pulse_full, b => refill_write_pulse, y => we_top_d);
 
-  u_or_8to14: or2
-    port map (
-      a => eq8_or_eq10,
-      b => eq12_or_eq14,
-      y => any_eq8_14
-    );
-
-  -- refill_write_pulse = refill_active AND any_eq8_14
-  u_and_refill_write: and2
-    port map (
-      a => refill_active,
-      b => any_eq8_14,
-      y => refill_write_pulse
-    );
-
-  -- we_top_d = write_hit_pulse_full OR refill_write_pulse
-  u_or_we_top: or2
-    port map (
-      a => write_hit_pulse_full,
-      b => refill_write_pulse,
-      y => we_top_d
-    );
-
-  -- set_tag_pulse = refill_active AND eq8
-  u_and_set_tag: and2
-    port map (
-      a => refill_active,
-      b => eq8,
-      y => set_tag_pulse
-    );
+  u_and_set_tag: and2 port map (a => refill_active, b => eq8, y => set_tag_pulse);
 
   set_tag_top_d <= set_tag_pulse;
 
-  -- Register we_top, set_tag_top
-  u_dff_we_top: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => we_top_d,
-      q     => we_top
-    );
-
-  u_dff_set_tag_top: dff_fall
-    port map (
-      clk   => clk,
-      reset => reset,
-      d     => set_tag_top_d,
-      q     => set_tag_top
-    );
+  u_dff_we_top: dff_fall port map (clk => clk, reset => reset, d => we_top_d, q => we_top);
+  u_dff_set_tag_top: dff_fall port map (clk => clk, reset => reset, d => set_tag_top_d, q => set_tag_top);
 
 end structural;
