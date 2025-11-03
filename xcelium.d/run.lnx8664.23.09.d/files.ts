@@ -28,7 +28,7 @@
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/gates.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/dff_fall.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/dff_rise.vhd
-1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux_comp.vhd
+1762203247 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux_comp.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/counter_adder.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/comparator.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/dff_dlatch.vhd
@@ -50,3 +50,4 @@
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg8_fall_en.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg2_fall_en.vhd
 1762201678 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/inc_mod4.vhd
+1762203213 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/registers.vhd

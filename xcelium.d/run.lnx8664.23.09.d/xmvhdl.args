@@ -11,14 +11,7 @@ comparator.vhd
 counter_adder.vhd
 dff_dlatch.vhd
 decoder.vhd
-mux2to1_8.vhd
-mux4to1_8.vhd
-mux4to1_1.vhd
-reg8_rise_en.vhd
-reg2_rise_en.vhd
-reg1_rise_en.vhd
-reg3_rise.vhd
-reg5_fall.vhd
+registers.vhd
 tbuf.vhd
 cache_block.vhd
 next_state_logic.vhd

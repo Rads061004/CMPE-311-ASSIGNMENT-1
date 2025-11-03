@@ -8,14 +8,7 @@
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/counter_adder.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/dff_dlatch.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/decoder.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux2to1_8.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux4to1_8.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux4to1_1.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg8_rise_en.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg2_rise_en.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg1_rise_en.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg3_rise.vhd
-/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/reg5_fall.vhd
+/afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/registers.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/tbuf.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/cache_block.vhd
 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/next_state_logic.vhd

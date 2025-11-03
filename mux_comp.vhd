@@ -128,5 +128,88 @@ begin
     u_xnor0: xnor2 port map (a => a(0), b => b(0), y => xnor_out(0));
     u_xnor1: xnor2 port map (a => a(1), b => b(1), y => xnor_out(1));
     u_and: and2 port map (a => xnor_out(0), b => xnor_out(1), y => eq);
+end structural;
 
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity mux2to1_8 is
+    port (
+        d0  : in  STD_LOGIC_VECTOR(7 downto 0);
+        d1  : in  STD_LOGIC_VECTOR(7 downto 0);
+        sel : in  STD_LOGIC;
+        y   : out STD_LOGIC_VECTOR(7 downto 0)
+    );
+end mux2to1_8;
+
+architecture structural of mux2to1_8 is
+    component mux2to1
+        port (
+            d0  : in  STD_LOGIC;
+            d1  : in  STD_LOGIC;
+            sel : in  STD_LOGIC;
+            y   : out STD_LOGIC
+        );
+    end component;
+begin
+    gen_bits: for i in 0 to 7 generate
+        u_mux: mux2to1 port map (d0 => d0(i), d1 => d1(i), sel => sel, y => y(i));
+    end generate;
+end structural;
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity mux4to1_8 is
+    port (
+        d0  : in  STD_LOGIC_VECTOR(7 downto 0);
+        d1  : in  STD_LOGIC_VECTOR(7 downto 0);
+        d2  : in  STD_LOGIC_VECTOR(7 downto 0);
+        d3  : in  STD_LOGIC_VECTOR(7 downto 0);
+        sel : in  STD_LOGIC_VECTOR(1 downto 0);
+        y   : out STD_LOGIC_VECTOR(7 downto 0)
+    );
+end mux4to1_8;
+
+architecture structural of mux4to1_8 is
+    component mux4to1
+        port (
+            d0, d1, d2, d3 : in  STD_LOGIC;
+            sel            : in  STD_LOGIC_VECTOR(1 downto 0);
+            y              : out STD_LOGIC
+        );
+    end component;
+begin
+    gen_bits: for i in 0 to 7 generate
+        u_muxbit: mux4to1 port map (d0 => d0(i), d1 => d1(i), d2 => d2(i), d3 => d3(i), sel => sel, y => y(i));
+    end generate;
+end structural;
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity mux4to1_1 is
+    port (
+        d0  : in  STD_LOGIC;
+        d1  : in  STD_LOGIC;
+        d2  : in  STD_LOGIC;
+        d3  : in  STD_LOGIC;
+        sel : in  STD_LOGIC_VECTOR(1 downto 0);
+        y   : out STD_LOGIC
+    );
+end mux4to1_1;
+
+architecture structural of mux4to1_1 is
+    component mux4to1
+        port (
+            d0  : in  STD_LOGIC;
+            d1  : in  STD_LOGIC;
+            d2  : in  STD_LOGIC;
+            d3  : in  STD_LOGIC;
+            sel : in  STD_LOGIC_VECTOR(1 downto 0);
+            y   : out STD_LOGIC
+        );
+    end component;
+begin
+    u_core: mux4to1 port map (d0 => d0, d1 => d1, d2 => d2, d3 => d3, sel => sel, y => y);
 end structural;

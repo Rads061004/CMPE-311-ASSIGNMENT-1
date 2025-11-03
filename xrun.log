@@ -1,5 +1,5 @@
 xrun(64): 23.09-s013: (c) Copyright 1995-2024 Cadence Design Systems, Inc.
-TOOL:	xrun(64)	23.09-s013: Started on Nov 03, 2025 at 15:46:40 EST
+TOOL:	xrun(64)	23.09-s013: Started on Nov 03, 2025 at 15:55:27 EST
 xrun
 	-top chip_tb
 	gates.vhd
@@ -8,14 +8,7 @@ xrun
 	counter_adder.vhd
 	dff_dlatch.vhd
 	decoder.vhd
-	mux2to1_8.vhd
-	mux4to1_8.vhd
-	mux4to1_1.vhd
-	reg8_rise_en.vhd
-	reg2_rise_en.vhd
-	reg1_rise_en.vhd
-	reg3_rise.vhd
-	reg5_fall.vhd
+	registers.vhd
 	tbuf.vhd
 	cache_block.vhd
 	next_state_logic.vhd
@@ -27,23 +20,47 @@ xrun
 	chip_tb.vhd
 	-gui
 	-access rwc
-Recompiling... reason: file './cache_fsm_struct.vhd' is newer than expected.
+Recompiling... reason: file './mux_comp.vhd' is newer than expected.
 	expected: Mon Nov  3 15:27:58 2025
-	actual:   Mon Nov  3 15:44:27 2025
-dff_dlatch.vhd:
+	actual:   Mon Nov  3 15:54:07 2025
+mux_comp.vhd:
 	errors: 0, warnings: 0
-WORKLIB.DFF_FALL (entity):
-	streams: 5, words: 95
-WORKLIB.DFF_FALL:BEHAVIORAL (architecture):
-	streams: 1, words: 195
-WORKLIB.DFF_RISE (entity):
-	streams: 5, words: 95
-WORKLIB.DFF_RISE:BEHAVIORAL (architecture):
-	streams: 1, words: 195
-WORKLIB.DLATCH (entity):
-	streams: 4, words: 87
-WORKLIB.DLATCH:BEHAVIORAL (architecture):
-	streams: 1, words: 195
+registers.vhd:
+	errors: 0, warnings: 0
+WORKLIB.EQ2:STRUCTURAL (architecture):
+	streams: 1, words: 409
+WORKLIB.MUX2TO1_8 (entity):
+	streams: 8, words: 884
+WORKLIB.MUX2TO1_8:STRUCTURAL (architecture):
+	streams: 2, words: 2125
+WORKLIB.MUX4TO1_8 (entity):
+	streams: 13, words: 1691
+WORKLIB.MUX4TO1_8:STRUCTURAL (architecture):
+	streams: 2, words: 2410
+WORKLIB.MUX4TO1_1 (entity):
+	streams: 8, words: 376
+WORKLIB.MUX4TO1_1:STRUCTURAL (architecture):
+	streams: 1, words: 548
+WORKLIB.REG1_RISE_EN (entity):
+	streams: 6, words: 103
+WORKLIB.REG1_RISE_EN:STRUCTURAL (architecture):
+	streams: 1, words: 325
+WORKLIB.REG2_RISE_EN (entity):
+	streams: 8, words: 633
+WORKLIB.REG2_RISE_EN:STRUCTURAL (architecture):
+	streams: 2, words: 2349
+WORKLIB.REG8_RISE_EN (entity):
+	streams: 8, words: 629
+WORKLIB.REG8_RISE_EN:STRUCTURAL (architecture):
+	streams: 2, words: 2345
+WORKLIB.REG3_RISE (entity):
+	streams: 7, words: 621
+WORKLIB.REG3_RISE:STRUCTURAL (architecture):
+	streams: 2, words: 2097
+WORKLIB.REG5_FALL (entity):
+	streams: 8, words: 645
+WORKLIB.REG5_FALL:STRUCTURAL (architecture):
+	streams: 2, words: 2361
 xmelab: *W,ARCMRA: Elaborating the WORKLIB.CHIP_TB:TB, MRA (most recently analyzed) architecture.
 	Elaborating the design hierarchy:
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut) with design unit (WORKLIB.CHIP:STRUCTURAL).
@@ -1072,4 +1089,4 @@ Simulation finished.
 Assertion at 535 NS + 0
 xcelium> ^C
 xcelium> exit
-TOOL:	xrun(64)	23.09-s013: Exiting on Nov 03, 2025 at 15:49:39 EST  (total: 00:02:59)
+TOOL:	xrun(64)	23.09-s013: Exiting on Nov 03, 2025 at 15:57:34 EST  (total: 00:02:07)
