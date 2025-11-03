@@ -3,8 +3,8 @@
 1761920083 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/counter_logic.vhd
 1761929496 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/next_state_logic.vhd
 1761929497 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/state_register.vhd
-1762119614 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/output_logic.vhd
-1762119275 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/cache_fsm_struct.vhd
+1762127554 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/output_logic.vhd
+1762127554 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/cache_fsm_struct.vhd
 1761324300 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/cmpe413_project_fsm_wr_hit.vhd
 1761920083 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/cache_block_tb.vhd
 1762100290 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/cache_block.vhd
@@ -12,8 +12,8 @@
 1761324300 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/decoder_tb.vhd
 1761786393 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux.vhd
 1761324300 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/mux_tb.vhd
-1762107959 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/chip_tb.vhd
-1762125066 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/chip.vhd
+1762127554 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/chip_tb.vhd
+1762132223 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/chip.vhd
 1761920083 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/and2.vhd
 1761795349 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/or2.vhd
 1761795715 /afs/umbc.edu/users/h/h/h189/home/cadence/labProj/CMPE-311-ASSIGNMENT-1/xnor2.vhd
