@@ -4,44 +4,38 @@ use ieee.numeric_std.all;
 
 entity chip is
   port (
-    -- CPU side
-    cpu_add    : in    std_logic_vector(5 downto 0);
-    cpu_data   : inout std_logic_vector(7 downto 0);
-    cpu_rd_wrn : in    std_logic;                     -- '1' = read, '0' = write
-    start      : in    std_logic;
+    cpu_add    : in    std_logic_vector(5 downto 0);   
+    cpu_data   : inout std_logic_vector(7 downto 0);   
+    cpu_rd_wrn : in    std_logic;                      
+    start      : in    std_logic;                    
     clk        : in    std_logic;
     reset      : in    std_logic;
 
-    -- backing memory
-    mem_data   : in    std_logic_vector(7 downto 0);
-    Vdd        : in    std_logic;
-    Gnd        : in    std_logic;
+    mem_data   : in    std_logic_vector(7 downto 0);   
+    Vdd        : in    std_logic;                      
+    Gnd        : in    std_logic;                 
 
-    busy       : out   std_logic;
-    mem_en     : out   std_logic;
-    mem_add    : out   std_logic_vector(5 downto 0);
+    busy       : out   std_logic;                  
+    mem_en     : out   std_logic;                     
+    mem_add    : out   std_logic_vector(5 downto 0);  
 
-    -- debug
-    fsm_state_dbg_s       : out std_logic_vector(2 downto 0);
-    fsm_next_state_dbg_s  : out std_logic_vector(2 downto 0);
-    fsm_counter_dbg_s     : out std_logic_vector(4 downto 0)
+    fsm_state_dbg_s      : out std_logic_vector(2 downto 0);
+    fsm_next_state_dbg_s : out std_logic_vector(2 downto 0);
+    fsm_counter_dbg_s    : out std_logic_vector(4 downto 0)
   );
 end chip;
 
 architecture structural of chip is
 
   ------------------------------------------------------------------------
-  -- Split CPU address
+  -- Address field extraction
   ------------------------------------------------------------------------
   signal tag_in    : std_logic_vector(1 downto 0);
   signal idx       : std_logic_vector(1 downto 0);
   signal byte_sel  : std_logic_vector(1 downto 0);
 
-  -- byte select that actually feeds writes into cache during refill
-  signal curr_byte_sel : std_logic_vector(1 downto 0);
-
   ------------------------------------------------------------------------
-  -- Index decoder
+  -- Component declarations
   ------------------------------------------------------------------------
   component decoder
     port (
@@ -50,127 +44,326 @@ architecture structural of chip is
     );
   end component;
 
-  signal en_1hot : std_logic_vector(3 downto 0);
-
-  ------------------------------------------------------------------------
-  -- Cache block
-  ------------------------------------------------------------------------
   component cache_block
     port (
       clk        : in  std_logic;
       reset      : in  std_logic;
       enable     : in  std_logic;
 
-      data_in    : in  std_logic_vector(7 downto 0);   -- CPU write data
-      data_out   : out std_logic_vector(7 downto 0);   -- registered read data
-      byte_sel   : in  std_logic_vector(1 downto 0);   -- which byte gets written
-      rd_wr      : in  std_logic;                      -- '1'=read,'0'=write from CPU
+      data_in    : in  std_logic_vector(7 downto 0);
+      data_out   : out std_logic_vector(7 downto 0);
+      byte_sel   : in  std_logic_vector(1 downto 0);
+      rd_wr      : in  std_logic;
 
-      mem_in     : in  std_logic_vector(7 downto 0);   -- incoming mem byte during refill
+      mem_in     : in  std_logic_vector(7 downto 0);
 
-      we         : in  std_logic;                      -- per-byte write strobe
-      set_tag    : in  std_logic;                      -- latch tag/valid on first beat
-      tag_in     : in  std_logic_vector(1 downto 0);   -- new tag to write
+      we         : in  std_logic;
+      set_tag    : in  std_logic;
+      tag_in     : in  std_logic_vector(1 downto 0);
 
       valid_out  : out std_logic;
       tag_out    : out std_logic_vector(1 downto 0);
       hit_miss   : out std_logic;
-
-      peek_sel   : in  std_logic_vector(1 downto 0);   -- original byte the CPU asked for
-      peek_data  : out std_logic_vector(7 downto 0)    -- combinational mux of that byte
+      
+      peek_sel   : in  std_logic_vector(1 downto 0);
+      peek_data  : out std_logic_vector(7 downto 0)
     );
   end component;
 
-  signal d0,d1,d2,d3 : std_logic_vector(7 downto 0);
-  signal v0,v1,v2,v3 : std_logic;
-  signal t0,t1,t2,t3 : std_logic_vector(1 downto 0);
-  signal h0,h1,h2,h3 : std_logic;
+  component mux4to1_8
+    port (
+      d0  : in  std_logic_vector(7 downto 0);
+      d1  : in  std_logic_vector(7 downto 0);
+      d2  : in  std_logic_vector(7 downto 0);
+      d3  : in  std_logic_vector(7 downto 0);
+      sel : in  std_logic_vector(1 downto 0);
+      y   : out std_logic_vector(7 downto 0)
+    );
+  end component;
 
-  signal pk0,pk1,pk2,pk3 : std_logic_vector(7 downto 0);
+  component mux4to1_1
+    port (
+      d0  : in  std_logic;
+      d1  : in  std_logic;
+      d2  : in  std_logic;
+      d3  : in  std_logic;
+      sel : in  std_logic_vector(1 downto 0);
+      y   : out std_logic
+    );
+  end component;
 
-  signal data_sel       : std_logic_vector(7 downto 0);
-  signal valid_sel      : std_logic;
-  signal hit_sel        : std_logic;
-  signal peek_sel_data  : std_logic_vector(7 downto 0);
+  component mux2to1
+    port (
+      d0  : in  std_logic;
+      d1  : in  std_logic;
+      sel : in  std_logic;
+      y   : out std_logic
+    );
+  end component;
 
-  ------------------------------------------------------------------------
-  -- FSM
-  ------------------------------------------------------------------------
+  component eq2
+    port (
+      a  : in  std_logic_vector(1 downto 0);
+      b  : in  std_logic_vector(1 downto 0);
+      eq : out std_logic
+    );
+  end component;
+
+  component and2
+    port (
+      a : in std_logic;
+      b : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component and3
+    port (
+      a : in std_logic;
+      b : in std_logic;
+      c : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component or2
+    port (
+      a : in std_logic;
+      b : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component or4
+    port (
+      a : in std_logic;
+      b : in std_logic;
+      c : in std_logic;
+      d : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component inv
+    port (
+      a : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component xor2
+    port (
+      a : in std_logic;
+      b : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component xnor2
+    port (
+      a : in std_logic;
+      b : in std_logic;
+      y : out std_logic
+    );
+  end component;
+
+  component dff_fall
+    port (
+      clk   : in  std_logic;
+      reset : in  std_logic;
+      d     : in  std_logic;
+      q     : out std_logic
+    );
+  end component;
+
+  component tbuf8
+    port (
+      d   : in  std_logic_vector(7 downto 0);
+      en  : in  std_logic;
+      b   : out std_logic_vector(7 downto 0)
+    );
+  end component;
+
+  component gte5
+    port (
+      a   : in  std_logic_vector(4 downto 0);
+      b   : in  std_logic_vector(4 downto 0);
+      gte : out std_logic
+    );
+  end component;
+
   component cache_fsm_struct
     port (
-      clk            : in  STD_LOGIC;
-      reset          : in  STD_LOGIC;
+      clk            : in  std_logic;
+      reset          : in  std_logic;
+      start          : in  std_logic;
+      tag            : in  std_logic;   
+      valid          : in  std_logic;   
+      read_write     : in  std_logic;   
 
-      start          : in  STD_LOGIC;
-      tag            : in  STD_LOGIC;
-      valid          : in  STD_LOGIC;
-      read_write     : in  STD_LOGIC;
-
-      busy           : out STD_LOGIC;      -- asserted while request in flight
-      en             : out STD_LOGIC;      -- memory enable during MISS
-      fsm_resp_pulse : out STD_LOGIC;      -- 1-cycle "read complete" pulse
-
-      state_dbg      : out STD_LOGIC_VECTOR(2 downto 0);
-      next_state_dbg : out STD_LOGIC_VECTOR(2 downto 0);
-      counter_dbg    : out STD_LOGIC_VECTOR(4 downto 0)
+      busy           : out std_logic;   
+      en             : out std_logic;   
+      fsm_resp_pulse : out std_logic;
+      
+      state_dbg      : out std_logic_vector(2 downto 0);
+      next_state_dbg : out std_logic_vector(2 downto 0);
+      counter_dbg    : out std_logic_vector(4 downto 0)
     );
   end component;
 
-  signal busy_int            : std_logic;
-  signal fsm_en              : std_logic;
-  signal fsm_resp_pulse      : std_logic;
+  ------------------------------------------------------------------------
+  -- Interconnect signals
+  ------------------------------------------------------------------------
+  signal en_1hot : std_logic_vector(3 downto 0);
 
-  signal fsm_state_dbg_sig      : std_logic_vector(2 downto 0);
-  signal fsm_next_state_dbg_sig : std_logic_vector(2 downto 0);
-  signal fsm_counter_dbg_sig    : std_logic_vector(4 downto 0);
+  signal d0, d1, d2, d3 : std_logic_vector(7 downto 0);
+  signal v0, v1, v2, v3 : std_logic;
+  signal t0, t1, t2, t3 : std_logic_vector(1 downto 0);
+  signal h0, h1, h2, h3 : std_logic;
+  signal pk0, pk1, pk2, pk3 : std_logic_vector(7 downto 0);
+
+  signal data_sel        : std_logic_vector(7 downto 0);
+  signal valid_sel       : std_logic;
+  signal hit_sel         : std_logic;
+  signal peek_sel_data   : std_logic_vector(7 downto 0);
+  signal curr_byte_sel   : std_logic_vector(1 downto 0);
+
+  signal fsm_resp_pulse  : std_logic;
+  signal fsm_en          : std_logic;
+  signal busy_int        : std_logic;
+
+  signal latch_go        : std_logic;
+  signal L_is_write      : std_logic;
+  signal L_is_read       : std_logic;
+  signal L_is_hit        : std_logic;
+  signal L_is_write_mux_out : std_logic;
+  signal L_is_read_mux_out  : std_logic;
+  signal L_is_hit_mux_out   : std_logic;
+
+  signal cpu_do          : std_logic_vector(7 downto 0);
+  signal cpu_data_oe     : std_logic;
+  signal cpu_data_oe_d   : std_logic;
+
+  signal tag_match_sel   : std_logic;
 
   ------------------------------------------------------------------------
-  -- Request bookkeeping / refill / bus return
+  -- Tag match helpers
   ------------------------------------------------------------------------
-  signal we_top              : std_logic := '0';
-  signal set_tag_top         : std_logic := '0';
+  signal idx_eq_00, idx_eq_01, idx_eq_10, idx_eq_11 : std_logic;
+  signal tag_eq_0, tag_eq_1, tag_eq_2, tag_eq_3     : std_logic;
+  signal match_0, match_1, match_2, match_3         : std_logic;
 
-  -- Latched request at the start edge
-  signal latch_go            : std_logic := '0';
-  signal L_is_write          : std_logic := '0';        -- '1' if request was WRITE
-  signal L_is_hit            : std_logic := '0';
-  signal req_byte_sel_reg    : std_logic_vector(1 downto 0) := (others => '0');
-
-  -- Refill tracker
-  signal mem_en_q            : std_logic := '0';
-  signal refill_active       : std_logic := '0';
-  signal refill_cnt          : integer range 0 to 31 := 0;
-
-  -- The byte offset inside the cache line we're currently filling
-  -- This is what actually drives curr_byte_sel to decide which byte reg to update.
-  signal refill_offset_reg    : std_logic_vector(1 downto 0) := "00";
-
-  -- NEW: shadow so we don't advance the offset until AFTER the write has clocked in
-  signal refill_offset_shadow : std_logic_vector(1 downto 0) := "00";
-  signal refill_offset_load   : std_logic := '0';
-
-  -- Return path to CPU
-  signal resp_data_reg       : std_logic_vector(7 downto 0) := (others => '0');
-  signal resp_drive          : std_logic := '0';  -- "drive cpu_data THIS negedge window only"
-
-  signal cpu_data_drive      : std_logic_vector(7 downto 0);
-  signal cpu_drive_en        : std_logic;
+  signal idx_const_00 : std_logic_vector(1 downto 0);
+  signal idx_const_01 : std_logic_vector(1 downto 0);
+  signal idx_const_10 : std_logic_vector(1 downto 0);
+  signal idx_const_11 : std_logic_vector(1 downto 0);
 
   ------------------------------------------------------------------------
-  -- Tag match to feed FSM's "hit" decision
+  -- Refill logic state (converted first process)
   ------------------------------------------------------------------------
-  signal tag_match_sel       : std_logic;
+  signal mem_en_q              : std_logic;
+  signal mem_en_q_d            : std_logic;
+  signal mem_en_q_n            : std_logic;
+
+  signal refill_active         : std_logic;
+  signal refill_active_d       : std_logic;
+
+  signal refill_cnt            : std_logic_vector(4 downto 0);  -- 0..31
+  signal refill_cnt_d          : std_logic_vector(4 downto 0);
+
+  signal refill_offset_reg     : std_logic_vector(1 downto 0);
+  signal refill_offset_d       : std_logic_vector(1 downto 0);
+
+  signal start_refill          : std_logic;
+
+  -- incrementer signals
+  signal c1, c2, c3, c4, c5    : std_logic;
+  signal cnt_inc               : std_logic_vector(4 downto 0);
+  signal cnt_after_inc         : std_logic_vector(4 downto 0);
+  signal cnt_after_zero        : std_logic_vector(4 downto 0);
+
+  -- equality comparators for 8,10,12,14
+  signal eq8, eq10, eq12, eq14 : std_logic;
+  signal x8, x10, x12, x14     : std_logic_vector(4 downto 0);
+  signal eq8_low3,  eq10_low3,  eq12_low3,  eq14_low3  : std_logic;
+  signal eq8_high2, eq10_high2, eq12_high2, eq14_high2 : std_logic;
+
+  -- refill_cnt >= 16
+  signal ge16                    : std_logic;
+  signal refill_active_and_ge16  : std_logic;
+  signal clr_active_pulse        : std_logic;
+  signal active_after_clr        : std_logic;
+
+  -- pulses for offset updates
+  signal refill_active_and_eq8   : std_logic;
+  signal refill_active_and_eq10  : std_logic;
+  signal refill_active_and_eq12  : std_logic;
+  signal refill_active_and_eq14  : std_logic;
+
+  signal load00_pulse            : std_logic; -- "00"
+  signal load01_pulse            : std_logic; -- "01"
+  signal load10_pulse            : std_logic; -- "10"
+  signal load11_pulse            : std_logic; -- "11"
+
+  signal load_en01_11            : std_logic;
+  signal load_en10_00            : std_logic;
+  signal load_en                 : std_logic;
+
+  signal offset_bit0_load        : std_logic;
+  signal offset_bit1_load        : std_logic;
+
+  ------------------------------------------------------------------------
+  -- Write / tag pulse logic (converted second process)
+  ------------------------------------------------------------------------
+  signal we_top              : std_logic;
+  signal set_tag_top         : std_logic;
+  signal we_top_d            : std_logic;
+  signal set_tag_top_d       : std_logic;
+
+  signal write_hit_pulse     : std_logic;
+  signal write_hit_pulse_full: std_logic;
+  signal refill_write_pulse  : std_logic;
+  signal set_tag_pulse       : std_logic;
+
+  signal eq8_or_eq10         : std_logic;
+  signal eq12_or_eq14        : std_logic;
+  signal any_eq8_14          : std_logic;
+
+  ------------------------------------------------------------------------
+  -- Misc / constants / tie-offs for VHDL-87 tool compliance
+  ------------------------------------------------------------------------
+  signal cpu_rd_wrn_n        : std_logic;
+  signal gnd_sig             : std_logic;
+
+  signal sig_zero            : std_logic;
+  signal sig_one             : std_logic;
+  signal vec_zero5           : std_logic_vector(4 downto 0);
+  signal vec_sixteen         : std_logic_vector(4 downto 0);
 
 begin
   ------------------------------------------------------------------------
-  -- Break out CPU address fields
+  -- Constant drivers
   ------------------------------------------------------------------------
-  tag_in   <= cpu_add(5 downto 4);  -- tag
-  idx      <= cpu_add(3 downto 2);  -- index
-  byte_sel <= cpu_add(1 downto 0);  -- byte offset requested by CPU
+  gnd_sig     <= '0';
+  sig_zero    <= '0';
+  sig_one     <= '1';
+  vec_zero5   <= "00000";
+  vec_sixteen <= "10000";
 
   ------------------------------------------------------------------------
-  -- Decode index to one-hot enables (selects which of the 4 lines is active)
+  -- Basic field extraction
+  ------------------------------------------------------------------------
+  tag_in   <= cpu_add(5 downto 4);
+  idx      <= cpu_add(3 downto 2);
+  byte_sel <= cpu_add(1 downto 0);
+
+  idx_const_00 <= "00";
+  idx_const_01 <= "01";
+  idx_const_10 <= "10";
+  idx_const_11 <= "11";
+
+  ------------------------------------------------------------------------
+  -- Decoder (index -> one-hot)
   ------------------------------------------------------------------------
   u_dec: decoder
     port map (
@@ -179,14 +372,7 @@ begin
     );
 
   ------------------------------------------------------------------------
-  -- During refill, writes go to refill_offset_reg-selected byte.
-  -- Otherwise, for normal CPU access, use the CPU's requested offset.
-  ------------------------------------------------------------------------
-  curr_byte_sel <= refill_offset_reg when refill_active = '1'
-                   else byte_sel;
-
-  ------------------------------------------------------------------------
-  -- Cache lines
+  -- Cache block instances
   ------------------------------------------------------------------------
   u_cb0: cache_block
     port map (
@@ -208,8 +394,8 @@ begin
       valid_out  => v0,
       tag_out    => t0,
       hit_miss   => h0,
-
-      peek_sel   => req_byte_sel_reg,
+      
+      peek_sel   => byte_sel,
       peek_data  => pk0
     );
 
@@ -233,8 +419,8 @@ begin
       valid_out  => v1,
       tag_out    => t1,
       hit_miss   => h1,
-
-      peek_sel   => req_byte_sel_reg,
+      
+      peek_sel   => byte_sel,
       peek_data  => pk1
     );
 
@@ -258,8 +444,8 @@ begin
       valid_out  => v2,
       tag_out    => t2,
       hit_miss   => h2,
-
-      peek_sel   => req_byte_sel_reg,
+      
+      peek_sel   => byte_sel,
       peek_data  => pk2
     );
 
@@ -283,48 +469,93 @@ begin
       valid_out  => v3,
       tag_out    => t3,
       hit_miss   => h3,
-
-      peek_sel   => req_byte_sel_reg,
+      
+      peek_sel   => byte_sel,
       peek_data  => pk3
     );
 
   ------------------------------------------------------------------------
-  -- Mux out the selected line's signals
+  -- curr_byte_sel = byte_sel normally, or refill_offset_reg during refill
   ------------------------------------------------------------------------
-  with idx select data_sel      <= d0  when "00",
-                                   d1  when "01",
-                                   d2  when "10",
-                                   d3  when "11",
-                                   (others => '0') when others;
-
-  with idx select valid_sel     <= v0  when "00",
-                                   v1  when "01",
-                                   v2  when "10",
-                                   v3  when "11",
-                                   '0' when others;
-
-  with idx select hit_sel       <= h0  when "00",
-                                   h1  when "01",
-                                   h2  when "10",
-                                   h3  when "11",
-                                   '0' when others;
-
-  with idx select peek_sel_data <= pk0 when "00",
-                                   pk1 when "01",
-                                   pk2 when "10",
-                                   pk3 when "11",
-                                   (others => '0') when others;
+  gen_curr_byte_sel: for i in 0 to 1 generate
+    u_mux_curr_byte: mux2to1
+      port map (
+        d0  => byte_sel(i),
+        d1  => refill_offset_reg(i),
+        sel => refill_active,
+        y   => curr_byte_sel(i)
+      );
+  end generate;
 
   ------------------------------------------------------------------------
-  -- Tag compare: does the selected line's tag match tag_in?
+  -- Muxes for data, valid, hit, and peek data
   ------------------------------------------------------------------------
-  tag_match_sel <= '1' when (
-                     (idx = "00" and t0 = tag_in) or
-                     (idx = "01" and t1 = tag_in) or
-                     (idx = "10" and t2 = tag_in) or
-                     (idx = "11" and t3 = tag_in)
-                   )
-                   else '0';
+  u_mux_data : mux4to1_8
+    port map (
+      d0  => d0,
+      d1  => d1,
+      d2  => d2,
+      d3  => d3,
+      sel => idx,
+      y   => data_sel
+    );
+
+  u_mux_valid : mux4to1_1
+    port map (
+      d0  => v0,
+      d1  => v1,
+      d2  => v2,
+      d3  => v3,
+      sel => idx,
+      y   => valid_sel
+    );
+
+  u_mux_hit : mux4to1_1
+    port map (
+      d0  => h0,
+      d1  => h1,
+      d2  => h2,
+      d3  => h3,
+      sel => idx,
+      y   => hit_sel      
+    );
+
+  u_mux_peek : mux4to1_8
+    port map (
+      d0  => pk0,
+      d1  => pk1,
+      d2  => pk2,
+      d3  => pk3,
+      sel => idx,
+      y   => peek_sel_data
+    );
+
+  ------------------------------------------------------------------------
+  -- tag_match_sel logic
+  ------------------------------------------------------------------------
+  u_idx_eq_00: eq2 port map (a => idx, b => idx_const_00, eq => idx_eq_00);
+  u_idx_eq_01: eq2 port map (a => idx, b => idx_const_01, eq => idx_eq_01);
+  u_idx_eq_10: eq2 port map (a => idx, b => idx_const_10, eq => idx_eq_10);
+  u_idx_eq_11: eq2 port map (a => idx, b => idx_const_11, eq => idx_eq_11);
+
+  u_tag_eq_0: eq2 port map (a => t0, b => tag_in, eq => tag_eq_0);
+  u_tag_eq_1: eq2 port map (a => t1, b => tag_in, eq => tag_eq_1);
+  u_tag_eq_2: eq2 port map (a => t2, b => tag_in, eq => tag_eq_2);
+  u_tag_eq_3: eq2 port map (a => t3, b => tag_in, eq => tag_eq_3);
+
+  u_match_0: and2 port map (a => idx_eq_00, b => tag_eq_0, y => match_0);
+  u_match_1: and2 port map (a => idx_eq_01, b => tag_eq_1, y => match_1);
+  u_match_2: and2 port map (a => idx_eq_10, b => tag_eq_2, y => match_2);
+  u_match_3: and2 port map (a => idx_eq_11, b => tag_eq_3, y => match_3);
+
+  u_tag_match_or: or4
+    port map (
+      a => match_0,
+      b => match_1,
+      c => match_2,
+      d => match_3,
+      y => tag_match_sel
+    );
 
   ------------------------------------------------------------------------
   -- FSM
@@ -334,201 +565,530 @@ begin
       clk            => clk,
       reset          => reset,
       start          => start,
-      tag            => tag_match_sel,
+      tag            => hit_sel,          -- using hit_sel
       valid          => valid_sel,
       read_write     => cpu_rd_wrn,
 
       busy           => busy_int,
       en             => fsm_en,
       fsm_resp_pulse => fsm_resp_pulse,
-
-      state_dbg      => fsm_state_dbg_sig,
-      next_state_dbg => fsm_next_state_dbg_sig,
-      counter_dbg    => fsm_counter_dbg_sig
+      
+      state_dbg      => fsm_state_dbg_s,
+      next_state_dbg => fsm_next_state_dbg_s,
+      counter_dbg    => fsm_counter_dbg_s
     );
 
   busy <= busy_int;
 
-  fsm_state_dbg_s      <= fsm_state_dbg_sig;
-  fsm_next_state_dbg_s <= fsm_next_state_dbg_sig;
-  fsm_counter_dbg_s    <= fsm_counter_dbg_sig;
+  ------------------------------------------------------------------------
+  -- mem_en and mem_add
+  ------------------------------------------------------------------------
+  mem_en <= fsm_en;
+
+  mem_add(5) <= cpu_add(5);
+  mem_add(4) <= cpu_add(4);
+  mem_add(3) <= cpu_add(3);
+  mem_add(2) <= cpu_add(2);
+  mem_add(1) <= gnd_sig;
+  mem_add(0) <= gnd_sig;
 
   ------------------------------------------------------------------------
-  -- Backing memory interface
-  --
-  -- mem_en asserts during miss
-  -- mem_add uses cpu_add upper bits, lower 2 forced to "00"
+  -- cpu_data tri-state back to CPU
   ------------------------------------------------------------------------
-  mem_en  <= fsm_en;
-  mem_add <= cpu_add(5 downto 2) & "00";
+  cpu_do <= peek_sel_data;
 
-  ------------------------------------------------------------------------
-  -- One single falling-edge process controls:
-  --   - request snapshot
-  --   - refill bookkeeping and byte placement
-  --   - write strobes into cache lines
-  --   - bus return pulse
-  ------------------------------------------------------------------------
-  process(clk)
-    variable next_off_u : unsigned(1 downto 0);
-  begin
-    if falling_edge(clk) then
-      if reset = '1' then
-        latch_go            <= '0';
-        L_is_write          <= '0';
-        L_is_hit            <= '0';
-        req_byte_sel_reg    <= (others => '0');
-
-        mem_en_q            <= '0';
-        refill_active       <= '0';
-        refill_cnt          <= 0;
-
-        refill_offset_reg    <= "00";
-        refill_offset_shadow <= "00";
-        refill_offset_load   <= '0';
-
-        we_top        <= '0';
-        set_tag_top   <= '0';
-
-        resp_data_reg <= (others => '0');
-        resp_drive    <= '0';
-
-      else
-        ----------------------------------------------------------------
-        -- Default each negedge
-        ----------------------------------------------------------------
-        we_top      <= '0';
-        set_tag_top <= '0';
-        resp_drive  <= '0';   -- drive lasts exactly this negedge window unless reasserted below
-
-        ----------------------------------------------------------------
-        -- First, if last cycle told us to update refill_offset_reg,
-        -- apply that now (AFTER the rising edge already used the old
-        -- offset to write the correct byte).
-        ----------------------------------------------------------------
-        if refill_offset_load = '1' then
-          refill_offset_reg  <= refill_offset_shadow;
-          refill_offset_load <= '0';
-        end if;
-
-        ----------------------------------------------------------------
-        -- Track mem_en to detect start/end of refill burst
-        ----------------------------------------------------------------
-        mem_en_q <= fsm_en;
-
-        if (mem_en_q = '0' and fsm_en = '1') then
-          -- just entered refill
-          refill_active       <= '1';
-          refill_cnt          <= 0;
-          refill_offset_reg   <= "00";
-          refill_offset_shadow<= "00";
-          refill_offset_load  <= '0';
-        elsif refill_active = '1' then
-          refill_cnt <= refill_cnt + 1;
-
-          -- heuristic stop after ~16 cycles (matches your TB timing)
-          if refill_cnt >= 16 then
-            refill_active <= '0';
-          end if;
-        end if;
-
-        ----------------------------------------------------------------
-        -- Immediate WRITE HIT write-through (write hit + write request)
-        ----------------------------------------------------------------
-        if (latch_go = '1') and (L_is_write = '1') and (L_is_hit = '1') then
-          we_top <= '1';
-          -- (not updating refill_offset here; this is not a refill)
-        end if;
-
-        ----------------------------------------------------------------
-        -- READ MISS refill storeback
-        --
-        -- For specific refill_cnt values (8,10,12,14) the testbench
-        -- feeds one byte of external memory data. We pulse we_top so
-        -- the cache_block will latch mem_data on the NEXT rising edge.
-        --
-        -- CRITICAL FIX:
-        --   We do NOT bump refill_offset_reg immediately anymore.
-        --   Instead:
-        --     - we_top asserts now
-        --     - we compute the NEXT offset into refill_offset_shadow
-        --     - we set refill_offset_load='1'
-        --   On the NEXT falling edge (after that rising edge happened),
-        --   we apply refill_offset_shadow into refill_offset_reg.
-        --
-        -- This guarantees:
-        --   Byte0 of the line really gets the FIRST beat ("DE"),
-        --   Byte1 gets the second ("AD"), etc.
-        --   So when the CPU asked for offset "00", that slot ends up
-        --   with DE, not EF, by the time we answer.
-        ----------------------------------------------------------------
-        if refill_active = '1' then
-          if (refill_cnt = 8) or (refill_cnt = 10) or
-             (refill_cnt = 12) or (refill_cnt = 14) then
-
-            we_top <= '1';
-
-            if refill_cnt = 8 then
-              set_tag_top <= '1';   -- only first beat sets tag/valid
-            end if;
-
-            -- Stage the increment for AFTER the write completes
-            next_off_u               := unsigned(refill_offset_reg) + 1;
-            refill_offset_shadow     <= std_logic_vector(next_off_u);
-            refill_offset_load       <= '1';
-          end if;
-        end if;
-
-        ----------------------------------------------------------------
-        -- Snapshot the request on start
-        ----------------------------------------------------------------
-        latch_go <= start;
-
-        if start = '1' then
-          L_is_write       <= not cpu_rd_wrn;   -- '1' if WRITE op
-          L_is_hit         <= hit_sel;          -- snapshot that hit/miss at launch
-          req_byte_sel_reg <= byte_sel;         -- which byte CPU actually wanted
-
-          -- We do NOT clear resp_data_reg here; it's fine to overwrite on response
-
-        end if;
-
-        ----------------------------------------------------------------
-        -- Generate the one-cycle CPU return pulse
-        --
-        -- fsm_resp_pulse means:
-        --   "the answer for this READ request is ready now".
-        --
-        -- We:
-        --   - Grab peek_sel_data (which is muxed by req_byte_sel_reg, the byte
-        --     offset from the original request).
-        --   - Latch it into resp_data_reg.
-        --   - Assert resp_drive = '1' for THIS falling-edge->next-falling-edge
-        --     window only.
-        --
-        -- Next falling edge, we default resp_drive <= '0', which cleanly
-        -- tri-states cpu_data back to "ZZ". No lingering xx.
-        --
-        -- Importantly, because we fixed refill_offset_reg sequencing above,
-        -- peek_sel_data now sees byte offset "00" holding DE after a miss,
-        -- not EF. So read miss now returns DE.
-        ----------------------------------------------------------------
-        if (fsm_resp_pulse = '1') and (L_is_write = '0') then
-          resp_data_reg <= peek_sel_data;
-          resp_drive    <= '1';   -- drive cpu_data for exactly one cycle
-        end if;
-
-      end if; -- reset
-    end if; -- falling_edge
-  end process;
+  u_cpu_data_tbuf: tbuf8
+    port map (
+      d  => cpu_do,
+      en => cpu_data_oe,
+      b  => cpu_data
+    );
 
   ------------------------------------------------------------------------
-  -- Tri-state the CPU bus except for the single resp_drive pulse window
+  -- Latch_go register (captures start)
   ------------------------------------------------------------------------
-  cpu_drive_en   <= resp_drive;
-  cpu_data_drive <= resp_data_reg;
+  u_latch_go_dff: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => start,
+      q     => latch_go
+    );
 
-  cpu_data <= cpu_data_drive when cpu_drive_en = '1'
-              else (others => 'Z');
+  ------------------------------------------------------------------------
+  -- L_is_write, L_is_read, L_is_hit registers
+  ------------------------------------------------------------------------
+  u_inv_rd_wrn: inv
+    port map (
+      a => cpu_rd_wrn,
+      y => cpu_rd_wrn_n
+    );
+
+  -- L_is_write latch
+  u_mux_L_is_write: mux2to1
+    port map (
+      d0  => L_is_write,
+      d1  => cpu_rd_wrn_n,
+      sel => start,
+      y   => L_is_write_mux_out
+    );
+
+  u_dff_L_is_write: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => L_is_write_mux_out,
+      q     => L_is_write
+    );
+
+  -- L_is_read latch
+  u_mux_L_is_read: mux2to1
+    port map (
+      d0  => L_is_read,
+      d1  => cpu_rd_wrn,
+      sel => start,
+      y   => L_is_read_mux_out
+    );
+
+  u_dff_L_is_read: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => L_is_read_mux_out,
+      q     => L_is_read
+    );
+
+  -- L_is_hit latch
+  u_mux_L_is_hit: mux2to1
+    port map (
+      d0  => L_is_hit,
+      d1  => hit_sel,
+      sel => start,
+      y   => L_is_hit_mux_out
+    );
+
+  u_dff_L_is_hit: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => L_is_hit_mux_out,
+      q     => L_is_hit
+    );
+
+  ------------------------------------------------------------------------
+  -- cpu_data_oe register
+  -- cpu_data_oe_d = fsm_resp_pulse AND L_is_read
+  ------------------------------------------------------------------------
+  u_and_cpu_data_oe: and2
+    port map (
+      a => fsm_resp_pulse,
+      b => L_is_read,
+      y => cpu_data_oe_d
+    );
+
+  u_dff_cpu_data_oe: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => cpu_data_oe_d,
+      q     => cpu_data_oe
+    );
+
+  ------------------------------------------------------------------------
+  -- STRUCTURAL REFILL CONTROL LOGIC (first process replacement)
+  ------------------------------------------------------------------------
+
+  -- mem_en_q <= fsm_en each falling edge
+  mem_en_q_d <= fsm_en;
+
+  -- start_refill = (~mem_en_q) AND (fsm_en)
+  u_inv_mem_en_q: inv
+    port map (
+      a => mem_en_q,
+      y => mem_en_q_n
+    );
+
+  u_start_refill_and: and2
+    port map (
+      a => mem_en_q_n,
+      b => fsm_en,
+      y => start_refill
+    );
+
+  ------------------------------------------------------------------------
+  -- refill_cnt + 1 ripple incrementer
+  ------------------------------------------------------------------------
+  -- bit0: next0 = NOT(cnt0); carry = cnt0
+  u_inv_cnt0: inv  
+    port map (
+      a => refill_cnt(0),
+      y => cnt_inc(0)
+    );
+  c1 <= refill_cnt(0);
+
+  -- bit1
+  u_xor_cnt1: xor2 
+    port map (
+      a => refill_cnt(1),
+      b => c1,
+      y => cnt_inc(1)
+    );
+  u_and_cnt1: and2 
+    port map (
+      a => refill_cnt(1),
+      b => c1,
+      y => c2
+    );
+
+  -- bit2
+  u_xor_cnt2: xor2 
+    port map (
+      a => refill_cnt(2),
+      b => c2,
+      y => cnt_inc(2)
+    );
+  u_and_cnt2: and2 
+    port map (
+      a => refill_cnt(2),
+      b => c2,
+      y => c3
+    );
+
+  -- bit3
+  u_xor_cnt3: xor2 
+    port map (
+      a => refill_cnt(3),
+      b => c3,
+      y => cnt_inc(3)
+    );
+  u_and_cnt3: and2 
+    port map (
+      a => refill_cnt(3),
+      b => c3,
+      y => c4
+    );
+
+  -- bit4
+  u_xor_cnt4: xor2 
+    port map (
+      a => refill_cnt(4),
+      b => c4,
+      y => cnt_inc(4)
+    );
+  u_and_cnt4: and2 
+    port map (
+      a => refill_cnt(4),
+      b => c4,
+      y => c5
+    );
+  -- c5 unused
+
+  ------------------------------------------------------------------------
+  -- refill_cnt_d priority:
+  --   if start_refill=1      -> 0
+  --   elsif refill_active=1  -> increment
+  --   else                   -> hold
+  ------------------------------------------------------------------------
+  gen_cnt_next: for i in 0 to 4 generate
+    -- choose hold vs increment
+    u_cnt_inc_mux: mux2to1
+      port map (
+        d0  => refill_cnt(i),
+        d1  => cnt_inc(i),
+        sel => refill_active,
+        y   => cnt_after_inc(i)
+      );
+
+    -- override with zero if start_refill
+    u_cnt_zero_mux: mux2to1
+      port map (
+        d0  => cnt_after_inc(i),
+        d1  => sig_zero,       -- was '0'
+        sel => start_refill,
+        y   => cnt_after_zero(i)
+      );
+  end generate;
+
+  refill_cnt_d <= cnt_after_zero;
+
+  ------------------------------------------------------------------------
+  -- Equality checks for refill_cnt = 8,10,12,14
+  -- We use xnor2 against constant bits, but constants are signals now.
+  ------------------------------------------------------------------------
+  -- refill_cnt = 8  (01000)
+  u_xnor8_b0:  xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x8(0));
+  u_xnor8_b1:  xnor2 port map (a => refill_cnt(1), b => sig_zero, y => x8(1));
+  u_xnor8_b2:  xnor2 port map (a => refill_cnt(2), b => sig_zero, y => x8(2));
+  u_xnor8_b3:  xnor2 port map (a => refill_cnt(3), b => sig_one,  y => x8(3));
+  u_xnor8_b4:  xnor2 port map (a => refill_cnt(4), b => sig_zero, y => x8(4));
+  u_eq8_low3:  and3  port map (a => x8(0), b => x8(1), c => x8(2), y => eq8_low3);
+  u_eq8_high2: and2  port map (a => x8(3), b => x8(4), y => eq8_high2);
+  u_eq8_and:   and2  port map (a => eq8_low3, b => eq8_high2, y => eq8);
+
+  -- refill_cnt = 10 (01010)
+  u_xnor10_b0: xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x10(0));
+  u_xnor10_b1: xnor2 port map (a => refill_cnt(1), b => sig_one,  y => x10(1));
+  u_xnor10_b2: xnor2 port map (a => refill_cnt(2), b => sig_zero, y => x10(2));
+  u_xnor10_b3: xnor2 port map (a => refill_cnt(3), b => sig_one,  y => x10(3));
+  u_xnor10_b4: xnor2 port map (a => refill_cnt(4), b => sig_zero, y => x10(4));
+  u_eq10_low3: and3  port map (a => x10(0), b => x10(1), c => x10(2), y => eq10_low3);
+  u_eq10_high2:and2  port map (a => x10(3), b => x10(4), y => eq10_high2);
+  u_eq10_and:  and2  port map (a => eq10_low3, b => eq10_high2, y => eq10);
+
+  -- refill_cnt = 12 (01100)
+  u_xnor12_b0: xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x12(0));
+  u_xnor12_b1: xnor2 port map (a => refill_cnt(1), b => sig_zero, y => x12(1));
+  u_xnor12_b2: xnor2 port map (a => refill_cnt(2), b => sig_one,  y => x12(2));
+  u_xnor12_b3: xnor2 port map (a => refill_cnt(3), b => sig_one,  y => x12(3));
+  u_xnor12_b4: xnor2 port map (a => refill_cnt(4), b => sig_zero, y => x12(4));
+  u_eq12_low3: and3  port map (a => x12(0), b => x12(1), c => x12(2), y => eq12_low3);
+  u_eq12_high2:and2  port map (a => x12(3), b => x12(4), y => eq12_high2);
+  u_eq12_and:  and2  port map (a => eq12_low3, b => eq12_high2, y => eq12);
+
+  -- refill_cnt = 14 (01110)
+  u_xnor14_b0: xnor2 port map (a => refill_cnt(0), b => sig_zero, y => x14(0));
+  u_xnor14_b1: xnor2 port map (a => refill_cnt(1), b => sig_one,  y => x14(1));
+  u_xnor14_b2: xnor2 port map (a => refill_cnt(2), b => sig_one,  y => x14(2));
+  u_xnor14_b3: xnor2 port map (a => refill_cnt(3), b => sig_one,  y => x14(3));
+  u_xnor14_b4: xnor2 port map (a => refill_cnt(4), b => sig_zero, y => x14(4));
+  u_eq14_low3: and3  port map (a => x14(0), b => x14(1), c => x14(2), y => eq14_low3);
+  u_eq14_high2:and2  port map (a => x14(3), b => x14(4), y => eq14_high2);
+  u_eq14_and:  and2  port map (a => eq14_low3, b => eq14_high2, y => eq14);
+
+  ------------------------------------------------------------------------
+  -- refill_active clear condition: refill_cnt >= 16
+  ------------------------------------------------------------------------
+  u_ge16: gte5
+    port map (
+      a   => refill_cnt,
+      b   => vec_sixteen,  -- instead of "10000"
+      gte => ge16
+    );
+
+  u_and_active_ge16: and2
+    port map (
+      a => refill_active,
+      b => ge16,
+      y => refill_active_and_ge16
+    );
+
+  clr_active_pulse <= refill_active_and_ge16;
+
+  ------------------------------------------------------------------------
+  -- refill_active_d:
+  --   clear if clr_active_pulse
+  --   set   if start_refill
+  ------------------------------------------------------------------------
+  u_active_clr_mux: mux2to1
+    port map (
+      d0  => refill_active,   -- hold
+      d1  => sig_zero,        -- clear ('0')
+      sel => clr_active_pulse,
+      y   => active_after_clr
+    );
+
+  u_active_set_mux: mux2to1
+    port map (
+      d0  => active_after_clr,
+      d1  => sig_one,         -- set ('1')
+      sel => start_refill,
+      y   => refill_active_d
+    );
+
+  ------------------------------------------------------------------------
+  -- refill_offset_reg next-state
+  ------------------------------------------------------------------------
+  u_and_eq8:  and2 port map (a => refill_active, b => eq8,  y => refill_active_and_eq8);
+  u_and_eq10: and2 port map (a => refill_active, b => eq10, y => refill_active_and_eq10);
+  u_and_eq12: and2 port map (a => refill_active, b => eq12, y => refill_active_and_eq12);
+  u_and_eq14: and2 port map (a => refill_active, b => eq14, y => refill_active_and_eq14);
+
+  u_or_load00: or2
+    port map (
+      a => start_refill,
+      b => refill_active_and_eq8,
+      y => load00_pulse
+    );
+
+  load01_pulse <= refill_active_and_eq10;
+  load10_pulse <= refill_active_and_eq12;
+  load11_pulse <= refill_active_and_eq14;
+
+  u_or01_11: or2
+    port map (
+      a => load01_pulse,
+      b => load11_pulse,
+      y => load_en01_11
+    );
+
+  u_or10_00: or2
+    port map (
+      a => load10_pulse,
+      b => load00_pulse,
+      y => load_en10_00
+    );
+
+  u_or_all_en: or2
+    port map (
+      a => load_en01_11,
+      b => load_en10_00,
+      y => load_en
+    );
+
+  -- bit0 is 1 for "01" and "11"
+  u_or_bit0: or2
+    port map (
+      a => load01_pulse,
+      b => load11_pulse,
+      y => offset_bit0_load
+    );
+
+  -- bit1 is 1 for "10" and "11"
+  u_or_bit1: or2
+    port map (
+      a => load10_pulse,
+      b => load11_pulse,
+      y => offset_bit1_load
+    );
+
+  -- refill_offset_d(0)
+  u_offset_bit0_mux: mux2to1
+    port map (
+      d0  => refill_offset_reg(0),
+      d1  => offset_bit0_load,
+      sel => load_en,
+      y   => refill_offset_d(0)
+    );
+
+  -- refill_offset_d(1)
+  u_offset_bit1_mux: mux2to1
+    port map (
+      d0  => refill_offset_reg(1),
+      d1  => offset_bit1_load,
+      sel => load_en,
+      y   => refill_offset_d(1)
+    );
+
+  ------------------------------------------------------------------------
+  -- DFFs for refill state
+  ------------------------------------------------------------------------
+  u_dff_mem_en_q: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => mem_en_q_d,
+      q     => mem_en_q
+    );
+
+  u_dff_refill_active: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => refill_active_d,
+      q     => refill_active
+    );
+
+  gen_refill_cnt_reg: for i in 0 to 4 generate
+    u_dff_refill_cnt: dff_fall
+      port map (
+        clk   => clk,
+        reset => reset,
+        d     => refill_cnt_d(i),
+        q     => refill_cnt(i)
+      );
+  end generate;
+
+  gen_refill_offset_reg: for i in 0 to 1 generate
+    u_dff_refill_offset: dff_fall
+      port map (
+        clk   => clk,
+        reset => reset,
+        d     => refill_offset_d(i),
+        q     => refill_offset_reg(i)
+      );
+  end generate;
+
+  ------------------------------------------------------------------------
+  -- STRUCTURAL WRITE / TAG PULSE LOGIC (second process replacement)
+  ------------------------------------------------------------------------
+  -- write_hit_pulse_full = latch_go AND L_is_write AND L_is_hit
+  u_write_hit_and0: and2
+    port map (
+      a => latch_go,
+      b => L_is_write,
+      y => write_hit_pulse
+    );
+
+  u_write_hit_and1: and2
+    port map (
+      a => write_hit_pulse,
+      b => L_is_hit,
+      y => write_hit_pulse_full
+    );
+
+  -- any_eq8_14 = eq8 or eq10 or eq12 or eq14
+  u_or_8_10: or2
+    port map (
+      a => eq8,
+      b => eq10,
+      y => eq8_or_eq10
+    );
+
+  u_or_12_14: or2
+    port map (
+      a => eq12,
+      b => eq14,
+      y => eq12_or_eq14
+    );
+
+  u_or_8to14: or2
+    port map (
+      a => eq8_or_eq10,
+      b => eq12_or_eq14,
+      y => any_eq8_14
+    );
+
+  -- refill_write_pulse = refill_active AND any_eq8_14
+  u_and_refill_write: and2
+    port map (
+      a => refill_active,
+      b => any_eq8_14,
+      y => refill_write_pulse
+    );
+
+  -- we_top_d = write_hit_pulse_full OR refill_write_pulse
+  u_or_we_top: or2
+    port map (
+      a => write_hit_pulse_full,
+      b => refill_write_pulse,
+      y => we_top_d
+    );
+
+  -- set_tag_pulse = refill_active AND eq8
+  u_and_set_tag: and2
+    port map (
+      a => refill_active,
+      b => eq8,
+      y => set_tag_pulse
+    );
+
+  set_tag_top_d <= set_tag_pulse;
+
+  -- Register we_top, set_tag_top
+  u_dff_we_top: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => we_top_d,
+      q     => we_top
+    );
+
+  u_dff_set_tag_top: dff_fall
+    port map (
+      clk   => clk,
+      reset => reset,
+      d     => set_tag_top_d,
+      q     => set_tag_top
+    );
 
 end structural;
