@@ -1,61 +1,49 @@
 xrun(64): 23.09-s013: (c) Copyright 1995-2024 Cadence Design Systems, Inc.
-TOOL:	xrun(64)	23.09-s013: Started on Nov 02, 2025 at 20:10:31 EST
+TOOL:	xrun(64)	23.09-s013: Started on Nov 03, 2025 at 15:46:40 EST
 xrun
 	-top chip_tb
 	gates.vhd
-	dff_fall.vhd
-	dff_rise.vhd
-	d_latch.vhd
-	decoder.vhd
 	mux_comp.vhd
+	comparator.vhd
+	counter_adder.vhd
+	dff_dlatch.vhd
+	decoder.vhd
 	mux2to1_8.vhd
-	mux2to1_2.vhd
 	mux4to1_8.vhd
 	mux4to1_1.vhd
-	mux4to1_2.vhd
-	req_latch.vhd
 	reg8_rise_en.vhd
-	reg8_fall_en.vhd
 	reg2_rise_en.vhd
-	reg2_fall_en.vhd
 	reg1_rise_en.vhd
 	reg3_rise.vhd
-	reg5_rise.vhd
-	reg3_fall.vhd
 	reg5_fall.vhd
-	counter_adder.vhd
-	inc_mod4.vhd
-	comparator.vhd
-	state_register.vhd
-	counter_logic.vhd
-	next_state_logic.vhd
-	output_logic.vhd
-	cache_fsm_struct.vhd
-	req_latch.vhd
 	tbuf.vhd
 	cache_block.vhd
+	next_state_logic.vhd
+	state_register.vhd
+	counter_logic.vhd
+	output_logic.vhd
+	cache_fsm_struct.vhd
 	chip.vhd
 	chip_tb.vhd
 	-gui
 	-access rwc
-reg5_rise.vhd:
+Recompiling... reason: file './cache_fsm_struct.vhd' is newer than expected.
+	expected: Mon Nov  3 15:27:58 2025
+	actual:   Mon Nov  3 15:44:27 2025
+dff_dlatch.vhd:
 	errors: 0, warnings: 0
-reg3_fall.vhd:
-	errors: 0, warnings: 0
-counter_adder.vhd:
-	errors: 0, warnings: 0
-chip.vhd:
-	errors: 0, warnings: 0
-WORKLIB.REG5_RISE (entity):
-	streams: 8, words: 645
-WORKLIB.REG5_RISE:STRUCTURAL (architecture):
-	streams: 2, words: 2361
-WORKLIB.REG3_FALL (entity):
-	streams: 7, words: 621
-WORKLIB.REG3_FALL:STRUCTURAL (architecture):
-	streams: 2, words: 2097
-WORKLIB.CHIP:STRUCTURAL (architecture):
-	streams: 5, words: 27268
+WORKLIB.DFF_FALL (entity):
+	streams: 5, words: 95
+WORKLIB.DFF_FALL:BEHAVIORAL (architecture):
+	streams: 1, words: 195
+WORKLIB.DFF_RISE (entity):
+	streams: 5, words: 95
+WORKLIB.DFF_RISE:BEHAVIORAL (architecture):
+	streams: 1, words: 195
+WORKLIB.DLATCH (entity):
+	streams: 4, words: 87
+WORKLIB.DLATCH:BEHAVIORAL (architecture):
+	streams: 1, words: 195
 xmelab: *W,ARCMRA: Elaborating the WORKLIB.CHIP_TB:TB, MRA (most recently analyzed) architecture.
 	Elaborating the design hierarchy:
 xmelab: *W,CUDEFB: default binding occurred for component instance (:chip_tb(tb):dut) with design unit (WORKLIB.CHIP:STRUCTURAL).
@@ -1082,4 +1070,6 @@ xcelium> run
 ASSERT/FAILURE (time 535 NS) from process :stim (architecture worklib.chip_tb:tb)
 Simulation finished.
 Assertion at 535 NS + 0
-xcelium> TOOL:	xrun(64)	23.09-s013: Exiting on Nov 02, 2025 at 21:55:34 EST  (total: 01:45:03)
+xcelium> ^C
+xcelium> exit
+TOOL:	xrun(64)	23.09-s013: Exiting on Nov 03, 2025 at 15:49:39 EST  (total: 00:02:59)
