@@ -12,18 +12,16 @@ entity fsm is
 end fsm;
 
 architecture rtl of fsm is
-    -- State type
     type state_t is (IDLE, WR_HIT, DONE);
     signal CS, NS : state_t;
 
-    -- Counter
     signal counter_en  : std_logic := '0';
     signal delay_count : unsigned(7 downto 0) := (others => '0');
     signal busy_reg    : std_logic := '0';
 
 begin
     busy <= busy_reg;
-    -- Delay counter (negative edge)
+ 
     process(clk)
     begin
         if falling_edge(clk) then
@@ -34,7 +32,7 @@ begin
             end if;
         end if;
     end process;
-    -- State register (negative edge)
+            
     process(clk)
     begin
         if falling_edge(clk) then
@@ -46,10 +44,9 @@ begin
         end if;
     end process;
 
-    -- Next state combinational logic
     process(CS, start, delay_count)
     begin
-        NS <= CS; -- default
+        NS <= CS; 
 
         case CS is
 
@@ -73,7 +70,6 @@ begin
         end case;
     end process;
 
-    -- Output and control signals (negative edge)
     process(clk)
     begin
         if falling_edge(clk) then
@@ -84,7 +80,6 @@ begin
                 case NS is
 
                     when IDLE =>
-                        -- do nothing
                         null;
 
                     when WR_HIT =>
@@ -120,14 +115,12 @@ architecture sim of fsm_tb is
         );
     end component;
 
-    -- DUT signals
     signal clk   : std_logic := '0';
     signal reset : std_logic := '0';
     signal start : std_logic := '0';
     signal busy  : std_logic;
 
 begin
-    -- Instantiate the DUT
     uut: fsm
         port map (
             clk   => clk,
@@ -136,7 +129,6 @@ begin
             busy  => busy
         );
 
-    -- Clock Generation 
     clk_process : process
     begin
         clk <= '0';
@@ -145,29 +137,23 @@ begin
         wait for 1 ns;
     end process;
 
-    -- Stimulus Process
     stim_proc : process
     begin
-        -- Initial values already set by signal declarations
 
-        -- Apply reset at rising edge
         wait until rising_edge(clk);
         reset <= '1';
 
         wait until rising_edge(clk);
         reset <= '0';
 
-        -- Apply start pulse at next rising edge
         wait until rising_edge(clk);
         start <= '1';
 
         wait until rising_edge(clk);
         start <= '0';
 
-        -- Allow FSM to run for some cycles
         wait for 20 ns;
 
-        -- End simulation cleanly
         assert false report "Simulation Finished" severity failure;
     end process;
 

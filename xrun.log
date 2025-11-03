@@ -1,0 +1,122 @@
+xrun(64): 23.09-s013: (c) Copyright 1995-2024 Cadence Design Systems, Inc.
+TOOL:	xrun(64)	23.09-s013: Started on Nov 02, 2025 at 20:08:35 EST
+xrun
+	-top chip_tb
+	gates.vhd
+	dff_fall.vhd
+	dff_rise.vhd
+	d_latch.vhd
+	decoder.vhd
+	mux_comp.vhd
+	mux2to1_8.vhd
+	mux2to1_2.vhd
+	mux4to1_8.vhd
+	mux4to1_1.vhd
+	mux4to1_2.vhd
+	req_latch.vhd
+	reg8_rise_en.vhd
+	reg8_fall_en.vhd
+	reg2_rise_en.vhd
+	reg2_fall_en.vhd
+	reg1_rise_en.vhd
+	reg3_rise.vhd
+	reg5_rise.vhd
+	reg3_fall.vhd
+	reg5_fall.vhd
+	counter_adder.vhd
+	inc_mod4.vhd
+	comparator.vhd
+	state_register.vhd
+	counter_logic.vhd
+	next_state_logic.vhd
+	output_logic.vhd
+	cache_fsm_struct.vhd
+	req_latch.vhd
+	tbuf.vhd
+	cache_block.vhd
+	chip.vhd
+	chip_tb.vhd
+	-gui
+	-access rwc
+reg5_rise.vhd:
+	errors: 0, warnings: 0
+reg3_fall.vhd:
+	errors: 0, warnings: 0
+counter_adder.vhd:
+	errors: 0, warnings: 0
+chip.vhd:
+        d1  => '0',
+                 |
+xmvhdl_p: *E,CNSTIN (chip.vhd,753|17): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor8_b0:  xnor2 port map (a => refill_cnt(0), b => '0', y => x8(0));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,767|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor8_b1:  xnor2 port map (a => refill_cnt(1), b => '0', y => x8(1));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,768|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor8_b2:  xnor2 port map (a => refill_cnt(2), b => '0', y => x8(2));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,769|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor8_b3:  xnor2 port map (a => refill_cnt(3), b => '1', y => x8(3));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,770|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor8_b4:  xnor2 port map (a => refill_cnt(4), b => '0', y => x8(4));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,771|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor10_b0: xnor2 port map (a => refill_cnt(0), b => '0', y => x10(0));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,779|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor10_b1: xnor2 port map (a => refill_cnt(1), b => '1', y => x10(1));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,780|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor10_b2: xnor2 port map (a => refill_cnt(2), b => '0', y => x10(2));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,781|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor10_b3: xnor2 port map (a => refill_cnt(3), b => '1', y => x10(3));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,782|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor10_b4: xnor2 port map (a => refill_cnt(4), b => '0', y => x10(4));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,783|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor12_b0: xnor2 port map (a => refill_cnt(0), b => '0', y => x12(0));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,791|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor12_b1: xnor2 port map (a => refill_cnt(1), b => '0', y => x12(1));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,792|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor12_b2: xnor2 port map (a => refill_cnt(2), b => '1', y => x12(2));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,793|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor12_b3: xnor2 port map (a => refill_cnt(3), b => '1', y => x12(3));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,794|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor12_b4: xnor2 port map (a => refill_cnt(4), b => '0', y => x12(4));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,795|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor14_b0: xnor2 port map (a => refill_cnt(0), b => '0', y => x14(0));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,803|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor14_b1: xnor2 port map (a => refill_cnt(1), b => '1', y => x14(1));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,804|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor14_b2: xnor2 port map (a => refill_cnt(2), b => '1', y => x14(2));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,805|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor14_b3: xnor2 port map (a => refill_cnt(3), b => '1', y => x14(3));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,806|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+  u_xnor14_b4: xnor2 port map (a => refill_cnt(4), b => '0', y => x14(4));
+                                                          |
+xmvhdl_p: *E,CNSTIN (chip.vhd,807|58): Port of type IN cannot be associated with a constant actual in VHDL-87..
+      b   => "10000",  -- decimal 16
+                   |
+xmvhdl_p: *E,CNSTIN (chip.vhd,819|19): Port of type IN cannot be associated with a constant actual in VHDL-87..
+      d1  => '0',              -- clear
+               |
+xmvhdl_p: *E,CNSTIN (chip.vhd,840|15): Port of type IN cannot be associated with a constant actual in VHDL-87..
+      d1  => '1',              -- set
+               |
+xmvhdl_p: *E,CNSTIN (chip.vhd,848|15): Port of type IN cannot be associated with a constant actual in VHDL-87..
+	errors: 24, warnings: 0
+xrun: *E,VHLERR: Error during parsing VHDL file (status 1), exiting.
+TOOL:	xrun(64)	23.09-s013: Exiting on Nov 02, 2025 at 20:08:36 EST  (total: 00:00:01)
