@@ -22,6 +22,7 @@ architecture structural of mux2to1 is
     
     signal sel_n, and0_out, and1_out : STD_LOGIC;
 begin
+    -- basic 2:1 mux built from gates
     u_inv: inv port map (a => sel, y => sel_n);
     u_and0: and2 port map (a => d0, b => sel_n, y => and0_out);
     u_and1: and2 port map (a => d1, b => sel, y => and1_out);
@@ -99,6 +100,7 @@ architecture structural of eq3 is
     
     signal xnor_out : STD_LOGIC_VECTOR(2 downto 0);
 begin
+    -- compare each bit using XNOR
     u_xnor0: xnor2 port map (a => a(0), b => b(0), y => xnor_out(0));
     u_xnor1: xnor2 port map (a => a(1), b => b(1), y => xnor_out(1));
     u_xnor2: xnor2 port map (a => a(2), b => b(2), y => xnor_out(2));
@@ -125,6 +127,7 @@ architecture structural of eq2 is
     
     signal xnor_out : STD_LOGIC_VECTOR(1 downto 0);
 begin
+    -- compare both bits
     u_xnor0: xnor2 port map (a => a(0), b => b(0), y => xnor_out(0));
     u_xnor1: xnor2 port map (a => a(1), b => b(1), y => xnor_out(1));
     u_and: and2 port map (a => xnor_out(0), b => xnor_out(1), y => eq);
@@ -152,6 +155,7 @@ architecture structural of mux2to1_8 is
         );
     end component;
 begin
+    -- bitwise 2:1 mux
     gen_bits: for i in 0 to 7 generate
         u_mux: mux2to1 port map (d0 => d0(i), d1 => d1(i), sel => sel, y => y(i));
     end generate;
@@ -180,6 +184,7 @@ architecture structural of mux4to1_8 is
         );
     end component;
 begin
+    -- bitwise 4:1 mux
     gen_bits: for i in 0 to 7 generate
         u_muxbit: mux4to1 port map (d0 => d0(i), d1 => d1(i), d2 => d2(i), d3 => d3(i), sel => sel, y => y(i));
     end generate;
@@ -212,4 +217,5 @@ architecture structural of mux4to1_1 is
     end component;
 begin
     u_core: mux4to1 port map (d0 => d0, d1 => d1, d2 => d2, d3 => d3, sel => sel, y => y);
+
 end structural;

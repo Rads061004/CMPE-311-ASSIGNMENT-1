@@ -150,6 +150,7 @@ begin
     gnd <= '0';
     vdd <= '1';
 
+    -- state encoding
     S_IDLE        <= "000";
     S_READ_HIT    <= "001";
     S_WRITE_HIT   <= "010";
@@ -157,6 +158,7 @@ begin
     S_WRITE_MISS  <= "100";
     S_DONE        <= "101";
 
+    -- check current state
     u_eq_idle       : eq3 port map (a => state, b => S_IDLE,        eq => is_idle);
     u_eq_read_hit   : eq3 port map (a => state, b => S_READ_HIT,    eq => is_read_hit);
     u_eq_write_hit  : eq3 port map (a => state, b => S_WRITE_HIT,   eq => is_write_hit);
@@ -164,11 +166,13 @@ begin
     u_eq_write_miss : eq3 port map (a => state, b => S_WRITE_MISS,  eq => is_write_miss);
     u_eq_done       : eq3 port map (a => state, b => S_DONE,        eq => is_done);
 
+    -- hit and miss detection
     u_hit_and : and2 port map (a => tag,  b => valid, y => hit);
     u_hit_inv : inv  port map (a => hit,  y => hit_n);
 
     u_rw_inv  : inv  port map (a => read_write, y => rw_n);
 
+    -- start control signals
     u_sah : and2 port map (a => start, b => hit,    y => start_and_hit);
     u_sam : and2 port map (a => start, b => hit_n,  y => start_and_miss);
 
@@ -198,6 +202,7 @@ begin
     next_from_idle_b1 <= idle_next_b1;
     next_from_idle_b2 <= idle_next_b2;
 
+    -- counter comparison logic
     u_cnt_ge0  : gte_zero      port map (a => counter, gte => cnt_gte_0);
     u_cnt_ge1  : gte_one       port map (a => counter, gte => cnt_gte_1);
     u_cnt_ge17 : gte_seventeen port map (a => counter, gte => cnt_gte_17);

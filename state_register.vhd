@@ -17,6 +17,7 @@ architecture Structural of state_register is
     
     signal state_int : STD_LOGIC_VECTOR(2 downto 0);
 begin
+    -- 3 flip-flops for each state bit 
     gen_dff: for i in 0 to 2 generate
         u_dff: dff_fall port map (
             clk   => clk, 
@@ -25,6 +26,7 @@ begin
             q     => state_int(i)
         );
     end generate;
-    
+            
+    -- output current state
     state <= state_int;
 end Structural;

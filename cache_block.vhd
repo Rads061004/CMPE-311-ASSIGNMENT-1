@@ -23,7 +23,7 @@ entity cache_block is
         tag_out    : out std_logic_vector(1 downto 0);
         hit_miss   : out std_logic;
 
-        -- NEW: peek interface for reading any byte combinationally
+        -- peek interface for reading any byte combinationally
         peek_sel   : in  std_logic_vector(1 downto 0);
         peek_data  : out std_logic_vector(7 downto 0)
     );
@@ -142,14 +142,17 @@ architecture structural of cache_block is
     signal one_sig     : std_logic;
 
 begin
+    -- constant logic '1' used for setting valid bit
     one_sig <= '1';
 
+    -- Decode which byte of the block we’re addressing
     u_byte_decoder: decoder
         port map (
             block_addr => byte_sel,
             block_sel  => byte_dec
         );
 
+    -- Mux decides whether write comes from CPU or memory refill
     u_write_src_mux: mux2to1_8
         port map (
             d0  => data_in,
@@ -158,6 +161,7 @@ begin
             y   => write_data
         );
 
+    -- Global write enable only when cache block is active
     u_we_global: and2
         port map (
             a => enable,
@@ -165,6 +169,7 @@ begin
             y => we_global
         );
 
+    -- Each byte register stores one byte of the cache line
     u_we_b0: and2 port map ( a => we_global, b => byte_dec(0), y => we_b0 );
     u_we_b1: and2 port map ( a => we_global, b => byte_dec(1), y => we_b1 );
     u_we_b2: and2 port map ( a => we_global, b => byte_dec(2), y => we_b2 );
@@ -286,7 +291,7 @@ begin
 
     hit_miss <= hit_sig;
 
-    -- NEW: Peek mux - structural mux to read any byte based on peek_sel
+    -- Peek mux - structural mux to read any byte based on peek_sel
     u_peek_mux: mux4to1_8
         port map (
             d0  => byte0_q,
@@ -297,4 +302,6 @@ begin
             y   => peek_data
         );
 
+
 end structural;
+

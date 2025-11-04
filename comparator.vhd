@@ -48,6 +48,7 @@ architecture structural of gte5 is
   signal gte_int : STD_LOGIC;
 
 begin
+  -- compare bits and find greater
   gen_bits : for i in 0 to 4 generate
     u_xnor : xnor2
       port map (a => a(i), b => b(i), y => eq_bit(i));
@@ -59,6 +60,7 @@ begin
       port map (a => a(i), b => b_n(i), y => gt_bit(i));
   end generate;
 
+  -- start from MSB and move down
   eqpref4   <= eq_bit(4);
   gt_sofar4 <= gt_bit(4);
 
@@ -98,6 +100,7 @@ begin
   u_gtsofar0_or : or2
     port map (a => gt_sofar1, b => gt_term0, y => gt_sofar0);
 
+  -- final output
   u_final_or : or2
     port map (a => gt_sofar0, b => eqpref0, y => gte_int);
 
@@ -181,4 +184,5 @@ begin
       gte => gte
     );
 end structural_gte_seventeen;
+
 
