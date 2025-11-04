@@ -13,12 +13,7 @@ entity cache_fsm_struct is
 
         busy           : out STD_LOGIC;    
         en             : out STD_LOGIC;    -- memory enable 
-        fsm_resp_pulse : out STD_LOGIC;    -- CPU should get read data now
-
-        -- debug taps
-        state_dbg      : out STD_LOGIC_VECTOR(2 downto 0);
-        next_state_dbg : out STD_LOGIC_VECTOR(2 downto 0);
-        counter_dbg    : out STD_LOGIC_VECTOR(4 downto 0)
+        fsm_resp_pulse : out STD_LOGIC     -- CPU should get read data now
     );
 end cache_fsm_struct;
 
@@ -126,10 +121,5 @@ begin
     busy           <= busy_int;
     en             <= en_int;
     fsm_resp_pulse <= resp_pulse_int;
-
-    -- export debug
-    state_dbg      <= state_sig;
-    next_state_dbg <= next_state_sig;
-    counter_dbg    <= counter_sig;
 
 end Structural;
