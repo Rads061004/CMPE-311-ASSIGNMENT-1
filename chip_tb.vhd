@@ -23,11 +23,7 @@ architecture tb of chip_tb is
 
       busy       : out   std_logic;
       mem_en     : out   std_logic;
-      mem_add    : out   std_logic_vector(5 downto 0);
-
-      fsm_state_dbg_s       : out std_logic_vector(2 downto 0);
-      fsm_next_state_dbg_s  : out std_logic_vector(2 downto 0);
-      fsm_counter_dbg_s     : out std_logic_vector(4 downto 0)
+      mem_add    : out   std_logic_vector(5 downto 0)
     );
   end component;
 
@@ -56,11 +52,6 @@ architecture tb of chip_tb is
   signal refill_active : std_logic := '0';
   signal neg_cnt       : integer range 0 to 31 := 0;
   signal refill_case   : integer := 0;
-
-  -- debug
-  signal fsm_state_dbg_s_tb      : std_logic_vector(2 downto 0);
-  signal fsm_next_state_dbg_s_tb : std_logic_vector(2 downto 0);
-  signal fsm_counter_dbg_s_tb    : std_logic_vector(4 downto 0);
 
   function U8(i : integer) return std_logic_vector is
   begin
@@ -93,11 +84,7 @@ begin
 
       busy       => busy,
       mem_en     => mem_en,
-      mem_add    => mem_add,
-
-      fsm_state_dbg_s       => fsm_state_dbg_s_tb,
-      fsm_next_state_dbg_s  => fsm_next_state_dbg_s_tb,
-      fsm_counter_dbg_s     => fsm_counter_dbg_s_tb
+      mem_add    => mem_add
     );
 
   -- 10ns period clock
@@ -268,5 +255,3 @@ begin
   end process;
 
 end tb;
-
-
