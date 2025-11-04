@@ -124,6 +124,7 @@ begin
     zero5   <= "00000";
     en_high <= '1';
 
+    -- store previous state
     u_prev_state_reg : reg3_rise
         port map (
             clk   => clk,
@@ -132,6 +133,7 @@ begin
             q     => prev_state
         );
 
+    -- check if state is same as previous
     u_state_eq : eq3
         port map (
             a  => state,
@@ -139,6 +141,7 @@ begin
             eq => state_same
         );
 
+    -- check for each working state
     u_is_read_hit : eq3
         port map (
             a  => state,
@@ -189,6 +192,7 @@ begin
             inc => cnt_inc
         );
 
+    -- check for each working state
     gen_cnt_mux : for i in 0 to 4 generate
         u_mux_cnt : mux2to1
             port map (
@@ -208,6 +212,7 @@ begin
             q     => cnt
         );
 
+    -- output current count
     counter <= cnt;
 
 end Structural;
