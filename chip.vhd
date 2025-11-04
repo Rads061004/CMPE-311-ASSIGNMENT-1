@@ -17,11 +17,7 @@ entity chip is
 
     busy       : out   std_logic;                  
     mem_en     : out   std_logic;                     
-    mem_add    : out   std_logic_vector(5 downto 0);  
-
-    fsm_state_dbg_s      : out std_logic_vector(2 downto 0);
-    fsm_next_state_dbg_s : out std_logic_vector(2 downto 0);
-    fsm_counter_dbg_s    : out std_logic_vector(4 downto 0)
+    mem_add    : out   std_logic_vector(5 downto 0)
   );
 end chip;
 
@@ -198,11 +194,7 @@ architecture structural of chip is
 
       busy           : out std_logic;   
       en             : out std_logic;   
-      fsm_resp_pulse : out std_logic;
-      
-      state_dbg      : out std_logic_vector(2 downto 0);
-      next_state_dbg : out std_logic_vector(2 downto 0);
-      counter_dbg    : out std_logic_vector(4 downto 0)
+      fsm_resp_pulse : out std_logic
     );
   end component;
     
@@ -456,17 +448,13 @@ begin
       clk            => clk,
       reset          => reset,
       start          => start,
-      tag            => hit_sel,          -- using hit_sel
+      tag            => hit_sel,
       valid          => valid_sel,
       read_write     => cpu_rd_wrn,
 
       busy           => busy_int,
       en             => fsm_en,
-      fsm_resp_pulse => fsm_resp_pulse,
-      
-      state_dbg      => fsm_state_dbg_s,
-      next_state_dbg => fsm_next_state_dbg_s,
-      counter_dbg    => fsm_counter_dbg_s
+      fsm_resp_pulse => fsm_resp_pulse
     );
 
   busy <= busy_int;
@@ -631,4 +619,3 @@ begin
   u_dff_set_tag_top: dff_fall port map (clk => clk, reset => reset, d => set_tag_top_d, q => set_tag_top);
 
 end structural;
-
