@@ -21,8 +21,10 @@ architecture structural of full_adder is
     
     signal xor1, and1, and2_sig, and3 : STD_LOGIC;
 begin
+    -- sum = a XOR b XOR cin
     u_xor1: xor2 port map (a => a, b => b, y => xor1);
     u_xor2: xor2 port map (a => xor1, b => cin, y => sum);
+    -- carry out logic
     u_and1: and2 port map (a => a, b => b, y => and1);
     u_and2: and2 port map (a => a, b => cin, y => and2_sig);
     u_and3: and2 port map (a => b, b => cin, y => and3);
@@ -48,6 +50,7 @@ architecture structural of adder5 is
     
     signal c : STD_LOGIC_VECTOR(4 downto 0);
 begin
+    -- chain of 5 full adders
     u_fa0: full_adder port map (a => a(0), b => b(0), cin => cin, sum => sum(0), cout => c(0));
     u_fa1: full_adder port map (a => a(1), b => b(1), cin => c(0), sum => sum(1), cout => c(1));
     u_fa2: full_adder port map (a => a(2), b => b(2), cin => c(1), sum => sum(2), cout => c(2));
@@ -75,6 +78,7 @@ architecture structural of inc5 is
     signal cout_unused : STD_LOGIC;
     signal cin_gnd : STD_LOGIC;
 begin
+    -- add 1 to input
     one <= "00001";
     cin_gnd <= '0';
     u_add: adder5 port map (a => a, b => one, cin => cin_gnd, sum => inc, cout => cout_unused);
@@ -104,6 +108,7 @@ architecture structural of reg5_rise is
     signal q_int : STD_LOGIC_VECTOR(4 downto 0);
     signal d_mux : STD_LOGIC_VECTOR(4 downto 0);
 begin
+    -- enable controls data load on rising edge
     gen_mux_dff: for i in 0 to 4 generate
         u_mux: mux2to1 port map (d0 => q_int(i), d1 => d(i), sel => en, y => d_mux(i));
         u_dff: dff_rise port map (clk => clk, reset => reset, d => d_mux(i), q => q_int(i));
@@ -129,8 +134,10 @@ architecture structural of reg3_fall is
         port (clk : in STD_LOGIC; reset : in STD_LOGIC; d : in STD_LOGIC; q : out STD_LOGIC);
     end component;
 begin
+    -- each bit stored in a falling-edge DFF
     gen_dff: for i in 0 to 2 generate
         u_dff: dff_fall port map (clk => clk, reset => reset, d => d(i), q => q(i));
     end generate;
 
 end structural;
+
