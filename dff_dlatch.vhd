@@ -14,8 +14,10 @@ architecture behavioral of dff_fall is
 begin
     process(clk, reset)
     begin
+        -- reset output to 0
         if reset = '1' then
             q <= '0';
+        -- latch data on falling edge
         elsif falling_edge(clk) then
             q <= d;
         end if;
@@ -39,8 +41,10 @@ architecture behavioral of dff_rise is
 begin
     process(clk, reset)
     begin
+        -- reset output to 0
         if reset = '1' then
             q <= '0';
+        -- latch data on rising edge
         elsif rising_edge(clk) then
             q <= d;
         end if;
@@ -63,9 +67,11 @@ architecture behavioral of dlatch is
 begin
     process(enable, d)
     begin
+        -- when enabled, output follows input
         if enable = '1' then
             q <= d;
         end if;
     end process;
 
 end behavioral;
+
