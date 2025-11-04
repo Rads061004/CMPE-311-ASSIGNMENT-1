@@ -7,9 +7,7 @@ end chip_tb;
 
 architecture tb of chip_tb is
 
-  ----------------------------------------------------------------
   -- DUT component
-  ----------------------------------------------------------------
   component chip
     port (
       cpu_add    : in    std_logic_vector(5 downto 0);
@@ -33,9 +31,7 @@ architecture tb of chip_tb is
     );
   end component;
 
-  ----------------------------------------------------------------
   -- Signals
-  ----------------------------------------------------------------
   signal clk   : std_logic := '0';
   signal reset : std_logic := '1';
 
@@ -43,7 +39,6 @@ architecture tb of chip_tb is
   signal cpu_rd_wrn : std_logic := '1';  -- '1' = read
   signal start      : std_logic := '0';
 
-  -- bidirectional bus modeling
   signal cpu_data   : std_logic_vector(7 downto 0);
   signal cpu_d_drv  : std_logic_vector(7 downto 0) := (others => '0');
   signal cpu_d_oe   : std_logic := '0';
@@ -56,7 +51,6 @@ architecture tb of chip_tb is
   signal Vdd        : std_logic := '1';
   signal Gnd        : std_logic := '0';
 
-  -- memory refill bookkeeping
   signal mem_en_q      : std_logic := '0';
   signal rd_q          : std_logic := '1';
   signal refill_active : std_logic := '0';
@@ -68,9 +62,6 @@ architecture tb of chip_tb is
   signal fsm_next_state_dbg_s_tb : std_logic_vector(2 downto 0);
   signal fsm_counter_dbg_s_tb    : std_logic_vector(4 downto 0);
 
-  ----------------------------------------------------------------
-  -- Tiny helpers (pure, no wait)
-  ----------------------------------------------------------------
   function U8(i : integer) return std_logic_vector is
   begin
     return std_logic_vector(to_unsigned(i, 8));
@@ -86,9 +77,7 @@ architecture tb of chip_tb is
   end MAKE_ADDR;
 
 begin
-  ----------------------------------------------------------------
   -- DUT
-  ----------------------------------------------------------------
   dut: chip
     port map (
       cpu_add    => cpu_add,
@@ -111,22 +100,13 @@ begin
       fsm_counter_dbg_s     => fsm_counter_dbg_s_tb
     );
 
-  ----------------------------------------------------------------
   -- 10ns period clock
-  ----------------------------------------------------------------
   clk <= not clk after 5 ns;
 
-  ----------------------------------------------------------------
   -- CPU drives bus only when writing
-  ----------------------------------------------------------------
   cpu_data <= cpu_d_drv when cpu_d_oe = '1' else (others => 'Z');
 
-  ----------------------------------------------------------------
   -- Memory model / refill data generator
-  -- Matches your earlier timing:
-  --   after mem_en rising edge for a READ miss,
-  --   at neg_cnt=8 -> DE, 10 -> AD, 12 -> BE, 14 -> EF.
-  ----------------------------------------------------------------
   mem_model : process(clk)
   begin
     if (clk'event and clk='0') then  -- falling edge
@@ -155,10 +135,7 @@ begin
     end if;
   end process;
 
-  ----------------------------------------------------------------
-  -- Reset generator:
-  -- Hold reset high across two negedges so DUT sees it.
-  ----------------------------------------------------------------
+  -- Reset generator
   reset_gen : process
   begin
     -- already '1'
@@ -168,45 +145,28 @@ begin
     wait;
   end process;
 
-  ----------------------------------------------------------------
-  -- Watchdog
-  ----------------------------------------------------------------
   watchdog : process
   begin
     wait for 5 ms;
     assert false report "Watchdog timeout - TB stuck" severity failure;
   end process;
 
-  ----------------------------------------------------------------
   -- Stimulus sequence
-  --
-  -- We do four ops, matching your waveform expectations:
-  --   1) READ MISS  (tag="11", idx="10", byte="00") -> triggers refill_case=1
-  --   2) WRITE HIT  (same line, byte="01", write 0xA5)
-  --   3) READ HIT   (read back byte "01" -> expect A5)
-  --   4) WRITE MISS (different tag, same idx, byte="10", write 0x7E)
-  ----------------------------------------------------------------
   stim : process
     -- constants for addresses
-    constant TAG_HIT  : std_logic_vector(1 downto 0) := "11"; -- the line we refill
+    constant TAG_HIT  : std_logic_vector(1 downto 0) := "11"; 
     constant IDX_HIT  : std_logic_vector(1 downto 0) := "10";
     constant B00      : std_logic_vector(1 downto 0) := "00";
     constant B01      : std_logic_vector(1 downto 0) := "01";
     constant B10      : std_logic_vector(1 downto 0) := "10";
   begin
-    ----------------------------------------------------------------
+                                                 
     -- Wait for reset low
-    ----------------------------------------------------------------
     wait until reset = '0';
     -- give one more falling edge to settle
     wait until clk'event and clk='0';
 
-    ------------------------------------------------------------
-    -- 1) READ MISS to TAG_HIT/IDX_HIT/B00
-    -- Drive address/data/start on a POSedge (per spec),
-    -- then release data bus for read.
-    ------------------------------------------------------------
-    refill_case <= 1;  -- tells memory model to serve DE AD BE EF
+    refill_case <= 1;  
 
     -- wait for DUT not busy
     if busy = '1' then
@@ -221,24 +181,16 @@ begin
     cpu_d_oe   <= '0';             -- release bus
     start      <= '1';             -- start pulse
 
-    -- next negedge DUT will latch it, so drop start on next posedge
     wait until clk'event and clk='1';
     start      <= '0';
 
-    -- wait until busy goes high (handshake)
     if busy = '0' then
       wait until busy = '1';
     end if;
-    -- wait until busy drops again (operation finished)
+                                                 
     wait until busy = '0';
 
-    -- give one posedge for CPU to "sample" data
     wait until clk'event and clk='1';
-
-    ------------------------------------------------------------
-    -- 2) WRITE HIT to same line, byte offset B01, data = 0xA5
-    -- CPU drives data during write.
-    ------------------------------------------------------------
 
     -- wait for not-busy just in case
     if busy = '1' then
@@ -263,16 +215,9 @@ begin
     -- wait for busy low (write finished)
     wait until busy = '0';
 
-    -- release bus after write completes
     cpu_d_oe   <= '0';
 
-    -- allow one posedge between ops
     wait until clk'event and clk='1';
-
-    ------------------------------------------------------------
-    -- 3) READ HIT from same line, byte offset B01
-    -- Expect to see 0xA5 driven back.
-    ------------------------------------------------------------
 
     if busy = '1' then
       wait until busy = '0';
@@ -295,18 +240,12 @@ begin
     -- CPU samples at following posedge
     wait until clk'event and clk='1';
 
-    ------------------------------------------------------------
-    -- 4) WRITE MISS (different tag, same idx, offset B10)
-    -- No write allocate for miss, but timing is same as write hit
-    -- per project spec.
-    ------------------------------------------------------------
-
     if busy = '1' then
       wait until busy = '0';
     end if;
 
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR("01", IDX_HIT, B10); -- different tag = miss
+    cpu_add    <= MAKE_ADDR("01", IDX_HIT, B10); 
     cpu_rd_wrn <= '0';             -- WRITE
     cpu_d_drv  <= U8(16#7E#);
     cpu_d_oe   <= '1';
@@ -322,7 +261,6 @@ begin
 
     cpu_d_oe   <= '0';
 
-    -- let things coast ~20 cycles
     for i in 0 to 20 loop
       wait until clk'event and clk='1';
     end loop;
@@ -331,3 +269,4 @@ begin
   end process;
 
 end tb;
+
