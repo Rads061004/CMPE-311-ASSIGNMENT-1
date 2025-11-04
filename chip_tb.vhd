@@ -106,14 +106,13 @@ begin
   -- CPU drives bus only when writing
   cpu_data <= cpu_d_drv when cpu_d_oe = '1' else (others => 'Z');
 
-  -- Memory model / refill data generator
   mem_model : process(clk)
   begin
     if (clk'event and clk='0') then  -- falling edge
       mem_en_q <= mem_en;
       rd_q     <= cpu_rd_wrn;
 
-      -- detect start of new refill (mem_en rising while doing READ)
+      -- detect start of new refill 
       if (mem_en_q = '0' and mem_en = '1' and rd_q = '1') then
         refill_active <= '1';
         neg_cnt       <= 0;
@@ -269,4 +268,5 @@ begin
   end process;
 
 end tb;
+
 
