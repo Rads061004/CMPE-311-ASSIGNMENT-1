@@ -6,12 +6,12 @@ entity cache_fsm_struct is
         clk            : in  STD_LOGIC;
         reset          : in  STD_LOGIC;
 
-        start          : in  STD_LOGIC;    -- CPU request strobe
+        start          : in  STD_LOGIC;    
         tag            : in  STD_LOGIC;    -- tag match boolean for indexed line
         valid          : in  STD_LOGIC;    -- valid bit for indexed line
         read_write     : in  STD_LOGIC;    -- '1' = read, '0' = write
 
-        busy           : out STD_LOGIC;    -- asserted while servicing
+        busy           : out STD_LOGIC;    
         en             : out STD_LOGIC;    -- memory enable 
         fsm_resp_pulse : out STD_LOGIC;    -- CPU should get read data now
 
@@ -100,7 +100,7 @@ begin
             state      => state_sig
         );
 
-    -- counter_logic (tracks how long we've been in service states)
+    -- counter_logic (tracks how long we've been in states)
     U3_counter_logic : counter_logic
         port map (
             clk     => clk,
