@@ -122,8 +122,5 @@ begin
     en             <= en_int;
     fsm_resp_pulse <= resp_pulse_int;
 
-<<<<<<< HEAD
+
 end Structural;
-=======
-end Structural;
->>>>>>> 9acad49de36a2658c308abcec6d7d810ca44f0f9
