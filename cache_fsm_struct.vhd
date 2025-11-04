@@ -12,8 +12,8 @@ entity cache_fsm_struct is
         read_write     : in  STD_LOGIC;    -- '1' = read, '0' = write
 
         busy           : out STD_LOGIC;    -- asserted while servicing
-        en             : out STD_LOGIC;    -- memory enable (miss traffic)
-        fsm_resp_pulse : out STD_LOGIC;    -- "CPU should get read data now"
+        en             : out STD_LOGIC;    -- memory enable 
+        fsm_resp_pulse : out STD_LOGIC;    -- CPU should get read data now
 
         -- debug taps
         state_dbg      : out STD_LOGIC_VECTOR(2 downto 0);
@@ -24,9 +24,7 @@ end cache_fsm_struct;
 
 architecture Structural of cache_fsm_struct is
 
-    --------------------------------------------------------------------
     -- Sub-block declarations
-    --------------------------------------------------------------------
     component next_state_logic
         Port (
             start      : in  STD_LOGIC;
@@ -71,9 +69,7 @@ architecture Structural of cache_fsm_struct is
         );
     end component;
 
-    --------------------------------------------------------------------
     -- Internal nets
-    --------------------------------------------------------------------
     signal state_sig      : STD_LOGIC_VECTOR(2 downto 0);
     signal next_state_sig : STD_LOGIC_VECTOR(2 downto 0);
     signal counter_sig    : STD_LOGIC_VECTOR(4 downto 0);
@@ -83,9 +79,7 @@ architecture Structural of cache_fsm_struct is
     signal resp_pulse_int : STD_LOGIC;
 
 begin
-    ----------------------------------------------------------------
-    -- next_state_logic (pure comb)
-    ----------------------------------------------------------------
+    -- next_state_logic 
     U1_next_state_logic : next_state_logic
         port map (
             start      => start,
@@ -97,9 +91,7 @@ begin
             next_state => next_state_sig
         );
 
-    ----------------------------------------------------------------
     -- state_register (sequential state update)
-    ----------------------------------------------------------------
     U2_state_register : state_register
         port map (
             clk        => clk,
@@ -108,9 +100,7 @@ begin
             state      => state_sig
         );
 
-    ----------------------------------------------------------------
     -- counter_logic (tracks how long we've been in service states)
-    ----------------------------------------------------------------
     U3_counter_logic : counter_logic
         port map (
             clk     => clk,
@@ -119,13 +109,7 @@ begin
             counter => counter_sig
         );
 
-    ----------------------------------------------------------------
     -- output_logic (decodes outputs from current/next state)
-    -- Produces:
-    --    busy_int        = "busy"
-    --    en_int          = "mem_en / refill enable"
-    --    resp_pulse_int  = one-cycle pulse to capture read data
-    ----------------------------------------------------------------
     U4_output_logic : output_logic
         port map (
             clk         => clk,
@@ -138,9 +122,7 @@ begin
             resp_pulse  => resp_pulse_int
         );
 
-    ----------------------------------------------------------------
     -- Hook internal nets to top-level outputs
-    ----------------------------------------------------------------
     busy           <= busy_int;
     en             <= en_int;
     fsm_resp_pulse <= resp_pulse_int;
