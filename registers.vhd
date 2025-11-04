@@ -33,7 +33,9 @@ architecture structural of reg1_rise_en is
     signal q_fb  : STD_LOGIC;
     signal d_sel : STD_LOGIC;
 begin
+    -- choose between old and new data
     u_mux: mux2to1 port map (d0 => q_fb, d1 => d, sel => en, y => d_sel);
+    -- store data on rising edge
     u_dff: dff_rise port map (clk => clk, reset => reset, d => d_sel, q => q_fb);
     q <= q_fb;
 end structural;
@@ -73,6 +75,7 @@ architecture structural of reg2_rise_en is
     signal q_fb  : STD_LOGIC_VECTOR(1 downto 0);
     signal d_sel : STD_LOGIC_VECTOR(1 downto 0);
 begin
+    -- bitwise register logic
     gen_bit: for i in 0 to 1 generate
         u_mux: mux2to1 port map (d0 => q_fb(i), d1 => d(i), sel => en, y => d_sel(i));
         u_dff: dff_rise port map (clk => clk, reset => reset, d => d_sel(i), q => q_fb(i));
@@ -115,6 +118,7 @@ architecture structural of reg8_rise_en is
     signal q_fb  : STD_LOGIC_VECTOR(7 downto 0);
     signal d_sel : STD_LOGIC_VECTOR(7 downto 0);
 begin
+    -- loop over all bits
     gen_bit: for i in 0 to 7 generate
         u_mux: mux2to1 port map (d0 => q_fb(i), d1 => d(i), sel => en, y => d_sel(i));
         u_dff: dff_rise port map (clk => clk, reset => reset, d => d_sel(i), q => q_fb(i));
@@ -144,6 +148,7 @@ architecture structural of reg3_rise is
         );
     end component;
 begin
+     -- simple DFF array
     gen_ffbits: for i in 0 to 2 generate
         u_ff_rise: dff_rise port map (clk => clk, reset => reset, d => d(i), q => q(i));
     end generate;
@@ -184,9 +189,11 @@ architecture structural of reg5_fall is
     signal q_int : STD_LOGIC_VECTOR(4 downto 0);
     signal d_sel : STD_LOGIC_VECTOR(4 downto 0);
 begin
+    -- data captured on falling edge
     gen_regbits: for i in 0 to 4 generate
         u_mux_en: mux2to1 port map (d0 => q_int(i), d1 => d(i), sel => en, y => d_sel(i));
         u_ff: dff_fall port map (clk => clk, reset => reset, d => d_sel(i), q => q_int(i));
     end generate;
     q <= q_int;
+
 end structural;
