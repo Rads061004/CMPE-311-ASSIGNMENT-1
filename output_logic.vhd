@@ -2,13 +2,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity output_logic is
-    port (
-        clk         : in  STD_LOGIC;                     
-        reset       : in  STD_LOGIC;                    
-
+    port (                    
         state       : in  STD_LOGIC_VECTOR(2 downto 0);   -- current FSM state
-        next_state  : in  STD_LOGIC_VECTOR(2 downto 0);   -- next FSM state
-        counter     : in  STD_LOGIC_VECTOR(4 downto 0);   
+        next_state  : in  STD_LOGIC_VECTOR(2 downto 0);   -- next FSM state   
 
         busy        : out STD_LOGIC;                   
         en          : out STD_LOGIC;                      -- assert mem_en for MISS
@@ -150,3 +146,4 @@ begin
     resp_pulse <= finishing_read;
 
 end Structural;
+
