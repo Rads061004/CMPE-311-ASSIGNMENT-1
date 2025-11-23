@@ -74,14 +74,22 @@ architecture structural of inc5 is
               sum : out STD_LOGIC_VECTOR(4 downto 0); cout : out STD_LOGIC);
     end component;
     
-    signal one : STD_LOGIC_VECTOR(4 downto 0);
+    signal one_0 : STD_LOGIC;
+    signal one_1 : STD_LOGIC;
+    signal one_2 : STD_LOGIC;
+    signal one_3 : STD_LOGIC;
+    signal one_4 : STD_LOGIC;
     signal cout_unused : STD_LOGIC;
     signal cin_gnd : STD_LOGIC;
 begin
-    -- add 1 to input
-    one <= "00001";
+    
+    one_4 <= '0';  
+    one_3 <= '0';
+    one_2 <= '0';
+    one_1 <= '0';
+    one_0 <= '1';
     cin_gnd <= '0';
-    u_add: adder5 port map (a => a, b => one, cin => cin_gnd, sum => inc, cout => cout_unused);
+    u_add: adder5 port map (a => a, b(4) => one_4, b(3) => one_3, b(2) => one_2, b(1) => one_1, b(0) => one_0, cin => cin_gnd, sum => inc, cout => cout_unused);
 end structural;
 
 library IEEE;
@@ -140,4 +148,3 @@ begin
     end generate;
 
 end structural;
-
