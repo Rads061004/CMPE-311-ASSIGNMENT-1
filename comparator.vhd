@@ -142,14 +142,28 @@ architecture structural_gte_one of gte_one is
     );
   end component;
 
-  signal one : STD_LOGIC_VECTOR(4 downto 0);
+  signal one_0 : STD_LOGIC;
+  signal one_1 : STD_LOGIC;
+  signal one_2 : STD_LOGIC;
+  signal one_3 : STD_LOGIC;
+  signal one_4 : STD_LOGIC;
+  
 begin
-  one <= "00001";
 
+  one_4 <= '0';  
+  one_3 <= '0';
+  one_2 <= '0';
+  one_1 <= '0';
+  one_0 <= '1';
+  
   u_ge1: gte5
     port map (
       a   => a,
-      b   => one,
+      b(4) => one_4,
+      b(3) => one_3,
+      b(2) => one_2,
+      b(1) => one_1,
+      b(0) => one_0,
       gte => gte
     );
 end structural_gte_one;
@@ -173,16 +187,27 @@ architecture structural_gte_seventeen of gte_seventeen is
     );
   end component;
 
-  signal seventeen : STD_LOGIC_VECTOR(4 downto 0);
+  signal seventeen_0 : STD_LOGIC;
+  signal seventeen_1 : STD_LOGIC;
+  signal seventeen_2 : STD_LOGIC;
+  signal seventeen_3 : STD_LOGIC;
+  signal seventeen_4 : STD_LOGIC;
 begin
-  seventeen <= "10001";
+
+  seventeen_4 <= '1';  
+  seventeen_3 <= '0';
+  seventeen_2 <= '0';
+  seventeen_1 <= '0';
+  seventeen_0 <= '1';  
 
   u_ge17: gte5
     port map (
       a   => a,
-      b   => seventeen,
+      b(4) => seventeen_4,
+      b(3) => seventeen_3,
+      b(2) => seventeen_2,
+      b(1) => seventeen_1,
+      b(0) => seventeen_0,
       gte => gte
     );
 end structural_gte_seventeen;
-
-
