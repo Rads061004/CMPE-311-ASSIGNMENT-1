@@ -66,13 +66,6 @@ architecture Structural of next_state_logic is
         );
     end component;
 
-    signal S_IDLE        : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_READ_HIT    : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_WRITE_HIT   : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_READ_MISS   : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_WRITE_MISS  : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_DONE        : STD_LOGIC_VECTOR(2 downto 0);
-
     signal is_idle        : STD_LOGIC;
     signal is_read_hit    : STD_LOGIC;
     signal is_write_hit   : STD_LOGIC;
@@ -104,7 +97,7 @@ architecture Structural of next_state_logic is
     signal cnt_gte_1      : STD_LOGIC;
     signal cnt_gte_17     : STD_LOGIC;
 
-    signal c0, c1, c2, c3, c4        : STD_LOGIC;
+    signal m_a, m_b, m_c, m_d, m_e        : STD_LOGIC;
     signal c1_n, c2_n, c3_n, c4_n    : STD_LOGIC;
     signal upper_zero                : STD_LOGIC;
     signal cnt_eq_1                  : STD_LOGIC;
@@ -150,21 +143,13 @@ begin
     gnd <= '0';
     vdd <= '1';
 
-    -- state encoding
-    S_IDLE        <= "000";
-    S_READ_HIT    <= "001";
-    S_WRITE_HIT   <= "010";
-    S_READ_MISS   <= "011";
-    S_WRITE_MISS  <= "100";
-    S_DONE        <= "101";
-
     -- check current state
-    u_eq_idle       : eq3 port map (a => state, b => S_IDLE,        eq => is_idle);
-    u_eq_read_hit   : eq3 port map (a => state, b => S_READ_HIT,    eq => is_read_hit);
-    u_eq_write_hit  : eq3 port map (a => state, b => S_WRITE_HIT,   eq => is_write_hit);
-    u_eq_read_miss  : eq3 port map (a => state, b => S_READ_MISS,   eq => is_read_miss);
-    u_eq_write_miss : eq3 port map (a => state, b => S_WRITE_MISS,  eq => is_write_miss);
-    u_eq_done       : eq3 port map (a => state, b => S_DONE,        eq => is_done);
+    u_eq_idle       : eq3 port map (a => state, b(2) => gnd, b(1) => gnd, b(0) => gnd, eq => is_idle);
+    u_eq_read_hit   : eq3 port map (a => state, b(2) => gnd, b(1) => gnd, b(0) => vdd, eq => is_read_hit);
+    u_eq_write_hit  : eq3 port map (a => state, b(2) => gnd, b(1) => vdd, b(0) => gnd, eq => is_write_hit);
+    u_eq_read_miss  : eq3 port map (a => state, b(2) => gnd, b(1) => vdd, b(0) => vdd, eq => is_read_miss);
+    u_eq_write_miss : eq3 port map (a => state, b(2) => vdd, b(1) => gnd, b(0) => gnd, eq => is_write_miss);
+    u_eq_done       : eq3 port map (a => state, b(2) => vdd, b(1) => gnd, b(0) => vdd, eq => is_done);
 
     -- hit and miss detection
     u_hit_and : and2 port map (a => tag,  b => valid, y => hit);
@@ -207,16 +192,16 @@ begin
     u_cnt_ge1  : gte_one       port map (a => counter, gte => cnt_gte_1);
     u_cnt_ge17 : gte_seventeen port map (a => counter, gte => cnt_gte_17);
 
-    c0 <= counter(0);
-    c1 <= counter(1);
-    c2 <= counter(2);
-    c3 <= counter(3);
-    c4 <= counter(4);
+    m_a <= counter(0);
+    m_b <= counter(1);
+    m_c <= counter(2);
+    m_d <= counter(3);
+    m_e <= counter(4);
 
-    u_inv1: inv port map (a => c1, y => c1_n);
-    u_inv2: inv port map (a => c2, y => c2_n);
-    u_inv3: inv port map (a => c3, y => c3_n);
-    u_inv4: inv port map (a => c4, y => c4_n);
+    u_inv1: inv port map (a => m_a, y => c1_n);
+    u_inv2: inv port map (a => m_b, y => c2_n);
+    u_inv3: inv port map (a => m_c, y => c3_n);
+    u_inv4: inv port map (a => m_d, y => c4_n);
 
     u_and_upper: and4 port map (
         a => c1_n,
@@ -227,7 +212,7 @@ begin
     );
 
     u_and_cnt1: and2 port map (
-        a => c0,
+        a => m_a,
         b => upper_zero,
         y => cnt_eq_1
     );
@@ -331,3 +316,4 @@ begin
         );
 
 end Structural;
+
