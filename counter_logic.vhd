@@ -91,11 +91,6 @@ architecture Structural of counter_logic is
         );
     end component;
 
-    signal S_READ_HIT    : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_WRITE_HIT   : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_READ_MISS   : STD_LOGIC_VECTOR(2 downto 0);
-    signal S_WRITE_MISS  : STD_LOGIC_VECTOR(2 downto 0);
-
     signal prev_state    : STD_LOGIC_VECTOR(2 downto 0);
 
     signal state_same    : STD_LOGIC;
@@ -112,16 +107,11 @@ architecture Structural of counter_logic is
     signal cnt_inc        : STD_LOGIC_VECTOR(4 downto 0);
     signal cnt_next       : STD_LOGIC_VECTOR(4 downto 0);
 
-    signal zero5          : STD_LOGIC_VECTOR(4 downto 0);
+    signal zero           : STD_LOGIC;
     signal en_high        : STD_LOGIC;
 
 begin
-    S_READ_HIT   <= "001";
-    S_WRITE_HIT  <= "010";
-    S_READ_MISS  <= "011";
-    S_WRITE_MISS <= "100";
-
-    zero5   <= "00000";
+    zero <= '0';
     en_high <= '1';
 
     -- store previous state
@@ -145,28 +135,36 @@ begin
     u_is_read_hit : eq3
         port map (
             a  => state,
-            b  => S_READ_HIT,
+            b(2) => zero,
+            b(1) => zero,
+            b(0) => en_high,
             eq => is_read_hit
         );
 
     u_is_write_hit : eq3
         port map (
             a  => state,
-            b  => S_WRITE_HIT,
+            b(2) => zero,
+            b(1) => en_high,
+            b(0) => zero,
             eq => is_write_hit
         );
 
     u_is_read_miss : eq3
         port map (
             a  => state,
-            b  => S_READ_MISS,
+            b(2) => zero,
+            b(1) => en_high,
+            b(0) => en_high,
             eq => is_read_miss
         );
 
     u_is_write_miss : eq3
         port map (
             a  => state,
-            b  => S_WRITE_MISS,
+            b(2) => en_high,
+            b(1) => zero,
+            b(0) => zero,
             eq => is_write_miss
         );
 
@@ -196,7 +194,7 @@ begin
     gen_cnt_mux : for i in 0 to 4 generate
         u_mux_cnt : mux2to1
             port map (
-                d0  => zero5(i),
+                d0 => zero,
                 d1  => cnt_inc(i),
                 sel => should_inc,
                 y   => cnt_next(i)
