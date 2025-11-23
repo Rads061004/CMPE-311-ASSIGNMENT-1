@@ -11,9 +11,7 @@ entity chip is
     clk        : in    std_logic;
     reset      : in    std_logic;
 
-    mem_data   : in    std_logic_vector(7 downto 0);   
-    Vdd        : in    std_logic;                      
-    Gnd        : in    std_logic;                
+    mem_data   : in    std_logic_vector(7 downto 0);                  
 
     busy       : out   std_logic;                  
     mem_en     : out   std_logic;                     
@@ -619,3 +617,4 @@ begin
   u_dff_set_tag_top: dff_fall port map (clk => clk, reset => reset, d => set_tag_top_d, q => set_tag_top);
 
 end structural;
+
