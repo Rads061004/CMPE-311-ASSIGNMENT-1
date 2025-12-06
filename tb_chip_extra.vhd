@@ -8,7 +8,7 @@ end tb_chip_extra;
 architecture sim of tb_chip_extra is
 
     signal cpu_add       : std_logic_vector(5 downto 0);
-    signal cpu_data : std_logic_vector(7 downto 0) := (others => 'Z');
+    signal cpu_data : std_logic_vector(7 downto 0);
     signal cpu_rd_wrn    : std_logic;
     signal start         : std_logic;
     signal clk           : std_logic := '0';
