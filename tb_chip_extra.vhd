@@ -6,39 +6,40 @@ entity tb_chip_extra is
 end tb_chip_extra;
 
 architecture sim of tb_chip_extra is
+
+    ----------------------------------------------------------------------
+    -- DUT PORT SIGNALS
+    ----------------------------------------------------------------------
     signal cpu_add       : std_logic_vector(5 downto 0);
     signal cpu_data      : std_logic_vector(7 downto 0);
     signal cpu_rd_wrn    : std_logic;
     signal start         : std_logic;
     signal clk           : std_logic := '0';
     signal reset         : std_logic;
+
     signal mem_data      : std_logic_vector(7 downto 0);
     signal busy          : std_logic;
     signal mem_en        : std_logic;
     signal mem_add       : std_logic_vector(5 downto 0);
-    signal cpu_data_drv  : std_logic_vector(7 downto 0);
-    signal cpu_data_oe_sim : std_logic := '0';
 
-    component chip_extra
-        port(
-            cpu_add    : in  std_logic_vector(5 downto 0);
-            cpu_data   : inout std_logic_vector(7 downto 0);
-            cpu_rd_wrn : in  std_logic;
-            start      : in  std_logic;
-            clk        : in  std_logic;
-            reset      : in  std_logic;
-            mem_data   : in  std_logic_vector(7 downto 0);
-            busy       : out std_logic;
-            mem_en     : out std_logic;
-            mem_add    : out std_logic_vector(5 downto 0)
-        );
-    end component;
+    ----------------------------------------------------------------------
+    -- CPU → DUT bus simulation
+    ----------------------------------------------------------------------
+    signal cpu_data_drv     : std_logic_vector(7 downto 0);
+    signal cpu_data_oe_sim  : std_logic := '0';
 
 begin
+
+    ----------------------------------------------------------------------
+    -- CLOCK: 20 ns period
+    ----------------------------------------------------------------------
     clk <= not clk after 10 ns;
 
-    uut: chip_extra
-        port map(
+    ----------------------------------------------------------------------
+    -- DUT INSTANTIATION
+    ----------------------------------------------------------------------
+    uut : entity work.chip_extra
+        port map (
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
             cpu_rd_wrn => cpu_rd_wrn,
@@ -51,32 +52,107 @@ begin
             mem_add    => mem_add
         );
 
+    ----------------------------------------------------------------------
+    -- TRI-STATE BUS MODEL
+    ----------------------------------------------------------------------
     cpu_data <= cpu_data_drv when cpu_data_oe_sim = '1' else (others => 'Z');
-    
+
+    ----------------------------------------------------------------------
+    -- SIMPLE MEMORY MODEL (returns mem_add as data)
+    ----------------------------------------------------------------------
     mem_data <= std_logic_vector(to_unsigned(to_integer(unsigned(mem_add)), 8));
 
-    process
+    ----------------------------------------------------------------------
+    -- TESTBENCH STIMULUS
+    ----------------------------------------------------------------------
+    stim : process
     begin
-        cpu_data_drv <= (others => '0');
+        ------------------------------------------------------------------
+        -- INITIALIZE
+        ------------------------------------------------------------------
+        cpu_data_drv    <= (others => '0');
         cpu_data_oe_sim <= '0';
-        cpu_rd_wrn <= '1';
-        cpu_add <= (others => '0');
-        start <= '0';
+        cpu_rd_wrn      <= '1';
+        cpu_add         <= (others => '0');
+        start           <= '0';
+
         reset <= '1';
         wait for 50 ns;
         reset <= '0';
         wait for 50 ns;
-        
-        -- Simple test
-        cpu_add <= "000100";
+
+        ------------------------------------------------------------------
+        -- TEST 1: READ MISS → bank0 refill
+        ------------------------------------------------------------------
+        report "TEST 1: Read miss triggers refill into bank0";
+        cpu_add    <= "000100";
         cpu_rd_wrn <= '1';
-        start <= '1';
+        start      <= '1';
         wait for 20 ns;
         start <= '0';
         wait until busy = '0';
-        
-        report "Test completed";
+        wait for 20 ns;
+
+        ------------------------------------------------------------------
+        -- TEST 2: HIT in bank0
+        ------------------------------------------------------------------
+        report "TEST 2: Read hit bank0";
+        cpu_add    <= "000100";
+        cpu_rd_wrn <= '1';
+        start <= '1'; wait for 20 ns; start <= '0';
+        wait until busy = '0';
+        wait for 20 ns;
+
+        ------------------------------------------------------------------
+        -- TEST 3: MISS → refill bank1
+        ------------------------------------------------------------------
+        report "TEST 3: Read miss → refill bank1";
+        cpu_add    <= "010100";
+        cpu_rd_wrn <= '1';
+        start <= '1'; wait for 20 ns; start <= '0';
+        wait until busy = '0';
+        wait for 20 ns;
+
+        ------------------------------------------------------------------
+        -- TEST 4: LRU flip
+        ------------------------------------------------------------------
+        report "TEST 4: LRU flip test";
+        cpu_add <= "000100";
+        start <= '1'; wait for 20 ns; start <= '0';
+        wait until busy = '0';
+
+        cpu_add <= "010100";
+        start <= '1'; wait for 20 ns; start <= '0';
+        wait until busy = '0';
+
+        ------------------------------------------------------------------
+        -- TEST 5: WRITE HIT to bank1
+        ------------------------------------------------------------------
+        report "TEST 5: Write hit to bank1";
+        cpu_data_drv    <= x"AA";
+        cpu_data_oe_sim <= '1';
+        cpu_rd_wrn      <= '0';
+        cpu_add         <= "010100";
+
+        start <= '1'; wait for 20 ns; start <= '0';
+        wait until busy = '0';
+
+        cpu_data_oe_sim <= '0';
+
+        ------------------------------------------------------------------
+        -- TEST 6: READ BACK WRITTEN VALUE
+        ------------------------------------------------------------------
+        report "TEST 6: Read back value from bank1";
+        cpu_rd_wrn <= '1';
+        cpu_add    <= "010100";
+        start <= '1'; wait for 20 ns; start <= '0';
+        wait until busy = '0';
+
+        ------------------------------------------------------------------
+        -- FINISH
+        ------------------------------------------------------------------
+        report "ALL TESTS COMPLETED";
         wait;
     end process;
-    
+
 end sim;
