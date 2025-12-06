@@ -59,9 +59,7 @@ begin
         reset <= '0';
         wait for 50 ns;
 
-        report "==============================================================";
         report "TEST 1: READ MISS triggers refill into bank0 (LRU=0)";
-        report "==============================================================";
 
         cpu_add    <= "000100";  -- tag=00 index=01 offset=00
         cpu_rd_wrn <= '1';
@@ -83,9 +81,7 @@ begin
         wait until busy = '0';
         wait for 20 ns;
 
-        report "==============================================================";
         report "TEST 3: New tag, MISS fills bank1 (LRU flips to 1)";
-        report "==============================================================";
 
         cpu_add <= "010100";
         cpu_rd_wrn <= '1';
@@ -106,9 +102,7 @@ begin
         start <= '1'; wait for 20 ns; start <= '0';
         wait until busy='0';
 
-        report "==============================================================";
         report "TEST 5: WRITE HIT to bank1 (should only update bank1)";
-        report "==============================================================";
 
         cpu_data_drv    <= x"AA";
         cpu_data_oe_sim <= '1';
