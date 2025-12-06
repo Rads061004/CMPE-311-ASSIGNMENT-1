@@ -125,6 +125,5 @@ begin
         report "ALL TESTS COMPLETED";
         wait;
     end process;
-
 end sim;
 
