@@ -29,7 +29,7 @@ architecture sim of tb_chip_extra is
     signal cpu_data_drv     : std_logic_vector(7 downto 0);
     signal cpu_data_oe_sim  : std_logic := '0';
 
-begin   -- <<<<<<<<<<<< *** REQUIRED, WAS MISSING *** >>>>>>>>>>>>>
+begin   
 
     ----------------------------------------------------------------------
     -- CLOCK: 20 ns period (50MHz)
