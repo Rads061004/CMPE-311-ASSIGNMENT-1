@@ -46,13 +46,12 @@ begin
     -- SIMPLE MEMORY MODEL
     -- returns mem_data = mem_add (byte address)
     ----------------------------------------------------------------------
-    mem_data <= std_logic_vector(to_unsigned(
-                    to_integer(unsigned(mem_add)), 8));
+    mem_data <= std_logic_vector(to_unsigned(to_integer(unsigned(mem_add)), 8));
 
     ----------------------------------------------------------------------
     -- DUT INSTANTIATION (Cadence syntax)
     ----------------------------------------------------------------------
-    uut: entity work.chip_extra(structural)
+    uut: entity work.chip_extra
         port map(
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
