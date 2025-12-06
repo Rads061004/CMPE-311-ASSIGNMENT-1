@@ -51,7 +51,7 @@ begin
     ----------------------------------------------------------------------
     -- DUT INSTANTIATION (Cadence syntax)
     ----------------------------------------------------------------------
-    uut: entity work.chip_extra(structural)
+    uut: entity work.chip_extra
         port map(
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
