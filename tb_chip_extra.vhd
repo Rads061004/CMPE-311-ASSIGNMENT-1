@@ -39,7 +39,7 @@ begin
     ----------------------------------------------------------------------
     -- DUT INSTANTIATION (Cadence REQUIRES architecture name)
     ----------------------------------------------------------------------
-    uut: entity work.chip_extra(structural)
+    uut: entity work.chip_extra
         port map(
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
