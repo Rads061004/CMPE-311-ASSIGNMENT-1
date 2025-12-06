@@ -89,7 +89,10 @@ begin
 
         cpu_add <= "000100";    -- tag=00 index=01 offset=00
         cpu_rd_wrn <= '1';      -- read
-        start <= '1'; wait for 20 ns; start <= '0';
+
+        start <= '1';
+        wait for 50 ns;
+        start <= '0';
 
         wait until busy = '0';
         wait for 20 ns;
