@@ -52,8 +52,6 @@ architecture Structural of cache_fsm_struct is
 
     component output_logic
         Port (
-            clk         : in  STD_LOGIC;
-            reset       : in  STD_LOGIC;
             state       : in  STD_LOGIC_VECTOR(2 downto 0);
             next_state  : in  STD_LOGIC_VECTOR(2 downto 0);
             counter     : in  STD_LOGIC_VECTOR(4 downto 0);
@@ -107,8 +105,6 @@ begin
     -- output_logic (decodes outputs from current/next state)
     U4_output_logic : output_logic
         port map (
-            clk         => clk,
-            reset       => reset,
             state       => state_sig,
             next_state  => next_state_sig,
             counter     => counter_sig,
