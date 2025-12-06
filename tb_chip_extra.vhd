@@ -28,21 +28,6 @@ architecture sim of tb_chip_extra is
     signal cpu_data_drv     : std_logic_vector(7 downto 0) := (others => '0');
     signal cpu_data_drive   : std_logic := '0';
 
-    component chip_extra
-        port(
-            cpu_add    : in    std_logic_vector(5 downto 0);
-            cpu_data   : inout std_logic_vector(7 downto 0);
-            cpu_rd_wrn : in    std_logic;
-            start      : in    std_logic;
-            clk        : in    std_logic;
-            reset      : in    std_logic;
-            mem_data   : in    std_logic_vector(7 downto 0);
-            busy       : out   std_logic;
-            mem_en     : out   std_logic;
-            mem_add    : out   std_logic_vector(5 downto 0)
-        );
-    end component;
-
 begin
 
     ----------------------------------------------------------------------
@@ -66,7 +51,7 @@ begin
     ----------------------------------------------------------------------
     -- DUT INSTANTIATION (Cadence syntax)
     ----------------------------------------------------------------------
-    uut: chip_extra
+    uut: entity work.chip_extra
         port map(
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
