@@ -24,7 +24,7 @@ architecture sim of tb_chip_extra is
     signal mem_add       : std_logic_vector(5 downto 0);
 
     ----------------------------------------------------------------------
-    -- CPU ↔ DUT bidirectional bus simulation
+    -- CPU to DUT bidirectional bus simulation
     ----------------------------------------------------------------------
     signal cpu_data_drv     : std_logic_vector(7 downto 0);
     signal cpu_data_oe_sim  : std_logic := '0';
@@ -84,7 +84,7 @@ begin
         wait for 50 ns;
 
         ------------------------------------------------------------------
-        -- TEST 1: Read MISS → bank0 refill
+        -- TEST 1: Read MISS to bank0 refill
         ------------------------------------------------------------------
         report "==============================================================";
         report "TEST 1: READ MISS triggers refill into bank0 (LRU=0)";
@@ -100,7 +100,7 @@ begin
         wait for 20 ns;
 
         ------------------------------------------------------------------
-        -- TEST 2: Repeat → HIT in bank0
+        -- TEST 2: Repeat to HIT in bank0
         ------------------------------------------------------------------
         report "TEST 2: READ HIT in bank0";
 
@@ -114,7 +114,7 @@ begin
         wait for 20 ns;
 
         ------------------------------------------------------------------
-        -- TEST 3: New tag → MISS → refill bank1
+        -- TEST 3: New tag to MISS to refill bank1
         ------------------------------------------------------------------
         report "==============================================================";
         report "TEST 3: New tag, MISS fills bank1 (LRU flips to 1)";
