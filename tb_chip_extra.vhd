@@ -61,7 +61,7 @@ begin
 
         report "TEST 1: READ MISS triggers refill into bank0 (LRU=0)";
 
-        cpu_add    <= "000100";  -- tag=00 index=01 offset=00
+        cpu_add    <= "000100";  
         cpu_rd_wrn <= '1';
         start      <= '1';
         wait for 20 ns;
@@ -125,5 +125,5 @@ begin
         report "ALL TESTS COMPLETED";
         wait;
     end process;
-end sim;
 
+end sim;
