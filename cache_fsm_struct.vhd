@@ -54,7 +54,6 @@ architecture Structural of cache_fsm_struct is
         Port (
             state       : in  STD_LOGIC_VECTOR(2 downto 0);
             next_state  : in  STD_LOGIC_VECTOR(2 downto 0);
-            counter     : in  STD_LOGIC_VECTOR(4 downto 0);
 
             busy        : out STD_LOGIC;
             en          : out STD_LOGIC;
@@ -107,7 +106,6 @@ begin
         port map (
             state       => state_sig,
             next_state  => next_state_sig,
-            counter     => counter_sig,
             busy        => busy_int,
             en          => en_int,
             resp_pulse  => resp_pulse_int
