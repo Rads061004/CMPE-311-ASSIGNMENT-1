@@ -30,6 +30,7 @@ architecture sim of tb_chip_extra is
 
 begin
 
+    assert false report "TESTBENCH STARTED!" severity note;
     ----------------------------------------------------------------------
     -- CLOCK GENERATION
     ----------------------------------------------------------------------
