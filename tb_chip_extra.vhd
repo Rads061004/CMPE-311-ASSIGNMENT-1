@@ -24,7 +24,7 @@ architecture sim of tb_chip_extra is
     signal mem_add       : std_logic_vector(5 downto 0);
 
     ----------------------------------------------------------------------
-    -- CPU ↔ DUT bidirectional bus simulation
+    -- CPU to DUT bidirectional bus simulation
     ----------------------------------------------------------------------
     signal cpu_data_drv     : std_logic_vector(7 downto 0);
     signal cpu_data_oe_sim  : std_logic := '0';
