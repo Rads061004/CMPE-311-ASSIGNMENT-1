@@ -110,7 +110,9 @@ begin
 
         cpu_add    <= "000100";  -- tag=00 index=01 offset=00
         cpu_rd_wrn <= '1';
-        start <= '1'; wait for 20 ns; start <= '0';
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy = '0';
 
         wait for 30 ns;
@@ -120,7 +122,9 @@ begin
         ----------------------------------------------------------
         report "TEST 2: HIT in bank0";
 
-        start <= '1'; wait for 20 ns; start <= '0';
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy='0';
 
         ----------------------------------------------------------
@@ -129,7 +133,9 @@ begin
         report "TEST 3: MISS refills bank1";
 
         cpu_add <= "010100";  -- different tag
-        start <= '1'; wait for 20 ns; start <= '0';
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy='0';
 
         ----------------------------------------------------------
@@ -137,10 +143,16 @@ begin
         ----------------------------------------------------------
         report "TEST 4: Access bank0 then bank1 to flip LRU";
 
-        cpu_add <= "000100"; start <= '1'; wait for 20 ns; start <= '0';
+        cpu_add <= "000100";
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy='0';
 
-        cpu_add <= "010100"; start <= '1'; wait for 20 ns; start <= '0';
+        cpu_add <= "010100";
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy='0';
 
         ----------------------------------------------------------
@@ -153,7 +165,9 @@ begin
         cpu_rd_wrn      <= '0';      -- write
         cpu_add         <= "010100";
 
-        start <= '1'; wait for 20 ns; start <= '0';
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy='0';
 
         cpu_data_oe_sim <= '0';
@@ -164,7 +178,9 @@ begin
         report "TEST 6: Read back, should get 0xAA";
 
         cpu_rd_wrn <= '1';
-        start <= '1'; wait for 20 ns; start <= '0';
+        start <= '1';
+        wait for 20 ns;
+        start <= '0';
         wait until busy='0';
 
         report "CHECK SIM OUTPUT: Expected = AA";
