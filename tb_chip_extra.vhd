@@ -29,6 +29,24 @@ architecture sim of tb_chip_extra is
     signal cpu_data_drv     : std_logic_vector(7 downto 0);
     signal cpu_data_oe_sim  : std_logic := '0';
 
+    ----------------------------------------------------------------------
+    -- DUT COMPONENT DECLARATION (required by Cadence)
+    ----------------------------------------------------------------------
+    component chip_extra
+        port(
+            cpu_add    : in  std_logic_vector(5 downto 0);
+            cpu_data   : inout std_logic_vector(7 downto 0);
+            cpu_rd_wrn : in  std_logic;
+            start      : in  std_logic;
+            clk        : in  std_logic;
+            reset      : in  std_logic;
+            mem_data   : in  std_logic_vector(7 downto 0);
+            busy       : out std_logic;
+            mem_en     : out std_logic;
+            mem_add    : out std_logic_vector(5 downto 0)
+        );
+    end component;
+
 begin   
 
     ----------------------------------------------------------------------
@@ -37,9 +55,9 @@ begin
     clk <= not clk after 10 ns;
 
     ----------------------------------------------------------------------
-    -- DUT INSTANTIATION (Cadence REQUIRES architecture name)
+    -- DUT INSTANTIATION (with explicit component)
     ----------------------------------------------------------------------
-    uut: entity work.chip_extra
+    uut: chip_extra
         port map(
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
