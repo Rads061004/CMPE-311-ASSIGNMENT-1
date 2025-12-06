@@ -37,7 +37,7 @@ begin
     clk <= not clk after 10 ns;
 
     ----------------------------------------------------------------------
-    -- DUT INSTANTIATION (VHDL‑93 style)
+    -- DUT INSTANTIATION (VHDL-93 style)
     ----------------------------------------------------------------------
     uut: chip_extra
         port map(
@@ -178,3 +178,4 @@ begin
     end process;
 
 end sim;
+
