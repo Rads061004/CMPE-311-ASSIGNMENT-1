@@ -87,7 +87,7 @@ begin
     ----------------------------------------------------------------------
     -- TEST SEQUENCE
     ----------------------------------------------------------------------
-    stim: process
+    stim_proc: process
     begin
         ----------------------------------------------------------
         -- INITIALIZE
@@ -114,7 +114,6 @@ begin
         wait for 20 ns;
         start <= '0';
         wait until busy = '0';
-
         wait for 30 ns;
 
         ----------------------------------------------------------
@@ -190,6 +189,7 @@ begin
         ----------------------------------------------------------
         report "ALL TESTS FINISHED";
         wait;
-    end process;
+        
+    end process stim_proc;
 
-end sim;
+end architecture sim;
