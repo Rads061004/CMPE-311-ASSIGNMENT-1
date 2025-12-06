@@ -102,7 +102,10 @@ begin
         ----------------------------------------------------------
         report "TEST 2: READ HIT in bank0" severity note;
 
-        start <= '1'; wait for 20 ns; start <= '0';
+        start <= '1';
+        wait for 50 ns;
+        start <= '0';
+
         wait until busy='0';
 
         ----------------------------------------------------------
@@ -111,7 +114,11 @@ begin
         report "TEST 3: NEW TAG causes MISS (bank1 refill)" severity note;
 
         cpu_add <= "010100";    -- different tag
-        start <= '1'; wait for 20 ns; start <= '0';
+        
+        start <= '1';
+        wait for 50 ns;
+        start <= '0';
+
         wait until busy='0';
 
         ----------------------------------------------------------
@@ -123,7 +130,11 @@ begin
         cpu_data_drv <= x"AA";       -- data
         cpu_data_drive <= '1';       -- drive bus
 
-        start <= '1'; wait for 20 ns; start <= '0';
+        
+        start <= '1';
+        wait for 50 ns;
+        start <= '0';
+
         wait until busy='0';
 
         cpu_data_drive <= '0';       -- release bus
@@ -134,7 +145,11 @@ begin
         report "TEST 5: READ BACK written byte (expect 0xAA)" severity note;
 
         cpu_rd_wrn <= '1';   -- read
-        start <= '1'; wait for 20 ns; start <= '0';
+        
+        start <= '1';
+        wait for 50 ns;
+        start <= '0';
+
         wait until busy='0';
 
         report "SIM: Check waveform: cpu_data should show 0xAA" severity note;
