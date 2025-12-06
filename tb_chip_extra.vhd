@@ -29,7 +29,7 @@ architecture sim of tb_chip_extra is
     signal cpu_data_drv     : std_logic_vector(7 downto 0);
     signal cpu_data_oe_sim  : std_logic := '0';
 
-begin   
+begin
 
     ----------------------------------------------------------------------
     -- CLOCK: 20 ns period (50MHz)
@@ -37,9 +37,9 @@ begin
     clk <= not clk after 10 ns;
 
     ----------------------------------------------------------------------
-    -- DUT INSTANTIATION
+    -- DUT INSTANTIATION (VHDL‑93 style)
     ----------------------------------------------------------------------
-    uut: entity work.chip_extra
+    uut: chip_extra
         port map(
             cpu_add    => cpu_add,
             cpu_data   => cpu_data,
@@ -54,19 +54,17 @@ begin
         );
 
     ----------------------------------------------------------------------
-    -- TRI-STATE BUS MODEL (CPU drives only when cpu_data_oe_sim = '1')
+    -- TRI-STATE BUS MODEL
     ----------------------------------------------------------------------
     cpu_data <= cpu_data_drv when cpu_data_oe_sim = '1' else (others => 'Z');
 
     ----------------------------------------------------------------------
     -- SIMPLE MEMORY MODEL
-    -- For any mem_add, return byte equal to the address.
-    -- When refill loads multiple bytes, CPU offset selects correct one.
     ----------------------------------------------------------------------
     mem_data <= std_logic_vector(to_unsigned(to_integer(unsigned(mem_add)), 8));
 
     ----------------------------------------------------------------------
-    -- TESTBENCH STIMULUS PROCESS
+    -- TESTBENCH STIMULUS
     ----------------------------------------------------------------------
     stim: process
     begin
@@ -85,7 +83,6 @@ begin
         reset <= '0';
         wait for 50 ns;
 
-
         ------------------------------------------------------------------
         -- TEST 1: Read MISS → bank0 refill
         ------------------------------------------------------------------
@@ -94,14 +91,13 @@ begin
         report "==============================================================";
 
         cpu_add    <= "000100";  -- tag=00 index=01 offset=00
-        cpu_rd_wrn <= '1';       -- read
+        cpu_rd_wrn <= '1';
         start      <= '1';
         wait for 20 ns;
         start <= '0';
 
         wait until busy = '0';
         wait for 20 ns;
-
 
         ------------------------------------------------------------------
         -- TEST 2: Repeat → HIT in bank0
@@ -117,7 +113,6 @@ begin
         wait until busy = '0';
         wait for 20 ns;
 
-
         ------------------------------------------------------------------
         -- TEST 3: New tag → MISS → refill bank1
         ------------------------------------------------------------------
@@ -125,7 +120,7 @@ begin
         report "TEST 3: New tag, MISS fills bank1 (LRU flips to 1)";
         report "==============================================================";
 
-        cpu_add <= "010100";  -- tag=01 index=01
+        cpu_add <= "010100";
         cpu_rd_wrn <= '1';
         start <= '1';
         wait for 20 ns;
@@ -134,22 +129,18 @@ begin
         wait until busy='0';
         wait for 20 ns;
 
-
         ------------------------------------------------------------------
         -- TEST 4: Re-access both blocks to flip LRU
         ------------------------------------------------------------------
         report "TEST 4: LRU flip verification";
 
-        -- Access bank0 block
         cpu_add <= "000100";
         start <= '1'; wait for 20 ns; start <= '0';
         wait until busy='0';
 
-        -- Access bank1 block
         cpu_add <= "010100";
         start <= '1'; wait for 20 ns; start <= '0';
         wait until busy='0';
-
 
         ------------------------------------------------------------------
         -- TEST 5: WRITE HIT
@@ -158,28 +149,26 @@ begin
         report "TEST 5: WRITE HIT to bank1 (should only update bank1)";
         report "==============================================================";
 
-        cpu_data_drv    <= x"AA";  -- value to write
-        cpu_data_oe_sim <= '1';    -- drive CPU bus
-        cpu_rd_wrn      <= '0';    -- write
+        cpu_data_drv    <= x"AA";
+        cpu_data_oe_sim <= '1';
+        cpu_rd_wrn      <= '0';
         cpu_add         <= "010100";
 
         start <= '1'; wait for 20 ns; start <= '0';
         wait until busy='0';
 
-        cpu_data_oe_sim <= '0';    -- release bus
-
+        cpu_data_oe_sim <= '0';
 
         ------------------------------------------------------------------
         -- TEST 6: READ BACK THE WRITTEN VALUE
         ------------------------------------------------------------------
         report "TEST 6: Read back; expected returned value = AA";
 
-        cpu_rd_wrn <= '1'; -- read
+        cpu_rd_wrn <= '1';
         cpu_add    <= "010100";
 
         start <= '1'; wait for 20 ns; start <= '0';
         wait until busy='0';
-
 
         ------------------------------------------------------------------
         -- FINISH
