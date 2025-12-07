@@ -104,7 +104,8 @@ begin
         wait until busy = '0';
         report "TEST 2 COMPLETE" severity note;
         wait for 100 ns;
-        
+            
+        wait until busy = '0';
         -----------------------------------------------------------
         -- TEST 3: Read Different Tag, Same Index (fills bank1)
         -----------------------------------------------------------
@@ -152,7 +153,6 @@ begin
         wait for 40 ns;
         start <= '0';
         
-        wait until busy = '0';
         cpu_data_drive <= '0';
         report "TEST 5 COMPLETE" severity note;
         wait for 100 ns;
