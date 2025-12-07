@@ -105,7 +105,6 @@ begin
         report "TEST 2 COMPLETE" severity note;
         wait for 100 ns;
             
-        wait until busy = '0';
         -----------------------------------------------------------
         -- TEST 3: Read Different Tag, Same Index (fills bank1)
         -----------------------------------------------------------
