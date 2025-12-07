@@ -152,6 +152,7 @@ begin
         wait for 40 ns;
         start <= '0';
 
+        wait until busy = '0';
         cpu_data_drive <= '0';
         report "TEST 5 COMPLETE" severity note;
         wait for 100 ns;
@@ -168,7 +169,8 @@ begin
         start <= '1';
         wait for 40 ns;
         start <= '0';
-        
+
+        wait until busy = '0';
         report "TEST 6 COMPLETE - check cpu_data for 0xAA" severity note;
         wait for 100 ns;
         
@@ -183,7 +185,8 @@ begin
         start <= '1';
         wait for 40 ns;
         start <= '0';
-        
+
+        wait until busy = '0';
         report "TEST 7 COMPLETE" severity note;
         wait for 100 ns;
         
@@ -198,7 +201,8 @@ begin
         start <= '1';
         wait for 40 ns;
         start <= '0';
-        
+
+        wait until busy = '0';
         report "TEST 8 COMPLETE" severity note;
         wait for 100 ns;
         
