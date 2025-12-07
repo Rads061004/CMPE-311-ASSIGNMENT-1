@@ -316,6 +316,8 @@ architecture structural of chip_extra is
 
   signal lru_mux_out : std_logic;
 
+  signal mem_en_core : std_logic;
+
 begin
   --------------------------------------------------------------------
   -- CONSTANTS
@@ -673,7 +675,9 @@ begin
   --------------------------------------------------------------------
   -- mem_en and mem_add (unchanged from your chip)
   --------------------------------------------------------------------
-  mem_en <= fsm_en;
+  mem_en_core <= fsm_en and L_is_read;
+
+  mem_en <= mem_en_core;
 
   mem_add(5) <= cpu_add(5);
   mem_add(4) <= cpu_add(4);
@@ -756,7 +760,7 @@ begin
     --------------------------------------------------------------------
   -- STRUCTURAL REFILL CONTROL LOGIC  (from original chip.vhd)
   --------------------------------------------------------------------
-  mem_en_q_d <= fsm_en;
+  mem_en_q_d <= mem_en_core;
 
   u_inv_mem_en_q: inv
     port map (a => mem_en_q, y => mem_en_q_n);
