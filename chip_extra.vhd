@@ -614,9 +614,9 @@ begin
   --   - Else (miss) => use LRU bit (lru_bank)
   --------------------------------------------------------------------
   -- Simple priority: bank0 hit wins over bank1; if neither hit, fall back to lru_bank
-  used_bank_sel <=
-      '0' when (L_hit0 = '1') else
-      '1' when (L_hit1 = '1') else
+   used_bank_sel <=
+      '0' when (hit_bank0 = '1') else
+      '1' when (hit_bank1 = '1') else
       lru_bank;
 
   u_inv_used_bank: inv
