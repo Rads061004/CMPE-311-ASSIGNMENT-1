@@ -28,6 +28,9 @@ architecture sim of tb_chip_extra is
     
     -- Simulation control
     signal sim_done : boolean := false;
+    
+    -- Test markers for waveform
+    signal test_num : integer := 0;
 
 begin
 
@@ -58,88 +61,154 @@ begin
     -- MAIN TEST PROCESS
     stimulus : process
     begin
+        test_num <= 0;
         report "=== TESTBENCH STARTED ===" severity note;
         
         -- Wait a bit for clock to start
         wait for 1 ns;
         
         report "Releasing reset..." severity note;
-        wait for 100 ns;
+        wait for 50 ns;
         reset <= '0';
-        wait for 100 ns;
+        wait for 50 ns;
         
-        report "TEST 1: Asserting START signal" severity note;
-        cpu_add <= "000100";
-        cpu_rd_wrn <= '1';
+        -----------------------------------------------------------
+        -- TEST 1: First Read Miss (fills bank 0)
+        -----------------------------------------------------------
+        test_num <= 1;
+        report "TEST 1: First read MISS - fills bank0" severity note;
+        cpu_add <= "000100";  -- tag=00, index=01, offset=00
+        cpu_rd_wrn <= '1';    -- read
         
-        wait for 20 ns;
-        start <= '1';
-        report "START = 1" severity note;
-        
-        wait for 40 ns;
-        start <= '0';
-        report "START = 0" severity note;
-        
-        wait for 500 ns;
-        
-        report "TEST 2: Read same address (should HIT in bank0)" severity note;
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        
         wait until busy = '0';
+        report "TEST 1 COMPLETE - busy went low" severity note;
         wait for 100 ns;
         
-        report "TEST 3: Read different tag, same index (fills bank1)" severity note;
+        -----------------------------------------------------------
+        -- TEST 2: Read Same Address (should HIT in bank0)
+        -----------------------------------------------------------
+        test_num <= 2;
+        report "TEST 2: Read same address - should HIT in bank0" severity note;
+        -- cpu_add still "000100"
+        
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        
+        wait until busy = '0';
+        report "TEST 2 COMPLETE" severity note;
+        wait for 100 ns;
+        
+        -----------------------------------------------------------
+        -- TEST 3: Read Different Tag, Same Index (fills bank1)
+        -----------------------------------------------------------
+        test_num <= 3;
+        report "TEST 3: Different tag, same index - fills bank1" severity note;
         cpu_add <= "010100";  -- tag=01, index=01, offset=00
+        
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        
         wait until busy = '0';
+        report "TEST 3 COMPLETE" severity note;
         wait for 100 ns;
         
-        report "TEST 4: Read original tag again (should HIT in bank0)" severity note;
+        -----------------------------------------------------------
+        -- TEST 4: Read Original Tag Again (should HIT in bank0)
+        -----------------------------------------------------------
+        test_num <= 4;
+        report "TEST 4: Back to original tag - should HIT in bank0" severity note;
         cpu_add <= "000100";  -- back to tag=00
+        
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        
         wait until busy = '0';
+        report "TEST 4 COMPLETE" severity note;
         wait for 100 ns;
         
-        report "TEST 5: Write to bank1 location" severity note;
-        cpu_add <= "010100";  -- tag=01
+        -----------------------------------------------------------
+        -- TEST 5: Write to Bank1 Location
+        -----------------------------------------------------------
+        test_num <= 5;
+        report "TEST 5: Write 0xAA to bank1 location" severity note;
+        cpu_add <= "010100";  -- tag=01, index=01
         cpu_rd_wrn <= '0';    -- write
         cpu_data_drv <= x"AA";
         cpu_data_drive <= '1';
+        
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        
         wait until busy = '0';
         cpu_data_drive <= '0';
+        report "TEST 5 COMPLETE" severity note;
         wait for 100 ns;
         
-        report "TEST 6: Read back written value (should be 0xAA)" severity note;
+        -----------------------------------------------------------
+        -- TEST 6: Read Back Written Value
+        -----------------------------------------------------------
+        test_num <= 6;
+        report "TEST 6: Read back - should return 0xAA" severity note;
         cpu_rd_wrn <= '1';    -- read
+        -- cpu_add still "010100"
+        
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        
         wait until busy = '0';
+        report "TEST 6 COMPLETE - check cpu_data for 0xAA" severity note;
         wait for 100 ns;
         
-        report "TEST 7: Third tag to same index (evicts LRU)" severity note;
-        cpu_add <= "100100";  -- tag=10, same index=01
+        -----------------------------------------------------------
+        -- TEST 7: Third Tag to Same Index (should evict LRU)
+        -----------------------------------------------------------
+        test_num <= 7;
+        report "TEST 7: Third tag, same index - evicts LRU bank" severity note;
+        cpu_add <= "100100";  -- tag=10, index=01, offset=00
+        
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        
         wait until busy = '0';
+        report "TEST 7 COMPLETE" severity note;
         wait for 100 ns;
         
+        -----------------------------------------------------------
+        -- TEST 8: Verify Which Bank Was Evicted
+        -----------------------------------------------------------
+        test_num <= 8;
+        report "TEST 8: Read tag=00 - check if still cached" severity note;
+        cpu_add <= "000100";  -- tag=00
+        
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        
+        wait until busy = '0';
+        report "TEST 8 COMPLETE" severity note;
+        wait for 100 ns;
+        
+        test_num <= 99;
         report "=== ALL TESTS COMPLETED ===" severity note;
+        wait for 200 ns;
         sim_done <= true;
         wait;
     end process;
