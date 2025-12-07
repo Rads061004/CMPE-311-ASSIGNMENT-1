@@ -78,15 +78,16 @@ begin
         -----------------------------------------------------------
         test_num <= 1;
         report "TEST 1: First read MISS - fills bank0" severity note;
+        wait until rising_edge(clk);
         cpu_add <= "000100";  -- tag=00, index=01, offset=00
         cpu_rd_wrn <= '1';    -- read
         
-        wait for 20 ns;
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         
-        -- Wait with timeout
         timeout_count := 0;
         while busy = '1' and timeout_count < 200 loop
             wait for CLK_PERIOD;
@@ -106,9 +107,10 @@ begin
         test_num <= 2;
         report "TEST 2: Read same address - should HIT in bank0" severity note;
         
-        wait for 20 ns;
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         
         timeout_count := 0;
@@ -129,11 +131,13 @@ begin
         -----------------------------------------------------------
         test_num <= 3;
         report "TEST 3: Different tag, same index - fills bank1" severity note;
+        wait until rising_edge(clk);
         cpu_add <= "010100";  -- tag=01, index=01, offset=00
         
-        wait for 20 ns;
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         
         timeout_count := 0;
@@ -154,11 +158,13 @@ begin
         -----------------------------------------------------------
         test_num <= 4;
         report "TEST 4: Back to original tag - should HIT in bank0" severity note;
+        wait until rising_edge(clk);
         cpu_add <= "000100";  -- back to tag=00
         
-        wait for 20 ns;
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         
         timeout_count := 0;
@@ -179,19 +185,24 @@ begin
         -----------------------------------------------------------
         test_num <= 5;
         report "TEST 5: Write 0xAA to bank1 location" severity note;
+        
+        -- Change ALL signals on a clock edge, then wait
+        wait until rising_edge(clk);
         cpu_add <= "010100";  -- tag=01, index=01
         cpu_rd_wrn <= '0';    -- write
         cpu_data_drv <= x"AA";
         cpu_data_drive <= '1';
         
-        wait for 20 ns;
+        -- Wait 2 clocks for hit detection to stabilize
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
+        
         report "TEST 5: Asserting start..." severity note;
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         report "TEST 5: Start deasserted, waiting for busy to go low..." severity note;
         
-        -- Wait with timeout and reporting
         timeout_count := 0;
         while busy = '1' and timeout_count < 50 loop
             wait for CLK_PERIOD;
@@ -219,11 +230,13 @@ begin
         -----------------------------------------------------------
         test_num <= 6;
         report "TEST 6: Read back - should return 0xAA" severity note;
+        wait until rising_edge(clk);
         cpu_rd_wrn <= '1';    -- read
         
-        wait for 20 ns;
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         
         timeout_count := 0;
@@ -244,11 +257,13 @@ begin
         -----------------------------------------------------------
         test_num <= 7;
         report "TEST 7: Third tag, same index - evicts LRU bank" severity note;
+        wait until rising_edge(clk);
         cpu_add <= "100100";  -- tag=10, index=01, offset=00
         
-        wait for 20 ns;
+        wait until rising_edge(clk);
+        wait until rising_edge(clk);
         start <= '1';
-        wait for 40 ns;
+        wait until rising_edge(clk);
         start <= '0';
         
         timeout_count := 0;
