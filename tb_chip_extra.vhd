@@ -82,13 +82,62 @@ begin
         
         wait for 500 ns;
         
-        report "TEST 2: Second START pulse" severity note;
+        report "TEST 2: Read same address (should HIT in bank0)" severity note;
         wait for 20 ns;
         start <= '1';
         wait for 40 ns;
         start <= '0';
+        wait until busy = '0';
+        wait for 100 ns;
         
-        wait for 500 ns;
+        report "TEST 3: Read different tag, same index (fills bank1)" severity note;
+        cpu_add <= "010100";  -- tag=01, index=01, offset=00
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        wait until busy = '0';
+        wait for 100 ns;
+        
+        report "TEST 4: Read original tag again (should HIT in bank0)" severity note;
+        cpu_add <= "000100";  -- back to tag=00
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        wait until busy = '0';
+        wait for 100 ns;
+        
+        report "TEST 5: Write to bank1 location" severity note;
+        cpu_add <= "010100";  -- tag=01
+        cpu_rd_wrn <= '0';    -- write
+        cpu_data_drv <= x"AA";
+        cpu_data_drive <= '1';
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        wait until busy = '0';
+        cpu_data_drive <= '0';
+        wait for 100 ns;
+        
+        report "TEST 6: Read back written value (should be 0xAA)" severity note;
+        cpu_rd_wrn <= '1';    -- read
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        wait until busy = '0';
+        wait for 100 ns;
+        
+        report "TEST 7: Third tag to same index (evicts LRU)" severity note;
+        cpu_add <= "100100";  -- tag=10, same index=01
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        wait until busy = '0';
+        wait for 100 ns;
         
         report "=== ALL TESTS COMPLETED ===" severity note;
         sim_done <= true;
