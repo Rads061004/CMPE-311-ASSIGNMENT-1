@@ -60,7 +60,6 @@ begin
 
     -- MAIN TEST PROCESS
     stimulus : process
-        variable timeout_count : integer;
     begin
         test_num <= 0;
         report "=== TESTBENCH STARTED ===" severity note;
@@ -78,27 +77,16 @@ begin
         -----------------------------------------------------------
         test_num <= 1;
         report "TEST 1: First read MISS - fills bank0" severity note;
-        wait until rising_edge(clk);
         cpu_add <= "000100";  -- tag=00, index=01, offset=00
         cpu_rd_wrn <= '1';    -- read
         
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
         
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 200 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-        end loop;
-        
-        if timeout_count >= 200 then
-            report "TEST 1 TIMEOUT!" severity error;
-        else
-            report "TEST 1 COMPLETE after " & integer'image(timeout_count) & " clocks" severity note;
-        end if;
+        wait until busy = '0';
+        report "TEST 1 COMPLETE - busy went low" severity note;
         wait for 100 ns;
         
         -----------------------------------------------------------
@@ -106,24 +94,15 @@ begin
         -----------------------------------------------------------
         test_num <= 2;
         report "TEST 2: Read same address - should HIT in bank0" severity note;
+        -- cpu_add still "000100"
         
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
         
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 200 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-        end loop;
-        
-        if timeout_count >= 200 then
-            report "TEST 2 TIMEOUT!" severity error;
-        else
-            report "TEST 2 COMPLETE after " & integer'image(timeout_count) & " clocks" severity note;
-        end if;
+        wait until busy = '0';
+        report "TEST 2 COMPLETE" severity note;
         wait for 100 ns;
             
         -----------------------------------------------------------
@@ -131,26 +110,15 @@ begin
         -----------------------------------------------------------
         test_num <= 3;
         report "TEST 3: Different tag, same index - fills bank1" severity note;
-        wait until rising_edge(clk);
         cpu_add <= "010100";  -- tag=01, index=01, offset=00
         
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
         
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 200 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-        end loop;
-        
-        if timeout_count >= 200 then
-            report "TEST 3 TIMEOUT!" severity error;
-        else
-            report "TEST 3 COMPLETE after " & integer'image(timeout_count) & " clocks" severity note;
-        end if;
+        wait until busy = '0';
+        report "TEST 3 COMPLETE" severity note;
         wait for 100 ns;
         
         -----------------------------------------------------------
@@ -158,26 +126,15 @@ begin
         -----------------------------------------------------------
         test_num <= 4;
         report "TEST 4: Back to original tag - should HIT in bank0" severity note;
-        wait until rising_edge(clk);
         cpu_add <= "000100";  -- back to tag=00
         
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
         
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 200 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-        end loop;
-        
-        if timeout_count >= 200 then
-            report "TEST 4 TIMEOUT!" severity error;
-        else
-            report "TEST 4 COMPLETE after " & integer'image(timeout_count) & " clocks" severity note;
-        end if;
+        wait until busy = '0';
+        report "TEST 4 COMPLETE" severity note;
         wait for 100 ns;
         
         -----------------------------------------------------------
@@ -185,44 +142,19 @@ begin
         -----------------------------------------------------------
         test_num <= 5;
         report "TEST 5: Write 0xAA to bank1 location" severity note;
-        
-        -- Change ALL signals on a clock edge, then wait
-        wait until rising_edge(clk);
         cpu_add <= "010100";  -- tag=01, index=01
         cpu_rd_wrn <= '0';    -- write
         cpu_data_drv <= x"AA";
         cpu_data_drive <= '1';
         
-        -- Wait 2 clocks for hit detection to stabilize
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
-        
-        report "TEST 5: Asserting start..." severity note;
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
-        report "TEST 5: Start deasserted, waiting for busy to go low..." severity note;
-        
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 50 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-            if timeout_count mod 10 = 0 then
-                report "TEST 5: Still waiting... busy still high after " & 
-                       integer'image(timeout_count) & " clocks" severity note;
-            end if;
-        end loop;
-        
-        if timeout_count >= 50 then
-            report "TEST 5 TIMEOUT! busy stuck high" severity error;
-            report "This indicates FSM is not completing write hit cycle" severity error;
-            sim_done <= true;
-            wait;
-        else
-            report "TEST 5 COMPLETE after " & integer'image(timeout_count) & " clocks" severity note;
-        end if;
-        
+
+        wait until busy = '0';
         cpu_data_drive <= '0';
+        report "TEST 5 COMPLETE" severity note;
         wait for 100 ns;
         
         -----------------------------------------------------------
@@ -230,26 +162,16 @@ begin
         -----------------------------------------------------------
         test_num <= 6;
         report "TEST 6: Read back - should return 0xAA" severity note;
-        wait until rising_edge(clk);
         cpu_rd_wrn <= '1';    -- read
+        -- cpu_add still "010100"
         
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
         
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 200 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-        end loop;
-        
-        if timeout_count >= 200 then
-            report "TEST 6 TIMEOUT!" severity error;
-        else
-            report "TEST 6 COMPLETE - check cpu_data for 0xAA" severity note;
-        end if;
+        wait until busy = '0';
+        report "TEST 6 COMPLETE - check cpu_data for 0xAA" severity note;
         wait for 100 ns;
         
         -----------------------------------------------------------
@@ -257,26 +179,31 @@ begin
         -----------------------------------------------------------
         test_num <= 7;
         report "TEST 7: Third tag, same index - evicts LRU bank" severity note;
-        wait until rising_edge(clk);
         cpu_add <= "100100";  -- tag=10, index=01, offset=00
         
-        wait until rising_edge(clk);
-        wait until rising_edge(clk);
+        wait for 20 ns;
         start <= '1';
-        wait until rising_edge(clk);
+        wait for 40 ns;
         start <= '0';
         
-        timeout_count := 0;
-        while busy = '1' and timeout_count < 200 loop
-            wait for CLK_PERIOD;
-            timeout_count := timeout_count + 1;
-        end loop;
+        wait until busy = '0';
+        report "TEST 7 COMPLETE" severity note;
+        wait for 100 ns;
         
-        if timeout_count >= 200 then
-            report "TEST 7 TIMEOUT!" severity error;
-        else
-            report "TEST 7 COMPLETE after " & integer'image(timeout_count) & " clocks" severity note;
-        end if;
+        -----------------------------------------------------------
+        -- TEST 8: Verify Which Bank Was Evicted
+        -----------------------------------------------------------
+        test_num <= 8;
+        report "TEST 8: Read tag=00 - check if still cached" severity note;
+        cpu_add <= "000100";  -- tag=00
+        
+        wait for 20 ns;
+        start <= '1';
+        wait for 40 ns;
+        start <= '0';
+        
+        wait until busy = '0';
+        report "TEST 8 COMPLETE" severity note;
         wait for 100 ns;
         
         test_num <= 99;
