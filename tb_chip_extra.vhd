@@ -58,16 +58,6 @@ architecture tb of tb_chip_extra is
     return tag & idx & byt;
   end;
 
-  constant B00 : std_logic_vector(1 downto 0) := "00";
-  constant B01 : std_logic_vector(1 downto 0) := "01";
-  constant B10 : std_logic_vector(1 downto 0) := "10";
-
-  -- Tags/indices
-  constant TAG_A : std_logic_vector(1 downto 0) := "11"; -- A
-  constant TAG_B : std_logic_vector(1 downto 0) := "01"; -- B
-  constant TAG_C : std_logic_vector(1 downto 0) := "10"; -- C
-  constant IDX_I : std_logic_vector(1 downto 0) := "10"; -- same index for conflict
-
 begin
   --------------------------------------------------------------------
   -- Clock 10 ns period
@@ -162,10 +152,10 @@ begin
 
     ----------------------------------------------------------------
     -- ====== SET 1: TAG_A / TAG_C ======
-    -- (1) READ MISS  : TAG_A @ IDX_I, byte 00
+    -- (1) READ MISS  : TAG_A="11", IDX="10", byte="00"
     ----------------------------------------------------------------
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_A, IDX_I, B00);
+    cpu_add    <= MAKE_ADDR("11", "10", "00");
     cpu_rd_wrn <= '1';
     cpu_d_oe   <= '0';
     start      <= '1';
@@ -176,11 +166,11 @@ begin
     wait until clk'event and clk='1';
 
     ----------------------------------------------------------------
-    -- (2) WRITE HIT  : TAG_A @ IDX_I, byte 01, data A5
+    -- (2) WRITE HIT  : same tag/index, byte="01", data A5
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_A, IDX_I, B01);
+    cpu_add    <= MAKE_ADDR("11", "10", "01");
     cpu_rd_wrn <= '0';
     cpu_d_drv  <= U8(16#A5#);
     cpu_d_oe   <= '1';
@@ -193,11 +183,11 @@ begin
     wait until clk'event and clk='1';
 
     ----------------------------------------------------------------
-    -- (3) READ HIT   : TAG_A @ IDX_I, byte 01 (expect A5)
+    -- (3) READ HIT   : TAG_A again, byte="01" (expect A5)
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_A, IDX_I, B01);
+    cpu_add    <= MAKE_ADDR("11", "10", "01");
     cpu_rd_wrn <= '1';
     cpu_d_oe   <= '0';
     start      <= '1';
@@ -208,12 +198,11 @@ begin
     wait until clk'event and clk='1';
 
     ----------------------------------------------------------------
-    -- (4) WRITE MISS : TAG_C @ IDX_I, byte 10, data 7E
-    --      causes refill into LRU way with TAG_C
+    -- (4) WRITE MISS : TAG_C="10", IDX="10", byte="10", data 7E
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_C, IDX_I, B10);
+    cpu_add    <= MAKE_ADDR("10", "10", "10");
     cpu_rd_wrn <= '0';
     cpu_d_drv  <= U8(16#7E#);
     cpu_d_oe   <= '1';
@@ -227,12 +216,11 @@ begin
 
     ----------------------------------------------------------------
     -- ====== SET 2: TAG_B / TAG_C ======
-    -- (5) READ MISS  : TAG_B @ IDX_I, byte 00
-    --      B is a new tag at same index -> second miss
+    -- (5) READ MISS  : TAG_B="01", IDX="10", byte="00"
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_B, IDX_I, B00);
+    cpu_add    <= MAKE_ADDR("01", "10", "00");
     cpu_rd_wrn <= '1';
     cpu_d_oe   <= '0';
     start      <= '1';
@@ -243,11 +231,11 @@ begin
     wait until clk'event and clk='1';
 
     ----------------------------------------------------------------
-    -- (6) WRITE HIT  : TAG_B @ IDX_I, byte 01, data A5
+    -- (6) WRITE HIT  : TAG_B again, byte="01", data A5
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_B, IDX_I, B01);
+    cpu_add    <= MAKE_ADDR("01", "10", "01");
     cpu_rd_wrn <= '0';
     cpu_d_drv  <= U8(16#A5#);
     cpu_d_oe   <= '1';
@@ -260,11 +248,11 @@ begin
     wait until clk'event and clk='1';
 
     ----------------------------------------------------------------
-    -- (7) READ HIT   : TAG_B @ IDX_I, byte 01
+    -- (7) READ HIT   : TAG_B, byte="01"
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_B, IDX_I, B01);
+    cpu_add    <= MAKE_ADDR("01", "10", "01");
     cpu_rd_wrn <= '1';
     cpu_d_oe   <= '0';
     start      <= '1';
@@ -275,12 +263,11 @@ begin
     wait until clk'event and clk='1';
 
     ----------------------------------------------------------------
-    -- (8) WRITE MISS : TAG_C @ IDX_I, byte 10, data 7E
-    --      another write miss to same index, exercising LRU again
+    -- (8) WRITE MISS : TAG_C again, byte="10", data 7E
     ----------------------------------------------------------------
     if busy = '1' then wait until busy = '0'; end if;
     wait until clk'event and clk='1';
-    cpu_add    <= MAKE_ADDR(TAG_C, IDX_I, B10);
+    cpu_add    <= MAKE_ADDR("10", "10", "10");
     cpu_rd_wrn <= '0';
     cpu_d_drv  <= U8(16#7E#);
     cpu_d_oe   <= '1';
