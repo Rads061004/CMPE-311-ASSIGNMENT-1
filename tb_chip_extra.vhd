@@ -5,212 +5,300 @@ use ieee.numeric_std.all;
 entity tb_chip_extra is
 end tb_chip_extra;
 
-architecture sim of tb_chip_extra is
+architecture tb of tb_chip_extra is
+  component chip_extra
+    port (
+      cpu_add    : in    std_logic_vector(5 downto 0);
+      cpu_data   : inout std_logic_vector(7 downto 0);
+      cpu_rd_wrn : in    std_logic;
+      start      : in    std_logic;
+      clk        : in    std_logic;
+      reset      : in    std_logic;
 
-    -- DUT PORT SIGNALS
-    signal cpu_add       : std_logic_vector(5 downto 0) := (others => '0');
-    signal cpu_data      : std_logic_vector(7 downto 0);
-    signal cpu_rd_wrn    : std_logic := '1';
-    signal start         : std_logic := '0';
-    signal clk           : std_logic := '0';
-    signal reset         : std_logic := '1';
+      mem_data   : in    std_logic_vector(7 downto 0);
 
-    signal mem_data      : std_logic_vector(7 downto 0);
-    signal busy          : std_logic;
-    signal mem_en        : std_logic;
-    signal mem_add       : std_logic_vector(5 downto 0);
+      busy       : out   std_logic;
+      mem_en     : out   std_logic;
+      mem_add    : out   std_logic_vector(5 downto 0)
+    );
+  end component;
 
-    -- CPU BUS DRIVER (for writes)
-    signal cpu_data_drv     : std_logic_vector(7 downto 0) := (others => '0');
-    signal cpu_data_drive   : std_logic := '0';
+  -- Clock/reset
+  signal clk   : std_logic := '0';
+  signal reset : std_logic := '1';
 
-    constant CLK_PERIOD : time := 20 ns;
-    
-    -- Simulation control
-    signal sim_done : boolean := false;
-    
-    -- Test markers for waveform
-    signal test_num : integer := 0;
+  -- CPU interface
+  signal cpu_add    : std_logic_vector(5 downto 0) := (others => '0');
+  signal cpu_rd_wrn : std_logic := '1';
+  signal start      : std_logic := '0';
+  signal cpu_data   : std_logic_vector(7 downto 0);
+  signal cpu_d_drv  : std_logic_vector(7 downto 0) := (others => '0');
+  signal cpu_d_oe   : std_logic := '0';
+
+  -- Memory-side
+  signal mem_data   : std_logic_vector(7 downto 0) := (others => '0');
+  signal mem_en     : std_logic;
+  signal mem_add    : std_logic_vector(5 downto 0);
+  signal busy       : std_logic;
+
+  -- Helpers for burst model
+  signal mem_en_q      : std_logic := '0';
+  signal rd_q          : std_logic := '1';
+  signal refill_active : std_logic := '0';
+  signal neg_cnt       : integer range 0 to 31 := 0;
+  signal refill_case   : integer := 0;
+
+  function U8(i : integer) return std_logic_vector is
+  begin
+    return std_logic_vector(to_unsigned(i, 8));
+  end;
+
+  function MAKE_ADDR(tag, idx, byt : std_logic_vector(1 downto 0)) return std_logic_vector is
+  begin
+    return tag & idx & byt;
+  end;
+
+  constant B00 : std_logic_vector(1 downto 0) := "00";
+  constant B01 : std_logic_vector(1 downto 0) := "01";
+  constant B10 : std_logic_vector(1 downto 0) := "10";
+
+  -- Tags/indices
+  constant TAG_A : std_logic_vector(1 downto 0) := "11"; -- A
+  constant TAG_B : std_logic_vector(1 downto 0) := "01"; -- B
+  constant TAG_C : std_logic_vector(1 downto 0) := "10"; -- C
+  constant IDX_I : std_logic_vector(1 downto 0) := "10"; -- same index for conflict
 
 begin
+  --------------------------------------------------------------------
+  -- Clock 10 ns period
+  --------------------------------------------------------------------
+  clk <= not clk after 5 ns;
 
-    -- CLOCK GENERATION - runs continuously
-    clk <= not clk after CLK_PERIOD/2 when not sim_done else '0';
+  --------------------------------------------------------------------
+  -- Tri-state CPU data
+  --------------------------------------------------------------------
+  cpu_data <= cpu_d_drv when cpu_d_oe = '1' else (others => 'Z');
 
-    -- BIDIRECTIONAL CPU BUS
-    cpu_data <= cpu_data_drv when cpu_data_drive = '1' else (others => 'Z');
+  --------------------------------------------------------------------
+  -- DUT
+  --------------------------------------------------------------------
+  dut: chip_extra
+    port map (
+      cpu_add    => cpu_add,
+      cpu_data   => cpu_data,
+      cpu_rd_wrn => cpu_rd_wrn,
+      start      => start,
+      clk        => clk,
+      reset      => reset,
+      mem_data   => mem_data,
+      busy       => busy,
+      mem_en     => mem_en,
+      mem_add    => mem_add
+    );
 
-    -- SIMPLE MEMORY MODEL
-    mem_data <= std_logic_vector(to_unsigned(to_integer(unsigned(mem_add)), 8));
+  --------------------------------------------------------------------
+  -- Memory model: burst DE/AD/BE/EF at negedge counts 8/10/12/14
+  -- after mem_en rises for a READ miss
+  --------------------------------------------------------------------
+  mem_model : process(clk)
+  begin
+    if (clk'event and clk='0') then
+      mem_en_q <= mem_en;
+      rd_q     <= cpu_rd_wrn;
 
-    -- DUT INSTANTIATION
-    uut: entity work.chip_extra
-        port map(
-            cpu_add    => cpu_add,
-            cpu_data   => cpu_data,
-            cpu_rd_wrn => cpu_rd_wrn,
-            start      => start,
-            clk        => clk,
-            reset      => reset,
-            mem_data   => mem_data,
-            busy       => busy,
-            mem_en     => mem_en,
-            mem_add    => mem_add
-        );
+      if (mem_en_q = '0' and mem_en = '1' and rd_q = '1') then
+        refill_active <= '1';
+        neg_cnt       <= 0;
+      elsif refill_active = '1' then
+        neg_cnt <= neg_cnt + 1;
 
-    -- MAIN TEST PROCESS
-    stimulus : process
-    begin
-        test_num <= 0;
-        report "=== TESTBENCH STARTED ===" severity note;
-        
-        -- Wait a bit for clock to start
-        wait for 1 ns;
-        
-        report "Releasing reset..." severity note;
-        wait for 50 ns;
-        reset <= '0';
-        wait for 50 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 1: First Read Miss (fills bank 0)
-        -----------------------------------------------------------
-        test_num <= 1;
-        report "TEST 1: First read MISS - fills bank0" severity note;
-        cpu_add <= "000100";  -- tag=00, index=01, offset=00
-        cpu_rd_wrn <= '1';    -- read
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
-        
-        wait until busy = '0';
-        report "TEST 1 COMPLETE - busy went low" severity note;
-        wait for 100 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 2: Read Same Address (should HIT in bank0)
-        -----------------------------------------------------------
-        test_num <= 2;
-        report "TEST 2: Read same address - should HIT in bank0" severity note;
-        -- cpu_add still "000100"
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
-        
-        wait until busy = '0';
-        report "TEST 2 COMPLETE" severity note;
-        wait for 100 ns;
-            
-        -----------------------------------------------------------
-        -- TEST 3: Read Different Tag, Same Index (fills bank1)
-        -----------------------------------------------------------
-        test_num <= 3;
-        report "TEST 3: Different tag, same index - fills bank1" severity note;
-        cpu_add <= "010100";  -- tag=01, index=01, offset=00
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
-        
-        wait until busy = '0';
-        report "TEST 3 COMPLETE" severity note;
-        wait for 100 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 4: Read Original Tag Again (should HIT in bank0)
-        -----------------------------------------------------------
-        test_num <= 4;
-        report "TEST 4: Back to original tag - should HIT in bank0" severity note;
-        cpu_add <= "000100";  -- back to tag=00
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
-        
-        wait until busy = '0';
-        report "TEST 4 COMPLETE" severity note;
-        wait for 100 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 5: Write to Bank1 Location
-        -----------------------------------------------------------
-        test_num <= 5;
-        report "TEST 5: Write 0xAA to bank1 location" severity note;
-        cpu_add <= "010100";  -- tag=01, index=01
-        cpu_rd_wrn <= '0';    -- write
-        cpu_data_drv <= x"AA";
-        cpu_data_drive <= '1';
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
+        if refill_case = 1 then
+          if    neg_cnt = 8  then mem_data <= U8(16#DE#);
+          elsif neg_cnt = 10 then mem_data <= U8(16#AD#);
+          elsif neg_cnt = 12 then mem_data <= U8(16#BE#);
+          elsif neg_cnt = 14 then mem_data <= U8(16#EF#);
+          end if;
+        end if;
 
-        wait until busy = '0';
-        cpu_data_drive <= '0';
-        report "TEST 5 COMPLETE" severity note;
-        wait for 100 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 6: Read Back Written Value
-        -----------------------------------------------------------
-        test_num <= 6;
-        report "TEST 6: Read back - should return 0xAA" severity note;
-        cpu_rd_wrn <= '1';    -- read
-        -- cpu_add still "010100"
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
+        if neg_cnt >= 16 then
+          refill_active <= '0';
+        end if;
+      end if;
+    end if;
+  end process;
 
-        wait until busy = '0';
-        report "TEST 6 COMPLETE - check cpu_data for 0xAA" severity note;
-        wait for 100 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 7: Third Tag to Same Index (should evict LRU)
-        -----------------------------------------------------------
-        test_num <= 7;
-        report "TEST 7: Third tag, same index - evicts LRU bank" severity note;
-        cpu_add <= "100100";  -- tag=10, index=01, offset=00
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
+  --------------------------------------------------------------------
+  -- Reset
+  --------------------------------------------------------------------
+  reset_gen : process
+  begin
+    wait until clk'event and clk='0';
+    wait until clk'event and clk='0';
+    reset <= '0';
+    wait;
+  end process;
 
-        wait until busy = '0';
-        report "TEST 7 COMPLETE" severity note;
-        wait for 100 ns;
-        
-        -----------------------------------------------------------
-        -- TEST 8: Verify Which Bank Was Evicted
-        -----------------------------------------------------------
-        test_num <= 8;
-        report "TEST 8: Read tag=00 - check if still cached" severity note;
-        cpu_add <= "000100";  -- tag=00
-        
-        wait for 20 ns;
-        start <= '1';
-        wait for 40 ns;
-        start <= '0';
+  --------------------------------------------------------------------
+  -- Watchdog
+  --------------------------------------------------------------------
+  watchdog : process
+  begin
+    wait for 5 ms;
+    assert false report "Watchdog timeout - TB stuck" severity failure;
+  end process;
 
-        wait until busy = '0';
-        report "TEST 8 COMPLETE" severity note;
-        wait for 100 ns;
-        
-        test_num <= 99;
-        report "=== ALL TESTS COMPLETED ===" severity note;
-        wait for 200 ns;
-        sim_done <= true;
-        wait;
-    end process;
+  --------------------------------------------------------------------
+  -- Stimulus: two full sets of (RM, WH, RH, WM)
+  --------------------------------------------------------------------
+  stim : process
+  begin
+    wait until reset = '0';
+    wait until clk'event and clk='0';
 
-end sim;
+    refill_case <= 1;
+
+    -- make sure DUT is idle
+    if busy = '1' then wait until busy = '0'; end if;
+
+    ----------------------------------------------------------------
+    -- ====== SET 1: TAG_A / TAG_C ======
+    -- (1) READ MISS  : TAG_A @ IDX_I, byte 00
+    ----------------------------------------------------------------
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_A, IDX_I, B00);
+    cpu_rd_wrn <= '1';
+    cpu_d_oe   <= '0';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- (2) WRITE HIT  : TAG_A @ IDX_I, byte 01, data A5
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_A, IDX_I, B01);
+    cpu_rd_wrn <= '0';
+    cpu_d_drv  <= U8(16#A5#);
+    cpu_d_oe   <= '1';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    cpu_d_oe   <= '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- (3) READ HIT   : TAG_A @ IDX_I, byte 01 (expect A5)
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_A, IDX_I, B01);
+    cpu_rd_wrn <= '1';
+    cpu_d_oe   <= '0';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- (4) WRITE MISS : TAG_C @ IDX_I, byte 10, data 7E
+    --      causes refill into LRU way with TAG_C
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_C, IDX_I, B10);
+    cpu_rd_wrn <= '0';
+    cpu_d_drv  <= U8(16#7E#);
+    cpu_d_oe   <= '1';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    cpu_d_oe   <= '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- ====== SET 2: TAG_B / TAG_C ======
+    -- (5) READ MISS  : TAG_B @ IDX_I, byte 00
+    --      B is a new tag at same index -> second miss
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_B, IDX_I, B00);
+    cpu_rd_wrn <= '1';
+    cpu_d_oe   <= '0';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- (6) WRITE HIT  : TAG_B @ IDX_I, byte 01, data A5
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_B, IDX_I, B01);
+    cpu_rd_wrn <= '0';
+    cpu_d_drv  <= U8(16#A5#);
+    cpu_d_oe   <= '1';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    cpu_d_oe   <= '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- (7) READ HIT   : TAG_B @ IDX_I, byte 01
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_B, IDX_I, B01);
+    cpu_rd_wrn <= '1';
+    cpu_d_oe   <= '0';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    wait until clk'event and clk='1';
+
+    ----------------------------------------------------------------
+    -- (8) WRITE MISS : TAG_C @ IDX_I, byte 10, data 7E
+    --      another write miss to same index, exercising LRU again
+    ----------------------------------------------------------------
+    if busy = '1' then wait until busy = '0'; end if;
+    wait until clk'event and clk='1';
+    cpu_add    <= MAKE_ADDR(TAG_C, IDX_I, B10);
+    cpu_rd_wrn <= '0';
+    cpu_d_drv  <= U8(16#7E#);
+    cpu_d_oe   <= '1';
+    start      <= '1';
+    wait until clk'event and clk='1';
+    start      <= '0';
+    if busy = '0' then wait until busy = '1'; end if;
+    wait until busy = '0';
+    cpu_d_oe   <= '0';
+
+    ----------------------------------------------------------------
+    -- Let things settle a bit
+    ----------------------------------------------------------------
+    for i in 0 to 20 loop
+      wait until clk'event and clk='1';
+    end loop;
+
+    assert false report "Simulation finished." severity failure;
+  end process;
+
+end tb;

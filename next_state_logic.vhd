@@ -9,7 +9,10 @@ entity next_state_logic is
         read_write : in  STD_LOGIC;
         state      : in  STD_LOGIC_VECTOR(2 downto 0);
         counter    : in  STD_LOGIC_VECTOR(4 downto 0);
-        next_state : out STD_LOGIC_VECTOR(2 downto 0)
+        next_state : out STD_LOGIC_VECTOR(2 downto 0);
+        dbg_write_hit_done : out std_logic;
+        dbg_write_miss_done : out std_logic;
+        dbg_cnt_eq_1 : out std_logic
     );
 end next_state_logic;
 
@@ -225,7 +228,7 @@ begin
 
     u_wh_done_and : and2 port map (
         a => is_write_hit,
-        b => cnt_eq_1,      
+        b => cnt_gte_1,      
         y => write_hit_done
     );
 
@@ -237,7 +240,7 @@ begin
 
     u_wm_done_and : and2 port map (
         a => is_write_miss,
-        b => cnt_eq_1,      
+        b => cnt_gte_1,      
         y => write_miss_done
     );
 
@@ -314,6 +317,10 @@ begin
             sel => state,
             y   => next_state(2)
         );
+
+    dbg_write_hit_done  <= write_hit_done;
+    dbg_write_miss_done <= write_miss_done;
+    dbg_cnt_eq_1        <= cnt_eq_1;
 
 end Structural;
 
