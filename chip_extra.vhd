@@ -21,9 +21,6 @@ end chip_extra;
 
 architecture Structural of chip_extra is
 
-  --------------------------------------------------------------------
-  -- COMPONENT DECLARATIONS
-  --------------------------------------------------------------------
   component decoder
     port (
       block_addr : in  STD_LOGIC_VECTOR(1 downto 0);
@@ -145,9 +142,6 @@ architecture Structural of chip_extra is
     );
   end component;
 
-  --------------------------------------------------------------------
-  -- CONSTANTS / ADDRESS FIELDS
-  --------------------------------------------------------------------
   signal tag_in    : STD_LOGIC_VECTOR(1 downto 0);
   signal idx       : STD_LOGIC_VECTOR(1 downto 0);
   signal byte_sel  : STD_LOGIC_VECTOR(1 downto 0);
@@ -157,9 +151,7 @@ architecture Structural of chip_extra is
   signal sig_zero, sig_one : STD_LOGIC;
   signal vec_zero5, vec_sixteen : STD_LOGIC_VECTOR(4 downto 0);
 
-  --------------------------------------------------------------------
-  -- BANK 0 ARRAYS
-  --------------------------------------------------------------------
+  -- Bank 0 Arrays
   signal d0_0, d1_0, d2_0, d3_0 : STD_LOGIC_VECTOR(7 downto 0);
   signal v0_0, v1_0, v2_0, v3_0 : STD_LOGIC;
   signal h0_0, h1_0, h2_0, h3_0 : STD_LOGIC;
@@ -169,9 +161,7 @@ architecture Structural of chip_extra is
   signal hit_sel_0   : STD_LOGIC;
   signal peek_data_0 : STD_LOGIC_VECTOR(7 downto 0);
 
-  --------------------------------------------------------------------
-  -- BANK 1 ARRAYS
-  --------------------------------------------------------------------
+  -- Bank 1 Arrays
   signal d0_1, d1_1, d2_1, d3_1 : STD_LOGIC_VECTOR(7 downto 0);
   signal v0_1, v1_1, v2_1, v3_1 : STD_LOGIC;
   signal h0_1, h1_1, h2_1, h3_1 : STD_LOGIC;
@@ -181,17 +171,15 @@ architecture Structural of chip_extra is
   signal hit_sel_1   : STD_LOGIC;
   signal peek_data_1 : STD_LOGIC_VECTOR(7 downto 0);
 
-  --------------------------------------------------------------------
-  -- LRU / BANK SELECTION + FSM VIEW
-  --------------------------------------------------------------------
+  -- LRU / Bank Selection
   signal hit0_and_valid0 : STD_LOGIC;
   signal hit1_and_valid1 : STD_LOGIC;
   signal hit_any         : STD_LOGIC;
   signal no_hit          : STD_LOGIC;
   signal no_hit_lru      : STD_LOGIC;
 
-  signal mru_bank        : STD_LOGIC;  -- here used as "LRU" bit
-  signal mru_bank_d      : STD_LOGIC;
+  signal lru_bank        : STD_LOGIC;  -- here used as "LRU" bit
+  signal lru_bank_d      : STD_LOGIC;
 
   signal used_bank_sel             : STD_LOGIC;  -- bank used for this transaction
   signal used_bank_sel_d           : STD_LOGIC;
@@ -208,18 +196,14 @@ architecture Structural of chip_extra is
   signal busy_n      : STD_LOGIC;
   signal txn_done    : STD_LOGIC;
 
-  --------------------------------------------------------------------
-  -- DATA BACK TO CPU
-  --------------------------------------------------------------------
+  -- Data back to CPU
   signal curr_byte_sel  : STD_LOGIC_VECTOR(1 downto 0);
   signal peek_sel_data  : STD_LOGIC_VECTOR(7 downto 0);
   signal cpu_do         : STD_LOGIC_VECTOR(7 downto 0);
   signal cpu_data_oe    : STD_LOGIC;
   signal cpu_data_oe_d  : STD_LOGIC;
 
-  --------------------------------------------------------------------
-  -- FSM LATCHED REQUEST INFO
-  --------------------------------------------------------------------
+  -- FSM Latched Request Info
   signal fsm_en         : STD_LOGIC;
   signal fsm_resp_pulse : STD_LOGIC;
 
@@ -229,9 +213,7 @@ architecture Structural of chip_extra is
 
   signal cpu_rd_wrn_n   : STD_LOGIC;
 
-  --------------------------------------------------------------------
-  -- REFILL CONTROLLER
-  --------------------------------------------------------------------
+  -- Refill Controller
   signal mem_en_q, mem_en_q_d, mem_en_q_n : STD_LOGIC;
 
   signal refill_active, refill_active_d : STD_LOGIC;
@@ -270,22 +252,8 @@ architecture Structural of chip_extra is
 
   signal eq8_or_eq10, eq12_or_eq14, any_eq8_14 : STD_LOGIC;
 
-  --------------------------------------------------------------------
-  -- DEBUG SIGNALS (aliases)
-  --------------------------------------------------------------------
-  signal dbg_hit0, dbg_hit1        : STD_LOGIC;
-  signal dbg_valid0, dbg_valid1    : STD_LOGIC;
-  signal dbg_tag_fsm, dbg_valid_fsm: STD_LOGIC;
-  signal dbg_bank_sel_now          : STD_LOGIC;
-  signal dbg_used_bank_sel         : STD_LOGIC;
-  signal dbg_mru_bank              : STD_LOGIC;
-  signal dbg_refill_cnt            : STD_LOGIC_VECTOR(4 downto 0);
-  signal dbg_refill_active         : STD_LOGIC;
-
 begin
-  --------------------------------------------------------------------
-  -- CONSTANTS / ADDRESS SLICING
-  --------------------------------------------------------------------
+  -- Constants / Address slicing
   sig_zero    <= '0';
   sig_one     <= '1';
   vec_zero5   <= (others => '0');
@@ -295,18 +263,14 @@ begin
   idx      <= cpu_add(3 downto 2);
   byte_sel <= cpu_add(1 downto 0);
 
-  --------------------------------------------------------------------
-  -- INDEX DECODER
-  --------------------------------------------------------------------
+  -- Index Decoder
   U_DEC : decoder
     port map (
       block_addr => idx,
       block_sel  => en_1hot
     );
 
-  --------------------------------------------------------------------
-  -- BANK 0 CACHE BLOCKS
-  --------------------------------------------------------------------
+  -- BANK 0 Cache Blocks
   U_CB0_0 : cache_block
     port map (
       clk        => clk,
@@ -417,9 +381,7 @@ begin
       y   => peek_data_0
     );
 
-  --------------------------------------------------------------------
-  -- BANK 1 CACHE BLOCKS
-  --------------------------------------------------------------------
+  -- BANK 1 Cache Blocks
   U_CB0_1 : cache_block
     port map (
       clk        => clk,
@@ -530,9 +492,6 @@ begin
       y   => peek_data_1
     );
 
-  --------------------------------------------------------------------
-  -- HIT / VALID COMBINATION + BANK SELECTION
-  --------------------------------------------------------------------
   -- hit in each way only counts if that way is valid
   U_AND_HV0 : and2 port map (a => hit_sel_0, b => valid_sel_0, y => hit0_and_valid0);
   U_AND_HV1 : and2 port map (a => hit_sel_1, b => valid_sel_1, y => hit1_and_valid1);
@@ -540,17 +499,17 @@ begin
   U_OR_HIT_ANY : or2 port map (a => hit0_and_valid0, b => hit1_and_valid1, y => hit_any);
   U_INV_HITANY : inv  port map (a => hit_any, y => no_hit);
 
-  -- no_hit_lru = (no_hit AND current LRU bit)
-  U_AND_NOHIT_LRU : and2 port map (a => no_hit, b => mru_bank, y => no_hit_lru);
+  -- no_hit_lru = no_hit AND current LRU bit
+  U_AND_NOHIT_LRU : and2 port map (a => no_hit, b => lru_bank, y => no_hit_lru);
 
   -- When a new operation starts:
-  --   if way1 hits -> choose bank1
-  --   else if way0 hits -> choose bank0
-  --   else (miss) -> choose LRU bank
+  --   if way1 hits, choose bank1
+  --   else if way0 hits, choose bank0
+  --   else (miss), choose LRU bank
   U_OR_USED_CAND : or2
     port map (a => hit1_and_valid1, b => no_hit_lru, y => used_bank_sel_candidate);
 
-  -- latch selected bank at start; otherwise hold previous
+  -- latch selected bank at start, otherwise hold previous
   U_MUX_USED_SEL_D : mux2to1
     port map (
       d0  => used_bank_sel,
@@ -562,7 +521,7 @@ begin
   U_FF_USED_SEL : dff_fall
     port map (clk => clk, reset => reset, d => used_bank_sel_d, q => used_bank_sel);
 
-  -- FSM's view: hit/valid from the *selected* bank (candidate for this access).
+  -- hit/valid from the selected bank
   U_MUX_TAG_FSM : mux2to1
     port map (
       d0  => hit_sel_0,
@@ -579,9 +538,7 @@ begin
       y   => valid_sel_fsm
     );
 
-  --------------------------------------------------------------------
-  -- CPU DATA PATH (bank chosen by used_bank_sel)
-  --------------------------------------------------------------------
+  -- CPU Data Path (bank chosen by used_bank_sel)
   gen_peek_data : for i in 0 to 7 generate
     U_MUX_PEEK_SEL : mux2to1
       port map (
@@ -597,9 +554,7 @@ begin
   U_TBUF : tbuf8
     port map (d => cpu_do, en => cpu_data_oe, b => cpu_data);
 
-  --------------------------------------------------------------------
   -- FSM
-  --------------------------------------------------------------------
   U_FSM : cache_fsm_struct
     port map (
       clk            => clk,
@@ -619,9 +574,7 @@ begin
   mem_add(5 downto 2) <= cpu_add(5 downto 2);
   mem_add(1 downto 0) <= (others => '0');
 
-  --------------------------------------------------------------------
-  -- BYTE SELECT (normal vs refill)
-  --------------------------------------------------------------------
+  -- Byte Select
   gen_curr_byte : for i in 0 to 1 generate
     U_MUX_CURR_BYTE : mux2to1
       port map (
@@ -632,9 +585,7 @@ begin
       );
   end generate;
 
-  --------------------------------------------------------------------
-  -- REQUEST LATCHING
-  --------------------------------------------------------------------
+  -- Request latching
   U_FF_LATCH_GO : dff_fall
     port map (clk => clk, reset => reset, d => start, q => latch_go);
 
@@ -661,9 +612,7 @@ begin
   U_FF_CPU_OE : dff_fall
     port map (clk => clk, reset => reset, d => cpu_data_oe_d, q => cpu_data_oe);
 
-  --------------------------------------------------------------------
-  -- REFILL CONTROLLER (same as original chip)
-  --------------------------------------------------------------------
+  -- Refill controller
   mem_en_q_d <= fsm_en;
 
   U_INV_MEM_EN_Q : inv
@@ -755,9 +704,7 @@ begin
 
   clr_active_pulse <= refill_active_and_ge16;
 
-  --------------------------------------------------------------------
-  -- latch refill_active ON START_REFILL (OR gate)
-  --------------------------------------------------------------------
+  -- latch refill_active ON START_REFILL
   U_OR_ACTIVE_START : or2
     port map (a => refill_active, b => start_refill, y => refill_active_trigger);
 
@@ -817,7 +764,7 @@ begin
   U_AND_SET_TAG : and2 port map (a => refill_active, b => eq8, y => set_tag_pulse);
   set_tag_top_d <= set_tag_pulse;
 
-  -- Register WE and set_tag on falling edge (match original chip behaviour)
+  -- Register WE and set_tag on falling edge
   U_DFF_WE_TOP : dff_fall
     port map (clk => clk, reset => reset, d => we_top_d,      q => we_top);
 
@@ -832,42 +779,25 @@ begin
   U_ST_BANK0 : and2 port map (a => set_tag_top, b => used_bank_sel_n, y => set_tag_top_0);
   U_ST_BANK1 : and2 port map (a => set_tag_top, b => used_bank_sel,   y => set_tag_top_1);
 
-  --------------------------------------------------------------------
-  -- LRU UPDATE AFTER EACH TRANSACTION (busy falling edge)
-  --------------------------------------------------------------------
+  -- LRU Update after each transaction
   busy_q_d <= busy_int;
 
   U_FF_BUSYQ : dff_fall port map (clk => clk, reset => reset, d => busy_q_d, q => busy_q);
   U_INV_BUSY : inv       port map (a => busy_int, y => busy_n);
   U_AND_TXN  : and2      port map (a => busy_q, b => busy_n, y => txn_done);
 
-  -- new LRU = "other" bank than the one just used
+  -- new LRU
   U_INV_USED_FOR_LRU : inv port map (a => used_bank_sel, y => used_bank_sel_n);
 
-  U_MUX_MRU_D : mux2to1
+  U_MUX_LRU_D : mux2to1
     port map (
-      d0  => mru_bank,          -- hold
+      d0  => lru_bank,          -- hold
       d1  => used_bank_sel_n,   -- update to other bank
       sel => txn_done,
-      y   => mru_bank_d
+      y   => lru_bank_d
     );
 
-  U_FF_MRU : dff_fall
-    port map (clk => clk, reset => reset, d => mru_bank_d, q => mru_bank);
-
-  --------------------------------------------------------------------
-  -- DEBUG ALIASES
-  --------------------------------------------------------------------
-  dbg_hit0          <= hit_sel_0;
-  dbg_hit1          <= hit_sel_1;
-  dbg_valid0        <= valid_sel_0;
-  dbg_valid1        <= valid_sel_1;
-  dbg_tag_fsm       <= hit_sel_fsm;
-  dbg_valid_fsm     <= valid_sel_fsm;
-  dbg_bank_sel_now  <= used_bank_sel;
-  dbg_used_bank_sel <= used_bank_sel;
-  dbg_mru_bank      <= mru_bank;
-  dbg_refill_cnt    <= refill_cnt;
-  dbg_refill_active <= refill_active;
+  U_FF_LRU : dff_fall
+    port map (clk => clk, reset => reset, d => lru_bank_d, q => lru_bank);
 
 end Structural;
